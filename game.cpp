@@ -5,6 +5,8 @@
 // Library includes:
 #include "renderer.h"
 #include "logmanager.h"
+#include "scenecheckerboards.h"
+#include "scenebouncingballs.h"
 // Static Members:
 Game * Game::sm_pInstance = 0;
 Game& Game::GetInstance()
@@ -34,6 +36,8 @@ void Game::Quit()
 }
 bool Game::Initialise()
 {
+
+
 	int bbWidth = 1024;
 	int bbHeight = 768;
 	m_pRenderer = new Renderer();
@@ -44,25 +48,39 @@ bool Game::Initialise()
 	}
 
 
-	m_pBall = m_pRenderer->CreateSprite("../assets/ball.png");
+	//m_pBall = m_pRenderer->CreateSprite("../assets/ball.png");
 
 
-	if (!m_pBall)
-	{
-		return false; // Failed to load sprite
-	}
+
+	//if (!m_pBall)
+	//{
+	//	return false; // Failed to load sprite
+	//}
 
 	// Set sprite position
 
 	bbWidth = m_pRenderer->GetWidth();
 	bbHeight = m_pRenderer->GetHeight();
 
-	m_pBall->SetScale(0.33);
-	m_pBall->SetX((bbWidth) / 2);
-	m_pBall->SetY((bbHeight) / 2);
+	//m_pBall->SetScale(0.33);
+	//m_pBall->SetX((bbWidth) / 2);
+	//m_pBall->SetY((bbHeight) / 2);
 
 	m_iLastTime = SDL_GetPerformanceCounter();
 	m_pRenderer->SetClearColour(0, 255, 255);
+
+	Scene* pScene = 0;
+	pScene = new SceneCheckerboards();
+	pScene->Initialise(*m_pRenderer);
+	m_scenes.push_back(pScene);
+
+	Scene* pScene2 = 0;
+	pScene2 = new SceneBouncingBalls();
+	pScene2->Initialise(*m_pRenderer);
+	m_scenes.push_back(pScene2);
+
+	m_iCurrentScene = 1;
+
 	return true;
 }
 bool Game::DoGameLoop()
@@ -101,10 +119,11 @@ void Game::Process(float deltaTime)
 	ProcessFrameCounting(deltaTime);
 	// TODO: Add game objects to process here!
 
-	if (m_pBall)
-	{
-		m_pBall->Process(deltaTime);
-	}
+	//if (m_pBall)
+	//{
+	//	m_pBall->Process(deltaTime);
+	//}
+	m_scenes[m_iCurrentScene]->Process(deltaTime);
 
 }
 void Game::Draw(Renderer& renderer)
@@ -116,11 +135,13 @@ void Game::Draw(Renderer& renderer)
 	m_pRenderer->Clear(); // Clear the screen with the backbuffer color
 
 
-	if (m_pBall)
-	{
-		m_pBall->Draw(*m_pRenderer);
-	}
+	//if (m_pBall)
+	//{
+	//	m_pBall->Draw(*m_pRenderer);
+	//}
+	m_scenes[m_iCurrentScene]->Draw(renderer);
 	renderer.Present();
+
 }
 void
 Game::ProcessFrameCounting(float deltaTime)

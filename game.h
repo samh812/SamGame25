@@ -2,9 +2,12 @@
 #ifndef __GAME_H
 #define __GAME_H
 
+#include <vector>
+
 #include "sprite.h"
 // Forward declarations:
 class Renderer;
+class Scene;
 class Game
 {
 	// Member methods:
@@ -35,6 +38,10 @@ protected:
 	float m_fElapsedSeconds;
 	int m_iFrameCount;
 	int m_iFPS;
+
+	std::vector<Scene*> m_scenes;
+	int m_iCurrentScene;
+
 #ifdef USE_LAG
 	float m_fLag;
 	int m_iUpdateCount;

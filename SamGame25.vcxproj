@@ -19,26 +19,37 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ball.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="inlinehelpers.h" />
     <ClInclude Include="logmanager.h" />
     <ClInclude Include="matrix4.h" />
     <ClInclude Include="renderer.h" />
+    <ClInclude Include="scene.h" />
+    <ClInclude Include="scenebouncingballs.h" />
+    <ClInclude Include="scenecheckerboards.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="sprite.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="texturemanager.h" />
+    <ClInclude Include="vector2.h" />
     <ClInclude Include="vertexarray.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ball.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="logmanager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="matrix4.cpp" />
     <ClCompile Include="renderer.cpp" />
+    <ClCompile Include="scene.cpp" />
+    <ClCompile Include="scenebouncingballs.cpp" />
+    <ClCompile Include="scenecheckerboards.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="sprite.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="texturemanager.cpp" />
+    <ClCompile Include="vector2.cpp" />
     <ClCompile Include="vertexarray.cpp" />
   </ItemGroup>
   <ItemGroup>
