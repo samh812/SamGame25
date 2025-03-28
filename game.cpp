@@ -100,10 +100,7 @@ void Game::Process(float deltaTime)
 {
 	ProcessFrameCounting(deltaTime);
 	// TODO: Add game objects to process here!
-	if (m_pCheckerboard)
-	{
-		m_pCheckerboard->Process(deltaTime);
-	}
+
 	if (m_pBall)
 	{
 		m_pBall->Process(deltaTime);
