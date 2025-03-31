@@ -3,6 +3,7 @@
 #define SCENEBOUNCINGBALLS_H
 // Local includes:
 #include "scene.h"
+#include "sprite.h"
 // Forward declarations:
 class Renderer;
 class Ball;
@@ -22,9 +23,13 @@ private:
 	SceneBouncingBalls& operator=(const SceneBouncingBalls& sceneBouncingBalls);
 	// Member data:
 public:
+
 protected:
 	Ball* m_pBalls[100];
 	int m_iShowCount;
+
 private:
+	Sprite* m_pTestSprite;
+
 };
 #endif // SCENEBOUNCINGBALLS_H

@@ -4,6 +4,7 @@
 // Local includes:
 #include "renderer.h"
 #include "ball.h"
+#include "sprite.h"
 // Library includes:
 #include <cassert>
 #include <cstdlib>
@@ -33,6 +34,10 @@ SceneBouncingBalls::Initialise(Renderer& renderer)
 	m_pBalls[0]->Position().x = renderer.GetWidth() / 2.0f;
 	m_pBalls[0]->Position().y = renderer.GetHeight() / 2.0f;
 	m_iShowCount = 100;
+
+
+	m_pTestSprite = renderer.CreateSprite("../assets/ball.png");
+
 	return true;
 }
 void
@@ -46,6 +51,12 @@ SceneBouncingBalls::Process(float deltaTime)
 void
 SceneBouncingBalls::Draw(Renderer& renderer)
 {
+
+	// Draw the test sprite
+	if (m_pTestSprite)
+	{
+		m_pTestSprite->Draw(renderer);
+	}
 	for (int k = 0; k < m_iShowCount; ++k)
 	{
 		m_pBalls[k]->Draw(renderer);

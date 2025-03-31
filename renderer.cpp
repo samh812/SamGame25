@@ -8,6 +8,10 @@
 #include "vertexarray.h"
 #include "sprite.h"
 #include "matrix4.h"
+
+#include "imgui/imgui_impl_sdl2.h"
+#include "imgui/imgui_impl_opengl3.h"
+
 // Library includes:
 #include <SDL.h>
 #include <SDL_image.h>
@@ -29,6 +33,9 @@ Renderer::Renderer()
 }
 Renderer::~Renderer()
 {
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplSDL2_Shutdown();
+	ImGui::DestroyContext();
 	delete m_pSpriteShader;
 	m_pSpriteShader = 0;
 	delete m_pSpriteVertexData;
@@ -79,6 +86,10 @@ bool Renderer::Initialise(bool windowed, int width, int height)
 		assert(m_pTextureManager);
 		initialised = m_pTextureManager->Initialise();
 	}
+
+	ImGui::CreateContext();
+	ImGui_ImplSDL2_InitForOpenGL(m_pWindow, m_glContext);
+	ImGui_ImplOpenGL3_Init();
 	return initialised;
 }
 bool Renderer::InitialiseOpenGL(int screenWidth, int screenHeight)
@@ -111,10 +122,17 @@ void Renderer::Clear()
 {
 	glClearColor(m_fClearRed, m_fClearGreen, m_fClearBlue, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplSDL2_NewFrame(m_pWindow);
+	ImGui::NewFrame();
 }
 void Renderer::Present()
 {
 	SDL_GL_SwapWindow(m_pWindow);
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 }
 void Renderer::SetFullscreen(bool fullscreen)
 {

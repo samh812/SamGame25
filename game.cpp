@@ -74,12 +74,15 @@ bool Game::Initialise()
 	pScene->Initialise(*m_pRenderer);
 	m_scenes.push_back(pScene);
 
-	Scene* pScene2 = 0;
-	pScene2 = new SceneBouncingBalls();
-	pScene2->Initialise(*m_pRenderer);
-	m_scenes.push_back(pScene2);
 
-	m_iCurrentScene = 1;
+
+	pScene = new SceneBouncingBalls();
+	pScene->Initialise(*m_pRenderer);
+	m_scenes.push_back(pScene);
+
+
+
+	m_iCurrentScene = 0;
 
 	return true;
 }

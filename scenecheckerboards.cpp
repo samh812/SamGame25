@@ -50,7 +50,7 @@ SceneCheckerboards::Initialise(Renderer& renderer)
 	m_pCorners[2]->SetRedTint(0.0f);
 
 	// Bottom right green:
-	m_pCorners[3]->SetX(SCREEN_WIDTH - BOARD_HALF_WIDTH);
+	m_pCorners[3]->SetX(SCREEN_WIDTH);
 	m_pCorners[3]->SetY(SCREEN_HEIGHT - BOARD_HALF_HEIGHT);
 	m_pCorners[3]->SetBlueTint(0.0f);
 

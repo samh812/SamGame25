@@ -32,6 +32,7 @@ protected:
 	Vector2 m_boundaryLow;
 	Vector2 m_boundaryHigh;
 	Sprite* m_pSprite;
+	Sprite* m_pTestSprite;
 	bool m_bAlive;
 	static float sm_fBoundaryWidth;
 	static float sm_fBoundaryHeight;
