@@ -21,6 +21,7 @@ protected:
 	void Process(float deltaTime);
 	void Draw(Renderer& renderer);
 	void ProcessFrameCounting(float deltaTime);
+	void DebugDraw();
 private:
 	Game();
 	~Game();

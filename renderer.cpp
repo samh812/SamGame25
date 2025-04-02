@@ -9,6 +9,7 @@
 #include "sprite.h"
 #include "matrix4.h"
 
+
 #include "imgui/imgui_impl_sdl2.h"
 #include "imgui/imgui_impl_opengl3.h"
 
@@ -18,6 +19,8 @@
 #include <glew.h>
 #include <cassert>
 #include <cmath>
+#include <cstdlib>
+#include <iostream>
 
 Renderer::Renderer()
 	: m_pTextureManager(0)
@@ -120,18 +123,21 @@ bool Renderer::InitialiseOpenGL(int screenWidth, int screenHeight)
 }
 void Renderer::Clear()
 {
+
 	glClearColor(m_fClearRed, m_fClearGreen, m_fClearBlue, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplSDL2_NewFrame(m_pWindow);
+	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
 }
 void Renderer::Present()
 {
-	SDL_GL_SwapWindow(m_pWindow);
+	ImGui::EndFrame();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	SDL_GL_SwapWindow(m_pWindow);
+
 
 }
 void Renderer::SetFullscreen(bool fullscreen)

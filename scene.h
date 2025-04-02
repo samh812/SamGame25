@@ -13,6 +13,7 @@ public:
 	virtual bool Initialise(Renderer& renderer) = 0;
 	virtual void Process(float deltaTime) = 0;
 	virtual void Draw(Renderer& renderer) = 0;
+	virtual void DebugDraw() = 0;
 protected:
 private:
 	Scene(const Scene& scene);

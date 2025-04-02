@@ -16,6 +16,7 @@ public:
 	bool Initialise(Renderer& renderer);
 	void Process(float deltaTime);
 	void Draw(Renderer& renderer);
+	void DebugDraw();
 	void RandomiseColour();
 	void RandomiseSize();
 	Vector2& Position();

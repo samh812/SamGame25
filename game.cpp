@@ -7,6 +7,10 @@
 #include "logmanager.h"
 #include "scenecheckerboards.h"
 #include "scenebouncingballs.h"
+
+
+#include "imgui/imgui_impl_sdl2.h"
+#include "imgui/imgui_impl_opengl3.h"
 // Static Members:
 Game * Game::sm_pInstance = 0;
 Game& Game::GetInstance()
@@ -82,7 +86,7 @@ bool Game::Initialise()
 
 
 
-	m_iCurrentScene = 0;
+	m_iCurrentScene = 1;
 
 	return true;
 }
@@ -93,7 +97,8 @@ bool Game::DoGameLoop()
 	SDL_Event event;
 	while (SDL_PollEvent(&event) != 0)
 	{
-		continue;
+		ImGuiIO& io = ImGui::GetIO();
+		ImGui_ImplSDL2_ProcessEvent(&event);
 	}
 	if (m_bLooping)
 	{
@@ -135,7 +140,7 @@ void Game::Draw(Renderer& renderer)
 	renderer.Clear();
 	// TODO: Add game objects to draw here!
 
-	m_pRenderer->Clear(); // Clear the screen with the backbuffer color
+
 
 
 	//if (m_pBall)
@@ -143,6 +148,7 @@ void Game::Draw(Renderer& renderer)
 	//	m_pBall->Draw(*m_pRenderer);
 	//}
 	m_scenes[m_iCurrentScene]->Draw(renderer);
+	DebugDraw();
 	renderer.Present();
 
 }
@@ -158,4 +164,19 @@ Game::ProcessFrameCounting(float deltaTime)
 		m_iFPS = m_iFrameCount;
 		m_iFrameCount = 0;
 	}
+}
+
+void Game::DebugDraw
+()
+{
+	bool open = true;
+	ImGui::Begin("Debug Window", &open, ImGuiWindowFlags_MenuBar);
+	ImGui::Text("COMP710 GP Framework (%s)", "2022, S2");
+	if (ImGui::Button("Quit"))
+	{
+		Quit();
+	}
+	ImGui::SliderInt("Active scene", &m_iCurrentScene, 0, m_scenes.size() - 1, "%d");
+	m_scenes[m_iCurrentScene]->DebugDraw();
+	ImGui::End();
 }

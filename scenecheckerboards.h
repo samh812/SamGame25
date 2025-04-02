@@ -16,6 +16,7 @@ public:
 	virtual bool Initialise(Renderer& renderer);
 	virtual void Process(float deltaTime);
 	virtual void Draw(Renderer& renderer);
+	virtual void DebugDraw();
 protected:
 private:
 	SceneCheckerboards(const SceneCheckerboards& sceneCheckerboards);
