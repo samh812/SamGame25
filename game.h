@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "inputsystem.h"
 #include "sprite.h"
 // Forward declarations:
 class Renderer;
@@ -17,6 +18,7 @@ public:
 	bool Initialise();
 	bool DoGameLoop();
 	void Quit();
+	void ToggleDebugWindow();
 protected:
 	void Process(float deltaTime);
 	void Draw(Renderer& renderer);
@@ -33,6 +35,8 @@ public:
 protected:
 	static Game* sm_pInstance;
 
+	bool m_bShowDebugWindow;
+	InputSystem* m_pInputSystem;
 	Renderer* m_pRenderer;
 	__int64 m_iLastTime;
 	float m_fExecutionTime;

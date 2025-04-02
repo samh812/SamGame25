@@ -14,7 +14,7 @@ public:
 	SceneCheckerboards();
 	virtual ~SceneCheckerboards();
 	virtual bool Initialise(Renderer& renderer);
-	virtual void Process(float deltaTime);
+	virtual void Process(float deltaTime, InputSystem& inputSystem);
 	virtual void Draw(Renderer& renderer);
 	virtual void DebugDraw();
 protected:

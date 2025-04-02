@@ -61,7 +61,7 @@ SceneCheckerboards::Initialise(Renderer& renderer)
 }
 
 void
-SceneCheckerboards::Process(float deltaTime)
+SceneCheckerboards::Process(float deltaTime, InputSystem& inputSystem)
 {
 	for (int k = 0; k < 4; ++k)
 	{

@@ -8,9 +8,13 @@
 #include "scenecheckerboards.h"
 #include "scenebouncingballs.h"
 
+#include "inputsystem.h"
 
 #include "imgui/imgui_impl_sdl2.h"
 #include "imgui/imgui_impl_opengl3.h"
+
+
+#include <iostream>
 // Static Members:
 Game * Game::sm_pInstance = 0;
 Game& Game::GetInstance()
@@ -44,6 +48,11 @@ bool Game::Initialise()
 
 	int bbWidth = 1024;
 	int bbHeight = 768;
+	m_pInputSystem = new InputSystem();
+	if (!m_pInputSystem->Initialise()) {
+		std::cerr << "Failed to initialize InputSystem." << std::endl;
+		return false;
+	}
 	m_pRenderer = new Renderer();
 	if (!m_pRenderer->Initialise(true, bbWidth, bbHeight))
 	{
@@ -94,12 +103,8 @@ bool Game::DoGameLoop()
 {
 	const float stepSize = 1.0f / 60.0f;
 	// TODO: Process input here!
-	SDL_Event event;
-	while (SDL_PollEvent(&event) != 0)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		ImGui_ImplSDL2_ProcessEvent(&event);
-	}
+	m_pInputSystem->ProcessInput();
+
 	if (m_bLooping)
 	{
 		Uint64 current = SDL_GetPerformanceCounter();
@@ -131,7 +136,34 @@ void Game::Process(float deltaTime)
 	//{
 	//	m_pBall->Process(deltaTime);
 	//}
-	m_scenes[m_iCurrentScene]->Process(deltaTime);
+	ButtonState state1 = m_pInputSystem->GetKeyState(SDL_SCANCODE_SPACE);
+	std::cout << state1 << std::endl;
+	if (state1 == BS_PRESSED){
+		ToggleDebugWindow();
+	}
+
+	ButtonState leftArrowState = (m_pInputSystem->GetKeyState(SDL_SCANCODE_LEFT));
+	if (leftArrowState == BS_PRESSED)
+	{
+		LogManager::GetInstance().Log("Left arrow key pressed.");
+	}
+	else if (leftArrowState == BS_RELEASED)
+	{
+		LogManager::GetInstance().Log("Left arrow key released.");
+	}
+
+	int result = m_pInputSystem->GetMouseButtonState(SDL_BUTTON_LEFT);
+	if (result == BS_PRESSED)
+	{
+		LogManager::GetInstance().Log("Left mouse button pressed.");
+	}
+	else if (result == BS_RELEASED)
+	{
+		LogManager::GetInstance().Log("Left mouse button released.");
+	}
+
+
+	m_scenes[m_iCurrentScene]->Process(deltaTime, *m_pInputSystem);
 
 }
 void Game::Draw(Renderer& renderer)
@@ -169,14 +201,23 @@ Game::ProcessFrameCounting(float deltaTime)
 void Game::DebugDraw
 ()
 {
-	bool open = true;
-	ImGui::Begin("Debug Window", &open, ImGuiWindowFlags_MenuBar);
-	ImGui::Text("COMP710 GP Framework (%s)", "2022, S2");
-	if (ImGui::Button("Quit"))
+	if (m_bShowDebugWindow)
 	{
-		Quit();
+		bool open = true;
+		ImGui::Begin("Debug Window", &open, ImGuiWindowFlags_MenuBar);
+		ImGui::Text("COMP710 GP Framework (%s)", "2024, S2");
+		if (ImGui::Button("Quit"))
+		{
+			Quit();
+		}
+		ImGui::SliderInt("Active scene", &m_iCurrentScene, 0, m_scenes.size() - 1, "%d");
+		m_scenes[m_iCurrentScene]->DebugDraw();
+		ImGui::End();
 	}
-	ImGui::SliderInt("Active scene", &m_iCurrentScene, 0, m_scenes.size() - 1, "%d");
-	m_scenes[m_iCurrentScene]->DebugDraw();
-	ImGui::End();
+}
+void Game::ToggleDebugWindow
+()
+{
+	m_bShowDebugWindow = !m_bShowDebugWindow;
+	m_pInputSystem->ShowMouseCursor(m_bShowDebugWindow);
 }
