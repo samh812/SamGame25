@@ -31,6 +31,7 @@ protected:
 
 private:
 	Sprite* m_pTestSprite;
+	Sprite* m_pWelcomeText;
 
 };
 #endif // SCENEBOUNCINGBALLS_H

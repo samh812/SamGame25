@@ -3,6 +3,7 @@
 #define __GAME_H
 
 #include <vector>
+#include <memory>s
 
 #include "inputsystem.h"
 #include "sprite.h"
@@ -44,7 +45,8 @@ protected:
 	int m_iFrameCount;
 	int m_iFPS;
 
-	std::vector<Scene*> m_scenes;
+	//std::vector<std::unique_ptr<Scene>> m_scenes;		
+	std::vector<Scene*> m_scenes;	
 	int m_iCurrentScene;
 
 #ifdef USE_LAG

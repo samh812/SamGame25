@@ -1,4 +1,9 @@
 // COMP710 GP Framework 2022
+// 
+
+
+#include <iostream>
+// 
 // This include:
 #include "game.h"
 #include "sprite.h"
@@ -14,7 +19,7 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 
-#include <iostream>
+
 // Static Members:
 Game * Game::sm_pInstance = 0;
 Game& Game::GetInstance()
@@ -36,7 +41,17 @@ Game::Game() : m_pRenderer(0), m_bLooping(true)
 Game::~Game()
 {
 	delete m_pRenderer;
-	m_pRenderer = 0;
+	m_pRenderer = nullptr;
+
+	delete m_pInputSystem;
+	m_pInputSystem = nullptr;
+
+	for (Scene* scene : m_scenes)
+	{
+		delete scene;
+	}
+	m_scenes.clear();
+
 }
 void Game::Quit()
 {
@@ -79,6 +94,8 @@ bool Game::Initialise()
 	//m_pBall->SetX((bbWidth) / 2);
 	//m_pBall->SetY((bbHeight) / 2);
 
+
+
 	m_iLastTime = SDL_GetPerformanceCounter();
 	m_pRenderer->SetClearColour(0, 255, 255);
 
@@ -95,7 +112,14 @@ bool Game::Initialise()
 
 
 
+	//m_scenes.push_back(std::make_unique<SceneCheckerboards>());
+	//m_scenes.back()->Initialise(*m_pRenderer);
+
+	//m_scenes.push_back(std::make_unique<SceneBouncingBalls>());
+	//m_scenes.back()->Initialise(*m_pRenderer);
+
 	m_iCurrentScene = 1;
+
 
 	return true;
 }
@@ -137,10 +161,14 @@ void Game::Process(float deltaTime)
 	//	m_pBall->Process(deltaTime);
 	//}
 	ButtonState state1 = m_pInputSystem->GetKeyState(SDL_SCANCODE_SPACE);
-	std::cout << state1 << std::endl;
 	if (state1 == BS_PRESSED){
 		ToggleDebugWindow();
 	}
+	ButtonState quitButton = m_pInputSystem->GetKeyState(SDL_SCANCODE_ESCAPE);
+	if (quitButton == BS_PRESSED) {
+		Quit();
+	}
+
 
 	ButtonState leftArrowState = (m_pInputSystem->GetKeyState(SDL_SCANCODE_LEFT));
 	if (leftArrowState == BS_PRESSED)
@@ -170,15 +198,7 @@ void Game::Draw(Renderer& renderer)
 {
 	++m_iFrameCount;
 	renderer.Clear();
-	// TODO: Add game objects to draw here!
 
-
-
-
-	//if (m_pBall)
-	//{
-	//	m_pBall->Draw(*m_pRenderer);
-	//}
 	m_scenes[m_iCurrentScene]->Draw(renderer);
 	DebugDraw();
 	renderer.Present();
