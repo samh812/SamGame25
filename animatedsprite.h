@@ -25,6 +25,7 @@ public:
 	int GetWidth() const;
 	int GetHeight() const;
 	void DebugDraw();
+	//const
 protected:
 private:
 	AnimatedSprite(const AnimatedSprite& animatedsprite);

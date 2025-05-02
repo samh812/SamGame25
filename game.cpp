@@ -61,15 +61,15 @@ bool Game::Initialise()
 {
 
 
-	int bbWidth = 1024;
-	int bbHeight = 768;
+	int bbWidth = 1280;
+	int bbHeight = 720;
 	m_pInputSystem = new InputSystem();
 	if (!m_pInputSystem->Initialise()) {
 		std::cerr << "Failed to initialize InputSystem." << std::endl;
 		return false;
 	}
 	m_pRenderer = new Renderer();
-	if (!m_pRenderer->Initialise(true, bbWidth, bbHeight))
+	if (!m_pRenderer->Initialise(false, bbWidth, bbHeight))
 	{
 		LogManager::GetInstance().Log("Renderer failed to initialise!");
 		return false;
@@ -161,7 +161,7 @@ void Game::Process(float deltaTime)
 	//	m_pBall->Process(deltaTime);
 	//}
 	ButtonState state1 = m_pInputSystem->GetKeyState(SDL_SCANCODE_SPACE);
-	if (state1 == BS_PRESSED){
+	if (state1 == BS_PRESSED) {
 		ToggleDebugWindow();
 	}
 	ButtonState quitButton = m_pInputSystem->GetKeyState(SDL_SCANCODE_ESCAPE);
@@ -170,15 +170,7 @@ void Game::Process(float deltaTime)
 	}
 
 
-	ButtonState leftArrowState = (m_pInputSystem->GetKeyState(SDL_SCANCODE_LEFT));
-	if (leftArrowState == BS_PRESSED)
-	{
-		LogManager::GetInstance().Log("Left arrow key pressed.");
-	}
-	else if (leftArrowState == BS_RELEASED)
-	{
-		LogManager::GetInstance().Log("Left arrow key released.");
-	}
+
 
 	int result = m_pInputSystem->GetMouseButtonState(SDL_BUTTON_LEFT);
 	if (result == BS_PRESSED)
@@ -241,3 +233,4 @@ void Game::ToggleDebugWindow
 	m_bShowDebugWindow = !m_bShowDebugWindow;
 	m_pInputSystem->ShowMouseCursor(m_bShowDebugWindow);
 }
+

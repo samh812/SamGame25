@@ -3,7 +3,7 @@
 #define __GAME_H
 
 #include <vector>
-#include <memory>s
+#include <memory>
 
 #include "inputsystem.h"
 #include "sprite.h"

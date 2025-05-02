@@ -46,6 +46,7 @@ bool Texture::Initialise(const char* pcFilename)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	}
+
 	else
 	{
 		LogManager::GetInstance().Log("Texture failed to load!");

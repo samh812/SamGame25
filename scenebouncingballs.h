@@ -4,12 +4,23 @@
 // Local includes:
 #include "scene.h"
 #include "sprite.h"
+#include "inputsystem.h"
+
 // Forward declarations:
 class Renderer;
 class Ball;
+class AnimatedSprite;
 // Class declaration:
 class SceneBouncingBalls : public Scene
 {
+
+	//other members:
+	// 
+	
+private:
+	AnimatedSprite* m_pAnimSprite1;
+	AnimatedSprite* m_pAnimSprite2;
+	AnimatedSprite* m_pAnimSprite3;
 	// Member methods:
 public:
 	SceneBouncingBalls();
@@ -18,6 +29,7 @@ public:
 	virtual void Process(float deltaTime, InputSystem& inputSystem);
 	virtual void Draw(Renderer& renderer);
 	virtual void DebugDraw();
+	void playerMovement();
 protected:
 private:
 	SceneBouncingBalls(const SceneBouncingBalls& sceneBouncingBalls);
