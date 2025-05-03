@@ -73,22 +73,37 @@ int Texture::GetHeight() const
 void
 Texture::LoadTextTexture(const char* text, const char* fontname, int pointsize)
 {
-	TTF_Font* pFont = 0;
-	TTF_Init();
-	if (pFont == 0)
+	static bool ttfInitialized = false;
+	if (!ttfInitialized)
 	{
-		pFont = TTF_OpenFont(fontname, pointsize);
+		if (TTF_Init() == -1)
+		{
+			LogManager::GetInstance().Log("TTF_Init failed!");
+			return;
+		}
+		ttfInitialized = true;
 	}
-	SDL_Color color;
-	color.r = 255;
-	color.g = 255;
-	color.b = 255;
-	color.a = 255;
+
+	TTF_Font* pFont = TTF_OpenFont(fontname, pointsize);
+	if (!pFont)
+	{
+		LogManager::GetInstance().Log("Failed to open font!");
+		return;
+	}
+
+	SDL_Color color = { 255, 255, 255, 255 };
 	SDL_Surface* pSurface = TTF_RenderText_Blended(pFont, text, color);
+	if (!pSurface)
+	{
+		LogManager::GetInstance().Log("Failed to render text surface!");
+		TTF_CloseFont(pFont);
+		return;
+	}
+
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, pSurface->pitch / pSurface->format->BytesPerPixel);
-	LoadSurfaceIntoTexture(pSurface);
+	LoadSurfaceIntoTexture(pSurface); // This frees the surface
+
 	TTF_CloseFont(pFont);
-	pFont = 0;
 }
 void
 Texture::LoadSurfaceIntoTexture(SDL_Surface* pSurface)

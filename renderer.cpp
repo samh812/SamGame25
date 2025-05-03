@@ -30,8 +30,8 @@ Renderer::Renderer()
 	, m_pSpriteShader(0)
 	, m_pSpriteVertexData(0)
 	, m_glContext(0)
-	, m_iWidth(0)
-	, m_iHeight(0)
+	, m_screenWidth(0)
+	, m_screenHeight(0)
 	, m_fClearRed(0.0f)
 	, m_fClearGreen(0.0f)
 	, m_fClearBlue(0.0f)
@@ -48,7 +48,14 @@ Renderer::~Renderer()
 	m_pSpriteVertexData = 0;
 	delete m_pTextureManager;
 	m_pTextureManager = 0;
-	SDL_DestroyWindow(m_pWindow);
+
+	if (m_pWindow) {
+		SDL_DestroyWindow(m_pWindow);
+		m_pWindow = nullptr;
+
+	}
+
+
 	IMG_Quit();
 	SDL_Quit();
 }
@@ -59,16 +66,23 @@ bool Renderer::Initialise(bool windowed, int width, int height)
 		LogSdlError();
 		return false;
 	}
+
 	if (!windowed)
 	{
 		// Go fullscreen, with current resolution!
 		int numDisplays = SDL_GetNumVideoDisplays();
 		SDL_DisplayMode* currentDisplayMode = new SDL_DisplayMode[numDisplays];
+
+		// Loop through and get the display mode for each monitor
 		for (int k = 0; k < numDisplays; ++k)
 		{
 			int result = SDL_GetCurrentDisplayMode(k, &currentDisplayMode[k]);
+			if (result != 0) {
+				std::cerr << "Error getting display mode: " << SDL_GetError() << std::endl;
+			}
 		}
-		// Use the widest display?
+
+		// Find the display with the widest resolution
 		int widest = 0;
 		int andItsHeight = 0;
 		for (int k = 0; k < numDisplays; ++k)
@@ -79,13 +93,21 @@ bool Renderer::Initialise(bool windowed, int width, int height)
 				andItsHeight = currentDisplayMode[k].h;
 			}
 		}
+
 		delete[] currentDisplayMode;
-		currentDisplayMode = 0;
+
+		// Use the widest screen resolution available (or a specific one if desired)
 		width = widest;
 		height = andItsHeight;
 	}
+
+	 //storing width and height for later use in Player
+	m_screenWidth = width;
+	m_screenHeight = height;
+
 	bool initialised = InitialiseOpenGL(width, height);
 	SetFullscreen(!windowed);
+
 	if (initialised)
 	{
 		m_pTextureManager = new TextureManager();
@@ -93,15 +115,17 @@ bool Renderer::Initialise(bool windowed, int width, int height)
 		initialised = m_pTextureManager->Initialise();
 	}
 
+	// Initialize ImGui
 	ImGui::CreateContext();
 	ImGui_ImplSDL2_InitForOpenGL(m_pWindow, m_glContext);
 	ImGui_ImplOpenGL3_Init();
+
 	return initialised;
 }
 bool Renderer::InitialiseOpenGL(int screenWidth, int screenHeight)
 {
-	m_iWidth = screenWidth;
-	m_iHeight = screenHeight;
+	m_screenWidth = screenWidth;
+	m_screenHeight = screenHeight;
 	m_pWindow = SDL_CreateWindow("COMP710 GP Framework 2025", SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_OPENGL);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -150,7 +174,7 @@ void Renderer::SetFullscreen(bool fullscreen)
 		// SDL_SetWindowFullscreen(m_pWindow, SDL_WINDOW_FULLSCREEN | SDL_WINDOW_ALWAYS_ON_TOP);
 		SDL_SetWindowFullscreen(m_pWindow, SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_ALWAYS_ON_TOP);
 		SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
-		SDL_SetWindowSize(m_pWindow, m_iWidth, m_iHeight);
+		SDL_SetWindowSize(m_pWindow, m_screenWidth, m_screenHeight);
 	}
 	else
 	{
@@ -171,11 +195,11 @@ void Renderer::GetClearColour(unsigned char& r, unsigned char& g, unsigned char&
 }
 int Renderer::GetWidth() const
 {
-	return m_iWidth;
+	return m_screenWidth;
 }
 int Renderer::GetHeight() const
 {
-	return m_iHeight;
+	return m_screenHeight;
 }
 Sprite* Renderer::CreateSprite(const char* pcFilename)
 {
@@ -227,7 +251,7 @@ void Renderer::DrawSprite(Sprite& sprite)
 	world.m[3][1] = static_cast<float>(sprite.GetY());
 	m_pSpriteShader->SetMatrixUniform("uWorldTransform", world);
 	Matrix4 orthoViewProj;
-	CreateOrthoProjection(orthoViewProj, static_cast<float>(m_iWidth), static_cast<float>(m_iHeight));
+	CreateOrthoProjection(orthoViewProj, static_cast<float>(m_screenWidth), static_cast<float>(m_screenHeight));
 	m_pSpriteShader->SetVector4Uniform("colour", sprite.GetRedTint(),
 		sprite.GetGreenTint(),
 		sprite.GetBlueTint(),
@@ -270,7 +294,7 @@ Renderer::DrawAnimatedSprite(AnimatedSprite& sprite, int frame)
 	world.m[3][1] = static_cast<float>(sprite.GetY());
 	m_pSpriteShader->SetMatrixUniform("uWorldTransform", world);
 	Matrix4 orthoViewProj;
-	CreateOrthoProjection(orthoViewProj, static_cast<float>(m_iWidth), static_cast<float>(m_iHeight));
+	CreateOrthoProjection(orthoViewProj, static_cast<float>(m_screenWidth), static_cast<float>(m_screenHeight));
 	m_pSpriteShader->SetVector4Uniform("colour", sprite.GetRedTint(),
 		sprite.GetGreenTint(), sprite.GetBlueTint(), sprite.GetAlpha());
 	m_pSpriteShader->SetMatrixUniform("uViewProj", orthoViewProj);

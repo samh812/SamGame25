@@ -46,8 +46,8 @@ protected:
 	SDL_GLContext m_glContext;
 	Shader* m_pSpriteShader;
 	VertexArray* m_pSpriteVertexData;
-	int m_iWidth;
-	int m_iHeight;
+	int m_screenWidth;
+	int m_screenHeight;
 	float m_fClearRed;
 	float m_fClearGreen;
 	float m_fClearBlue;

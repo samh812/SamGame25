@@ -24,7 +24,11 @@ int main(int argc, char* argv[])
 	{
 		// No body.
 	}
+
+	SDL_Quit();
+
 	Game::DestroyInstance();
 	LogManager::DestroyInstance();
+	_CrtDumpMemoryLeaks();
 	return 0;
 }

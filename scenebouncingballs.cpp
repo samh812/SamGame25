@@ -28,6 +28,16 @@ SceneBouncingBalls::~SceneBouncingBalls()
 		delete m_pBalls[k];
 		m_pBalls[k] = 0;
 	}
+
+	delete m_pTestSprite;
+	delete m_pAnimSprite1;
+	delete m_pAnimSprite2;
+	delete m_pWelcomeText;
+
+	m_pTestSprite = nullptr;
+	m_pAnimSprite1 = nullptr;
+	m_pAnimSprite2 = nullptr;
+	m_pWelcomeText = nullptr;
 }
 bool
 SceneBouncingBalls::Initialise(Renderer& renderer)

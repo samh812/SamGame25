@@ -12,6 +12,7 @@
 #include "logmanager.h"
 #include "scenecheckerboards.h"
 #include "scenebouncingballs.h"
+#include "scenewarehouse.h"
 
 #include "inputsystem.h"
 
@@ -52,6 +53,7 @@ Game::~Game()
 	}
 	m_scenes.clear();
 
+
 }
 void Game::Quit()
 {
@@ -61,67 +63,44 @@ bool Game::Initialise()
 {
 
 
-	int bbWidth = 1280;
-	int bbHeight = 720;
 	m_pInputSystem = new InputSystem();
 	if (!m_pInputSystem->Initialise()) {
 		std::cerr << "Failed to initialize InputSystem." << std::endl;
 		return false;
 	}
+
 	m_pRenderer = new Renderer();
-	if (!m_pRenderer->Initialise(false, bbWidth, bbHeight))
+	if (!m_pRenderer->Initialise(false, 0, 0))
 	{
 		LogManager::GetInstance().Log("Renderer failed to initialise!");
 		return false;
 	}
 
-
-	//m_pBall = m_pRenderer->CreateSprite("../assets/ball.png");
-
-
-
-	//if (!m_pBall)
-	//{
-	//	return false; // Failed to load sprite
-	//}
-
-	// Set sprite position
-
-	bbWidth = m_pRenderer->GetWidth();
-	bbHeight = m_pRenderer->GetHeight();
-
-	//m_pBall->SetScale(0.33);
-	//m_pBall->SetX((bbWidth) / 2);
-	//m_pBall->SetY((bbHeight) / 2);
-
+	int bbWidth = m_pRenderer->GetWidth();
+	int bbHeight = m_pRenderer->GetHeight();
 
 
 	m_iLastTime = SDL_GetPerformanceCounter();
 	m_pRenderer->SetClearColour(0, 255, 255);
 
 	Scene* pScene = 0;
-	pScene = new SceneCheckerboards();
-	pScene->Initialise(*m_pRenderer);
-	m_scenes.push_back(pScene);
+	//pScene = new SceneCheckerboards();
+	//pScene->Initialise(*m_pRenderer);
+	//m_scenes.push_back(pScene);
 
 
 
-	pScene = new SceneBouncingBalls();
-	pScene->Initialise(*m_pRenderer);
-	m_scenes.push_back(pScene);
+	//pScene = new SceneBouncingBalls();
+	//pScene->Initialise(*m_pRenderer);
+	//m_scenes.push_back(pScene);
 
 
 	pScene = new SceneWarehouse();
 	pScene->Initialise(*m_pRenderer);
 	m_scenes.push_back(pScene);
 
-	//m_scenes.push_back(std::make_unique<SceneCheckerboards>());
-	//m_scenes.back()->Initialise(*m_pRenderer);
 
-	//m_scenes.push_back(std::make_unique<SceneBouncingBalls>());
-	//m_scenes.back()->Initialise(*m_pRenderer);
-
-	m_iCurrentScene = 2;
+	m_iCurrentScene = 0;
 
 
 	return true;
@@ -157,12 +136,7 @@ bool Game::DoGameLoop()
 void Game::Process(float deltaTime)
 {
 	ProcessFrameCounting(deltaTime);
-	// TODO: Add game objects to process here!
 
-	//if (m_pBall)
-	//{
-	//	m_pBall->Process(deltaTime);
-	//}
 	ButtonState state1 = m_pInputSystem->GetKeyState(SDL_SCANCODE_SPACE);
 	if (state1 == BS_PRESSED) {
 		ToggleDebugWindow();
@@ -170,19 +144,6 @@ void Game::Process(float deltaTime)
 	ButtonState quitButton = m_pInputSystem->GetKeyState(SDL_SCANCODE_ESCAPE);
 	if (quitButton == BS_PRESSED) {
 		Quit();
-	}
-
-
-
-
-	int result = m_pInputSystem->GetMouseButtonState(SDL_BUTTON_LEFT);
-	if (result == BS_PRESSED)
-	{
-		LogManager::GetInstance().Log("Left mouse button pressed.");
-	}
-	else if (result == BS_RELEASED)
-	{
-		LogManager::GetInstance().Log("Left mouse button released.");
 	}
 
 
