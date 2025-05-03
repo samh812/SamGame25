@@ -28,25 +28,39 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         return false;
     }
 
-    // Create multiple machines and give them different positions
-    for (int i = 0; i < 4; ++i)  // Create 5 machines for example
+    // Create machines with alternating types: MachineType1 > Conveyor > MachineType2 > Conveyor > MachineType1
+
+    float startX = 100.0f;  // Starting X position
+    float yOffset = 300.0f; // Fixed Y position
+
+    for (int i = 0; i < 5; ++i)  // Create 5 machines for example
     {
-        Machine* pMachine = new Machine();
+        Machine* pMachine = nullptr;
+
+        // Alternate between types of machines
+        if (i % 2 == 0) {
+            // Even index, use MachineType1
+            pMachine = new MachineBottler();
+        }
+        else if (i % 2 == 1 && (i / 2) % 2 == 0) {
+            // Odd index, use MachineTypeConveyor
+            pMachine = new MachineConveyor();
+        }
+        else {
+            // Use MachineType2 for the next odd index
+            pMachine = new MachineFiller();
+        }
+
         if (!pMachine->Initialise(renderer))
         {
             return false;  // If any machine fails to initialize, return false
         }
 
-        // Set different positions for each machine
-        // Example: Distribute machines horizontally with a gap of 150 units
-        float xOffset = 150.0f * i;  // 150 units between each machine
-        float yOffset = 300.0f;      // Same y position for all machines (can change to make it more dynamic)
-
+        // Set position based on index
+        float xOffset = startX + (i * 150.0f);  // 150 units between each machine
         pMachine->SetPosition(Vector2(xOffset, yOffset));  // Set the machine's position
         m_machines.push_back(pMachine);  // Add the machine to the vector
     }
-
-    return true;
 
     return true;
 }
@@ -67,10 +81,14 @@ void SceneWarehouse::Draw(Renderer& renderer)
 {
     if (m_pPlayer)
         m_pPlayer->Draw(renderer);
-    // Draw all machines
-    for (Machine* pMachine : m_machines)
+
+    // Draw all machines in the vector
+    for (auto& machine : m_machines)
     {
-        pMachine->Draw(renderer);
+        if (machine)
+        {
+            machine->Draw(renderer);
+        }
     }
 }
 
