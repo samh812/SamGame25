@@ -35,6 +35,7 @@
     <ClInclude Include="inlinehelpers.h" />
     <ClInclude Include="inputsystem.h" />
     <ClInclude Include="logmanager.h" />
+    <ClInclude Include="machine.h" />
     <ClInclude Include="matrix4.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="renderer.h" />
@@ -64,6 +65,7 @@
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="inputsystem.cpp" />
     <ClCompile Include="logmanager.cpp" />
+    <ClCompile Include="machine.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="matrix4.cpp" />
     <ClCompile Include="player.cpp" />

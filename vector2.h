@@ -1,6 +1,7 @@
 // COMP710 GP Framework 2022
 #ifndef VECTOR2_H
 #define VECTOR2_H
+
 // Class declaration:
 class Vector2
 {

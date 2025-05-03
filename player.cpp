@@ -2,10 +2,13 @@
 #include "renderer.h"
 #include "sprite.h"
 #include "inlinehelpers.h"
+#include "vector2.h"
 
 #include <algorithm>
+
+
 Player::Player()
-    : m_speed(150.0f)  // Pixels per second
+    : m_speed(400.0f)  // Pixels per second
 {
 }
 
@@ -28,6 +31,7 @@ bool Player::Initialise(Renderer& renderer)
     }
 
     m_position = Vector2(400.0f, 300.0f);  // Start at center
+    m_pSprite->SetScale(0.2f);
     m_bAlive = true;
     return true;
 }
@@ -41,7 +45,7 @@ void Player::Process(float deltaTime, InputSystem& inputSystem)
     if (IsKeyHeld(inputSystem, SDL_SCANCODE_A)) direction.x -= 1.0f;
     if (IsKeyHeld(inputSystem, SDL_SCANCODE_D)) direction.x += 1.0f;
 
-	//normalising to prevent faster diagonal movement
+    //normalising to prevent faster diagonal movement
     if (direction.x != 0.0f || direction.y != 0.0f)
     {
         float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);

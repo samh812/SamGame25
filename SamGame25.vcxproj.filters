@@ -105,6 +105,9 @@
     <ClCompile Include="scenewarehouse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="machine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h">
@@ -195,6 +198,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="scenewarehouse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="machine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

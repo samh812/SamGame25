@@ -3,6 +3,8 @@
 
 #include "scene.h"
 #include "player.h"
+#include "machine.h"
+#include <vector>
 
 
 class SceneWarehouse : public Scene
@@ -18,6 +20,7 @@ public:
 
 private:
 	Player* m_pPlayer;
+	std::vector<Machine*> m_machines;
 };
 
 #endif // __SCENEWAREHOUSE_H__
