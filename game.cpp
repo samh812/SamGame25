@@ -111,6 +111,9 @@ bool Game::Initialise()
 	m_scenes.push_back(pScene);
 
 
+	pScene = new SceneWarehouse();
+	pScene->Initialise(*m_pRenderer);
+	m_scenes.push_back(pScene);
 
 	//m_scenes.push_back(std::make_unique<SceneCheckerboards>());
 	//m_scenes.back()->Initialise(*m_pRenderer);
@@ -118,7 +121,7 @@ bool Game::Initialise()
 	//m_scenes.push_back(std::make_unique<SceneBouncingBalls>());
 	//m_scenes.back()->Initialise(*m_pRenderer);
 
-	m_iCurrentScene = 1;
+	m_iCurrentScene = 2;
 
 
 	return true;
