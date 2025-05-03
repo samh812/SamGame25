@@ -4,6 +4,8 @@
 #include "machinebottler.h"
 #include "machinefiller.h"
 #include "machineconveyor.h"
+#include "texture.h"
+#include "sprite.h"
 
 SceneWarehouse::SceneWarehouse()
     : m_pPlayer(nullptr)
@@ -22,6 +24,20 @@ SceneWarehouse::~SceneWarehouse()
 
 bool SceneWarehouse::Initialise(Renderer& renderer)
 {
+
+
+    m_pWarehouseBackground = renderer.CreateSprite("../assets/background.png");
+
+
+    float scaleX = static_cast<float>(renderer.GetWidth()) / m_pWarehouseBackground->GetWidth();
+    float scaleY = static_cast<float>(renderer.GetHeight()) / m_pWarehouseBackground->GetHeight();
+    float scale = std::max(scaleX, scaleY);  // Use max to ensure it covers the whole screen
+
+    m_pWarehouseBackground->SetX(renderer.GetWidth()/2);
+	m_pWarehouseBackground->SetY(renderer.GetHeight()/2);
+    m_pWarehouseBackground->SetScale(scale);
+
+
     m_pPlayer = new Player();
     if (!m_pPlayer->Initialise(renderer))
     {
@@ -79,6 +95,11 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 
 void SceneWarehouse::Draw(Renderer& renderer)
 {
+    if (m_pWarehouseBackground)
+    {
+        m_pWarehouseBackground->Draw(renderer);
+    }
+
     if (m_pPlayer)
         m_pPlayer->Draw(renderer);
 

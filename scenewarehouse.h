@@ -21,6 +21,8 @@ public:
 private:
 	Player* m_pPlayer;
 	std::vector<Machine*> m_machines;
+	Renderer* m_pRenderer;
+	Sprite* m_pWarehouseBackground;
 };
 
 #endif // __SCENEWAREHOUSE_H__

@@ -13,7 +13,7 @@ class Entity
 	// Member methods:
 public:
 	Entity();
-	~Entity();
+	virtual ~Entity();
 	bool Initialise(Renderer& renderer);
 	void Process(float deltaTime);
 	void Draw(Renderer& renderer);

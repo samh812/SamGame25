@@ -14,11 +14,6 @@ Player::Player()
 
 Player::~Player()
 {
-    if (m_pSprite)
-    {
-        delete m_pSprite;
-        m_pSprite = nullptr;
-    }
 }
 
 bool Player::Initialise(Renderer& renderer)

@@ -8,7 +8,7 @@ class Machine : public Entity {
 
 public:
 	Machine();
-	~Machine();
+	virtual ~Machine();
 
 	virtual bool Initialise(Renderer& renderer);
 	virtual void Process(float deltaTime, InputSystem& inputSystem);

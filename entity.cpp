@@ -14,7 +14,7 @@ Entity::Entity()
 
 Entity::~Entity()
 {
-    // Sprite is likely managed elsewhere (renderer), so don't delete it here
+    delete m_pSprite;
     m_pSprite = nullptr;
 }
 
