@@ -1,17 +1,16 @@
-#include "machinebottler.h"
+#include "machinefiller.h"
 #include "renderer.h"
 
+MachineFiller::MachineFiller() {}
 
-MachineBottler::MachineBottler() {}
+MachineFiller::~MachineFiller() {}
 
-MachineBottler::~MachineBottler() {}
-
-bool MachineBottler::Initialise(Renderer& renderer)
+bool MachineFiller::Initialise(Renderer& renderer)
 {
     if (!Machine::Initialise(renderer))
         return false;
 
-    // Load the sprite specific to MachineType1
+    // Load the sprite specific to MachineFiller
     m_pSprite = renderer.CreateSprite("../assets/machine_level1.png");  // Your sprite path
     if (m_pSprite == nullptr)
     {

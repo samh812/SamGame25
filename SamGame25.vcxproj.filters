@@ -108,6 +108,15 @@
     <ClCompile Include="machine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="machinebottler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="machineconveyor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="machinefiller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h">
@@ -201,6 +210,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="machine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="machinebottler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="machineconveyor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="machinefiller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

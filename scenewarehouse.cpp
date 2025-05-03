@@ -1,6 +1,9 @@
 #include "scenewarehouse.h"
 #include "renderer.h"
 #include "machine.h"
+#include "machinebottler.h"
+#include "machinefiller.h"
+#include "machineconveyor.h"
 
 SceneWarehouse::SceneWarehouse()
     : m_pPlayer(nullptr)
