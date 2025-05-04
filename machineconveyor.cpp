@@ -10,8 +10,8 @@ bool MachineConveyor::Initialise(Renderer& renderer)
     if (!Machine::Initialise(renderer))
         return false;
 
-    // Load the sprite specific to MachineTypeConveyor
-    m_pSprite = renderer.CreateSprite("../assets/machine_level2.png");  // Your conveyor sprite path
+
+    m_pSprite = renderer.CreateSprite("../assets/conveyor_00.png");
     if (m_pSprite == nullptr)
     {
         return false;

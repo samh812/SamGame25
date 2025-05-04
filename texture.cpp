@@ -96,7 +96,7 @@ Texture::LoadSurfaceIntoTexture(SDL_Surface* pSurface)
 		int bytesPerPixel = pSurface->format->BytesPerPixel;
 		unsigned int format = (bytesPerPixel == 3) ? GL_RGB : GL_RGBA;
 
-		// Flip the surface manually (row-wise swap)
+		//manually flipping surface
 		int pitch = pSurface->pitch;
 		uint8_t* pixels = (uint8_t*)pSurface->pixels;
 		uint8_t* temp = new uint8_t[pitch];

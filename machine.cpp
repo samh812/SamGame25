@@ -18,14 +18,14 @@ Machine::~Machine()
 
 bool Machine::Initialise(Renderer& renderer)
 {
-    m_pRenderer = &renderer;  // Store reference to the Renderer object
-    m_pSprite = m_pRenderer->CreateSprite("../assets/machine_level1.png");  // Use m_pRenderer to create sprite
+    m_pRenderer = &renderer;
+    m_pSprite = m_pRenderer->CreateSprite("../assets/bottler_00.png");
     if (m_pSprite == nullptr)
     {
         return false;
     }
 
-    m_position = Vector2(400.0f, 300.0f);  // Start at center
+    m_position = Vector2(400.0f, 300.0f);
     m_pSprite->SetScale(0.2f);
     m_bAlive = true;
     return true;
@@ -48,11 +48,11 @@ void Machine::Draw(Renderer& renderer)
 
 void Machine::SetPosition(const Vector2& position)
 {
-    m_position = position;  // Set the machine's position
+    m_position = position;
 }
 
 Vector2 Machine::GetPosition() const
 {
-    return m_position;  // Optional: return current position
+    return m_position;
 }
 

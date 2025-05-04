@@ -10,8 +10,8 @@ bool MachineFiller::Initialise(Renderer& renderer)
     if (!Machine::Initialise(renderer))
         return false;
 
-    // Load the sprite specific to MachineFiller
-    m_pSprite = renderer.CreateSprite("../assets/machine_level1.png");  // Your sprite path
+
+    m_pSprite = renderer.CreateSprite("../assets/filler_00.png");
     if (m_pSprite == nullptr)
     {
         return false;

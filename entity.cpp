@@ -20,13 +20,12 @@ Entity::~Entity()
 
 bool Entity::Initialise(Renderer& renderer)
 {
-    // This will probably be overridden in child classes, or you might pass a sprite in here
     return true;
 }
 
 void Entity::Process(float deltaTime)
 {
-    // Move the entity based on velocity
+
     m_position += m_velocity * deltaTime;
 }
 

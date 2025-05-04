@@ -26,7 +26,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 {
 
 
-    m_pWarehouseBackground = renderer.CreateSprite("../assets/background.png");
+    m_pWarehouseBackground = renderer.CreateSprite("../assets/warehouse_background.png");
 
 
     float scaleX = static_cast<float>(renderer.GetWidth()) / m_pWarehouseBackground->GetWidth();
@@ -44,38 +44,48 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         return false;
     }
 
-    // Create machines with alternating types: MachineType1 > Conveyor > MachineType2 > Conveyor > MachineType1
+    // Create machines in pattern: Bottler > Conveyor > Filler > Conveyor > Bottler
+    float currentX = 80.0f;
+    float yOffset = 730.0f;
 
-    float startX = 100.0f;  // Starting X position
-    float yOffset = 300.0f; // Fixed Y position
-
-    for (int i = 0; i < 5; ++i)  // Create 5 machines for example
+    for (int i = 0; i < 5; ++i)
     {
         Machine* pMachine = nullptr;
 
-        // Alternate between types of machines
-        if (i % 2 == 0) {
-            // Even index, use MachineType1
+        switch (i)
+        {
+        case 0:
             pMachine = new MachineBottler();
-        }
-        else if (i % 2 == 1 && (i / 2) % 2 == 0) {
-            // Odd index, use MachineTypeConveyor
+            break;
+        case 1:
             pMachine = new MachineConveyor();
-        }
-        else {
-            // Use MachineType2 for the next odd index
+            break;
+        case 2:
             pMachine = new MachineFiller();
+            break;
+        case 3:
+            pMachine = new MachineConveyor();
+            break;
+        case 4:
+            pMachine = new MachineBottler();
+            break;
         }
 
         if (!pMachine->Initialise(renderer))
         {
-            return false;  // If any machine fails to initialize, return false
+            delete pMachine;
+            return false;
         }
 
-        // Set position based on index
-        float xOffset = startX + (i * 150.0f);  // 150 units between each machine
-        pMachine->SetPosition(Vector2(xOffset, yOffset));  // Set the machine's position
-        m_machines.push_back(pMachine);  // Add the machine to the vector
+        //determine width of machine
+        float width = dynamic_cast<MachineConveyor*>(pMachine) ? 225.0f : 160.0f;
+
+
+        pMachine->SetPosition(Vector2(currentX + width / 2.0f, yOffset));
+        m_machines.push_back(pMachine);
+
+
+        currentX += width;
     }
 
     return true;
@@ -86,7 +96,6 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
     if (m_pPlayer)
         m_pPlayer->Process(deltaTime, inputSystem);
 
-    // Process all machines
     for (Machine* pMachine : m_machines)
     {
         pMachine->Process(deltaTime, inputSystem);
@@ -103,7 +112,7 @@ void SceneWarehouse::Draw(Renderer& renderer)
     if (m_pPlayer)
         m_pPlayer->Draw(renderer);
 
-    // Draw all machines in the vector
+
     for (auto& machine : m_machines)
     {
         if (machine)
@@ -115,5 +124,5 @@ void SceneWarehouse::Draw(Renderer& renderer)
 
 void SceneWarehouse::DebugDraw()
 {
-    // Optional ImGui debug stuff for this scene
+    //do later
 }

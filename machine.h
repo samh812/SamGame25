@@ -14,12 +14,12 @@ public:
 	virtual void Process(float deltaTime, InputSystem& inputSystem);
 	virtual void Draw(Renderer& renderer);
 
-	void SetPosition(const Vector2& position);  // Add this setter function
-	Vector2 GetPosition() const;                // Optional: to retrieve position
+	void SetPosition(const Vector2& position);
+	Vector2 GetPosition() const;
 
 
 private:
-	Renderer* m_pRenderer;  // Pointer to the Renderer object
+	Renderer* m_pRenderer;
 	Vector2 m_position;
 };
 

@@ -8,7 +8,7 @@
 
 
 Player::Player()
-    : m_speed(400.0f)  // Pixels per second
+    : m_speed(400.0f)
 {
 }
 
@@ -18,14 +18,14 @@ Player::~Player()
 
 bool Player::Initialise(Renderer& renderer)
 {
-    m_pRenderer = &renderer;  // Store reference to the Renderer object
-    m_pSprite = m_pRenderer->CreateSprite("../assets/ball.png");  // Use m_pRenderer to create sprite
+    m_pRenderer = &renderer;
+    m_pSprite = m_pRenderer->CreateSprite("../assets/ball.png");
     if (m_pSprite == nullptr)
     {
         return false;
     }
 
-    m_position = Vector2(400.0f, 300.0f);  // Start at center
+    m_position = Vector2(400.0f, 300.0f);
     m_pSprite->SetScale(0.2f);
     m_bAlive = true;
     return true;
@@ -55,11 +55,9 @@ void Player::Process(float deltaTime, InputSystem& inputSystem)
     const int screenWidth = m_pRenderer->GetWidth();
     const int screenHeight = m_pRenderer->GetHeight();
 
-    // Get the sprite's half width and half height
     const float spriteHalfWidth = m_pSprite->GetWidth() / 2.0f;
     const float spriteHalfHeight = m_pSprite->GetHeight() / 2.0f;
 
-    // Clamp the position to stay within the screen bounds, considering sprite's size
     m_position.x = std::max(spriteHalfWidth, std::min(screenWidth - spriteHalfWidth, m_position.x));
     m_position.y = std::max(spriteHalfHeight, std::min(screenHeight - spriteHalfHeight, m_position.y));
 }

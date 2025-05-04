@@ -69,11 +69,11 @@ bool Renderer::Initialise(bool windowed, int width, int height)
 
 	if (!windowed)
 	{
-		// Go fullscreen, with current resolution!
+		//go fullscreen, with current resolution
 		int numDisplays = SDL_GetNumVideoDisplays();
 		SDL_DisplayMode* currentDisplayMode = new SDL_DisplayMode[numDisplays];
 
-		// Loop through and get the display mode for each monitor
+		//loop through and get the display mode for each monitor
 		for (int k = 0; k < numDisplays; ++k)
 		{
 			int result = SDL_GetCurrentDisplayMode(k, &currentDisplayMode[k]);
@@ -96,7 +96,7 @@ bool Renderer::Initialise(bool windowed, int width, int height)
 
 		delete[] currentDisplayMode;
 
-		// Use the widest screen resolution available (or a specific one if desired)
+		//use the widest screen available
 		width = widest;
 		height = andItsHeight;
 	}
