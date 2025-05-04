@@ -14,6 +14,8 @@ Player::Player()
 
 Player::~Player()
 {
+	delete m_pSprite;
+	m_pSprite = nullptr;
 }
 
 bool Player::Initialise(Renderer& renderer)
@@ -35,10 +37,10 @@ void Player::Process(float deltaTime, InputSystem& inputSystem)
 {
     Vector2 direction(0.0f, 0.0f);
 
-    if (IsKeyHeld(inputSystem, SDL_SCANCODE_W)) direction.y -= 1.0f;
-    if (IsKeyHeld(inputSystem, SDL_SCANCODE_S)) direction.y += 1.0f;
-    if (IsKeyHeld(inputSystem, SDL_SCANCODE_A)) direction.x -= 1.0f;
-    if (IsKeyHeld(inputSystem, SDL_SCANCODE_D)) direction.x += 1.0f;
+    if (IsKeyHeld(inputSystem, SDL_SCANCODE_W) || IsKeyHeld(inputSystem, SDL_SCANCODE_UP))    direction.y -= 1.0f;
+    if (IsKeyHeld(inputSystem, SDL_SCANCODE_S) || IsKeyHeld(inputSystem, SDL_SCANCODE_DOWN))  direction.y += 1.0f;
+    if (IsKeyHeld(inputSystem, SDL_SCANCODE_A) || IsKeyHeld(inputSystem, SDL_SCANCODE_LEFT))  direction.x -= 1.0f;
+    if (IsKeyHeld(inputSystem, SDL_SCANCODE_D) || IsKeyHeld(inputSystem, SDL_SCANCODE_RIGHT)) direction.x += 1.0f;
 
     //normalising to prevent faster diagonal movement
     if (direction.x != 0.0f || direction.y != 0.0f)

@@ -14,6 +14,8 @@ Machine::Machine()
 
 Machine::~Machine()
 {
+    delete m_pSprite;
+    m_pSprite = nullptr;
 }
 
 bool Machine::Initialise(Renderer& renderer)

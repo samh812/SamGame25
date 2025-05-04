@@ -29,6 +29,6 @@ int main(int argc, char* argv[])
 
 	Game::DestroyInstance();
 	LogManager::DestroyInstance();
-	_CrtDumpMemoryLeaks();
+	//_CrtDumpMemoryLeaks();
 	return 0;
 }

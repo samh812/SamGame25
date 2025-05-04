@@ -15,11 +15,16 @@ SceneWarehouse::SceneWarehouse()
 SceneWarehouse::~SceneWarehouse()
 {
     delete m_pPlayer;
+	m_pPlayer = nullptr;
+
     for (Machine* machine : m_machines)
     {
         delete machine;
     }
     m_machines.clear();
+
+    delete m_pWarehouseBackground;
+    m_pWarehouseBackground = nullptr;
 }
 
 bool SceneWarehouse::Initialise(Renderer& renderer)
