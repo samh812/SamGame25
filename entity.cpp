@@ -71,6 +71,7 @@ Vector2 Entity::GetFacingDirection()
 Vector2& Entity::GetPosition()
 {
     return m_position;
+
 }
 
 Vector2& Entity::GetVelocity()

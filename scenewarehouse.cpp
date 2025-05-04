@@ -6,6 +6,11 @@
 #include "machineconveyor.h"
 #include "texture.h"
 #include "sprite.h"
+#include "player.h"
+#include <iostream>
+
+#include "imgui/imgui_impl_sdl2.h"
+#include "imgui/imgui_impl_opengl3.h"
 
 SceneWarehouse::SceneWarehouse()
     : m_pPlayer(nullptr)
@@ -95,6 +100,8 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 
         float width = machineWidths[i];
         pMachine->SetPosition(Vector2(currentX + width / 2.0f, yOffset));
+        pMachine->SetUpgradeArea(Vector2(currentX + width / 2.0f, yOffset - 220.0f), 50.0f, 50.0f); // example area 50x50
+
         m_machines.push_back(pMachine);
 
         currentX += width;
@@ -106,7 +113,24 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 {
     if (m_pPlayer)
+    {
         m_pPlayer->Process(deltaTime, inputSystem);
+
+        //check for upgrade collision
+        for (Machine* pMachine : m_machines)
+        {
+
+            if (pMachine->IsPlayerInUpgradeArea(m_pPlayer)) {
+				std::cout << "Player is in upgrade area of machine." << std::endl;
+            }
+            if (pMachine->IsPlayerInUpgradeArea(m_pPlayer) && inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_HELD) //Upgrade on E or ENTER
+            {
+                pMachine->Upgrade();
+            }
+        }
+    }
+
+
 
     for (Machine* pMachine : m_machines)
     {
@@ -136,5 +160,23 @@ void SceneWarehouse::Draw(Renderer& renderer)
 
 void SceneWarehouse::DebugDraw()
 {
-    //do later
+    if (m_pPlayer)
+    {
+        Vector2 playerPos = m_pPlayer->GetPosition();
+        ImGui::Text("Player Position: X = %.2f, Y = %.2f", playerPos.x, playerPos.y);
+    }
+
+    int i = 0;
+    for (Machine* machine : m_machines)
+    {
+        if (machine)
+        {
+            bool inArea = machine->IsPlayerInUpgradeArea(m_pPlayer);
+            bool upgraded = machine->IsUpgraded();
+            ImGui::Text("Machine %d:", i);
+            ImGui::BulletText("In Upgrade Area: %s", inArea ? "YES" : "no");
+            ImGui::BulletText("Upgraded: %s", upgraded ? "YES" : "no");
+            ++i;
+        }
+    }
 }

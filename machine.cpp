@@ -3,6 +3,7 @@
 #include "sprite.h"
 #include "inlinehelpers.h"
 #include "vector2.h"
+#include <iostream>
 
 #include <algorithm>
 
@@ -58,3 +59,42 @@ Vector2 Machine::GetPosition() const
     return m_position;
 }
 
+
+bool Machine::IsPlayerInUpgradeArea(Player* player)
+{
+    // Get player position
+    Vector2 playerPos = player->GetPosition();
+    //std::cout << "Entity Position: x = " << playerPos.x << ", y = " << playerPos.y << std::endl;
+
+
+    // Check if player is within the upgrade area
+    bool isWithinX = playerPos.x >= m_upgradeAreaPosition.x && playerPos.x <= m_upgradeAreaPosition.x + m_upgradeAreaWidth;
+    bool isWithinY = playerPos.y >= m_upgradeAreaPosition.y && playerPos.y <= m_upgradeAreaPosition.y + m_upgradeAreaHeight;
+
+    return isWithinX && isWithinY;
+}
+
+void Machine::SetUpgradeArea(const Vector2& position, float width, float height)
+{
+    m_upgradeAreaPosition = position;
+    m_upgradeAreaWidth = width;
+    m_upgradeAreaHeight = height;
+
+	std::cout << "Upgrade area set to: " << m_upgradeAreaPosition.x << ", " << m_upgradeAreaPosition.y << ", " << m_upgradeAreaWidth << ", " << m_upgradeAreaHeight << std::endl;
+}
+
+void Machine::Upgrade()
+{
+    //upgrade function
+    if (m_pSprite)
+    {
+		std::cout << "Machine upgraded!" << std::endl;
+		m_bUpgraded = true;
+        //m_pSprite->SetTexture("../assets/updated_machine_sprite.png");
+    }
+}
+
+bool Machine::IsUpgraded() const
+{
+    return m_bUpgraded;
+}
