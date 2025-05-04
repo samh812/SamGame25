@@ -44,30 +44,41 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         return false;
     }
 
-    // Create machines in pattern: Bottler > Conveyor > Filler > Conveyor > Bottler
-    float currentX = 80.0f;
-    float yOffset = 730.0f;
+    //placing machines based on screen resolution
+    const int numMachines = 5;
+    float screenWidth = static_cast<float>(renderer.GetWidth());
+    float screenHeight = static_cast<float>(renderer.GetHeight());
 
-    for (int i = 0; i < 5; ++i)
+    float yOffset = screenHeight * 0.85f; //dynamically placing machines near the bottom of the screen
+    float totalWidth = 0.0f;
+    std::vector<float> machineWidths;
+
+    //determine the widths of all the machines so they can be dynamically placed
+    for (int i = 0; i < numMachines; ++i)
+    {
+        float width = (i == 1 || i == 3) ? 225.0f : 160.0f; //conveyors are 225 vs 160
+        machineWidths.push_back(width);
+        totalWidth += width;
+    }
+
+    //calculate startX to place the machines starting from the left corner
+    float startX = screenWidth * 0.03f;
+    float currentX = startX;
+
+    for (int i = 0; i < numMachines; ++i)
     {
         Machine* pMachine = nullptr;
 
         switch (i)
         {
-        case 0:
+        case 0: case 4:
             pMachine = new MachineBottler();
             break;
-        case 1:
+        case 1: case 3:
             pMachine = new MachineConveyor();
             break;
         case 2:
             pMachine = new MachineFiller();
-            break;
-        case 3:
-            pMachine = new MachineConveyor();
-            break;
-        case 4:
-            pMachine = new MachineBottler();
             break;
         }
 
@@ -77,13 +88,9 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
             return false;
         }
 
-        //determine width of machine
-        float width = dynamic_cast<MachineConveyor*>(pMachine) ? 225.0f : 160.0f;
-
-
+        float width = machineWidths[i];
         pMachine->SetPosition(Vector2(currentX + width / 2.0f, yOffset));
         m_machines.push_back(pMachine);
-
 
         currentX += width;
     }

@@ -58,8 +58,20 @@ void Player::Process(float deltaTime, InputSystem& inputSystem)
     const float spriteHalfWidth = m_pSprite->GetWidth() / 2.0f;
     const float spriteHalfHeight = m_pSprite->GetHeight() / 2.0f;
 
-    m_position.x = std::max(spriteHalfWidth, std::min(screenWidth - spriteHalfWidth, m_position.x));
-    m_position.y = std::max(spriteHalfHeight, std::min(screenHeight - spriteHalfHeight, m_position.y));
+    float wallMarginX = screenWidth * 0.02f;  //2% horizontal margin (for the walls)
+    float wallMarginY = screenHeight * 0.02f; //2% vertical margin
+
+    float minX = wallMarginX + spriteHalfWidth;
+    float maxX = screenWidth - wallMarginX - spriteHalfWidth;
+    float minY = wallMarginY + spriteHalfHeight;
+    float machineY = screenHeight * 0.85f; //machines are placed at 85% height
+    float machineTopY = machineY - (160.0f / 2.0f); //machines are always 160
+
+    float maxY = std::min(screenHeight - wallMarginY - spriteHalfHeight, machineTopY - spriteHalfHeight);
+
+
+    m_position.x = std::max(minX, std::min(maxX, m_position.x));
+    m_position.y = std::max(minY, std::min(maxY, m_position.y));
 }
 
 void Player::Draw(Renderer& renderer)
