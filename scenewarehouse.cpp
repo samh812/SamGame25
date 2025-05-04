@@ -70,10 +70,16 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         machineWidths.push_back(width);
         totalWidth += width;
     }
-
-    //calculate startX to place the machines starting from the left corner
     float startX = screenWidth * 0.03f;
     float currentX = startX;
+
+    //dynamic upgrade area size
+    float upgradeAreaWidth = screenWidth * 0.05f;  //5% of screen width
+    float upgradeAreaHeight = screenHeight * 0.05f; //5% of screen height
+
+    //and positioning
+    float dynamicYOffset = screenHeight * 0.10f;  //15% above the machine
+    float upgradeAreaYOffset = yOffset - dynamicYOffset;
 
     for (int i = 0; i < numMachines; ++i)
     {
@@ -100,12 +106,14 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 
         float width = machineWidths[i];
         pMachine->SetPosition(Vector2(currentX + width / 2.0f, yOffset));
-        pMachine->SetUpgradeArea(Vector2(currentX + width / 2.0f, yOffset - 220.0f), 50.0f, 50.0f); // example area 50x50
+
+        //set upgrade area with dynamic size and dynamic Y offset
+        pMachine->SetUpgradeArea(Vector2(currentX + width / 2.0f, upgradeAreaYOffset), upgradeAreaWidth, upgradeAreaHeight);
 
         m_machines.push_back(pMachine);
-
         currentX += width;
     }
+
 
     return true;
 }
@@ -120,9 +128,6 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
         for (Machine* pMachine : m_machines)
         {
 
-            if (pMachine->IsPlayerInUpgradeArea(m_pPlayer)) {
-				std::cout << "Player is in upgrade area of machine." << std::endl;
-            }
             if (pMachine->IsPlayerInUpgradeArea(m_pPlayer) && inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_HELD) //Upgrade on E or ENTER
             {
                 pMachine->Upgrade();

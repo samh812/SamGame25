@@ -80,7 +80,7 @@ void Machine::SetUpgradeArea(const Vector2& position, float width, float height)
     m_upgradeAreaWidth = width;
     m_upgradeAreaHeight = height;
 
-	std::cout << "Upgrade area set to: " << m_upgradeAreaPosition.x << ", " << m_upgradeAreaPosition.y << ", " << m_upgradeAreaWidth << ", " << m_upgradeAreaHeight << std::endl;
+	//std::cout << "Upgrade area set to: " << m_upgradeAreaPosition.x << ", " << m_upgradeAreaPosition.y << ", " << m_upgradeAreaWidth << ", " << m_upgradeAreaHeight << std::endl;
 }
 
 void Machine::Upgrade()
@@ -88,7 +88,6 @@ void Machine::Upgrade()
     //upgrade function
     if (m_pSprite)
     {
-		std::cout << "Machine upgraded!" << std::endl;
 		m_bUpgraded = true;
         //m_pSprite->SetTexture("../assets/updated_machine_sprite.png");
     }
