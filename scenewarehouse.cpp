@@ -68,7 +68,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
     //determine the widths of all the machines so they can be dynamically placed
     for (int i = 0; i < numMachines; ++i)
     {
-        float width = (i == 1 || i == 3) ? 225.0f : 160.0f; //conveyors are 225 vs 160
+        float width = (i == 1 || i == 3 || i == 5) ? 225.0f : 160.0f; //conveyors are 225 vs 160
         machineWidths.push_back(width);
         totalWidth += width;
     }
@@ -89,7 +89,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         case 0:
             pMachine = new MachineBottler();
             break;
-        case 1: case 3: case 5: case 7:
+        case 1: case 3: case 5:
             pMachine = new MachineConveyor();
             break;
         case 2:
