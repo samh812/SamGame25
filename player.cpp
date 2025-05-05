@@ -90,3 +90,11 @@ bool Player::IsKeyHeld(InputSystem& input, SDL_Scancode key)
 {
 	return input.GetKeyState(key) == BS_HELD;
 }
+
+
+void Player::AddMoney(int amount) {
+	m_Shekels += amount;
+	if (m_Shekels < 0) {
+		m_Shekels = 0;
+	}
+}

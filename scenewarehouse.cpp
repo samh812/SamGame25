@@ -16,7 +16,6 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 SceneWarehouse::SceneWarehouse()
-    : m_pPlayer(nullptr)
 {
 }
 
@@ -33,6 +32,14 @@ SceneWarehouse::~SceneWarehouse()
 
     delete m_pWarehouseBackground;
     m_pWarehouseBackground = nullptr;
+
+    for (auto& pair : m_digitSprites)
+    {
+        delete pair.second;
+    }
+    m_digitSprites.clear();
+
+
 }
 
 bool SceneWarehouse::Initialise(Renderer& renderer)
@@ -50,6 +57,8 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
     m_pPlayer = new Player();
     if (!m_pPlayer->Initialise(renderer))
     {
+        delete m_pPlayer;
+        m_pPlayer = nullptr;
         return false;
     }
 
@@ -158,6 +167,8 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         currentX += width;
     }
 
+	InitDigitSprites(renderer);
+
     return true;
 }
 
@@ -204,6 +215,11 @@ void SceneWarehouse::Draw(Renderer& renderer)
             machine->Draw(renderer);
         }
     }
+
+    if (m_pPlayer) {
+        m_pPlayer->AddMoney(500);
+        DrawNumber(renderer, m_pPlayer->GetMoney(), 150, 50);
+    }
 }
 void SceneWarehouse::DebugDraw()
 {
@@ -228,5 +244,28 @@ void SceneWarehouse::DebugDraw()
             ImGui::BulletText("Upgrade Level: %d", upgradeLevel); // Display upgrade level
             ++i;
         }
+    }
+}
+
+
+void SceneWarehouse::InitDigitSprites(Renderer& renderer) {
+    for (char digit = '0'; digit <= '9'; ++digit) {
+		std::string text(1, digit);
+		renderer.CreateStaticText(text.c_str(), 50);
+		m_digitSprites[digit] = renderer.CreateSprite(text.c_str());
+    }
+}
+
+void SceneWarehouse::DrawNumber(Renderer& renderer, int number, int startX, int startY) {
+
+	std::string numStr = std::to_string(number);
+    int spacing = 40;
+
+    for (size_t i = 0; i < numStr.length(); ++i) {
+        char digit = numStr[i];
+        Sprite* sprite = m_digitSprites[digit];
+        sprite->SetX(startX + (i * spacing));
+        sprite->SetY(startY);
+        sprite->Draw(renderer);
     }
 }

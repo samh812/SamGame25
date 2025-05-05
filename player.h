@@ -15,9 +15,15 @@ public:
 	void Draw(Renderer& renderer);
 	bool IsKeyHeld(InputSystem& input, SDL_Scancode key);
 
+
+	void AddMoney(int amount);
+	//bool SpendMoney(int amount);
+	int GetMoney() const { return m_Shekels; }
+
 private:
 	float m_speed;
 	Renderer* m_pRenderer;  // Pointer to the Renderer object
+	int m_Shekels;
 };
 
 #endif // PLAYER_H
