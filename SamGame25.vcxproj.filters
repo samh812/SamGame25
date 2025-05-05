@@ -117,6 +117,12 @@
     <ClCompile Include="machinefiller.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="machinecapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="machinelabeler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h">
@@ -219,6 +225,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="machinefiller.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="machinecapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="machinelabeler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

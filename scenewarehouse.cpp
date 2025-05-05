@@ -4,6 +4,8 @@
 #include "machinebottler.h"
 #include "machinefiller.h"
 #include "machineconveyor.h"
+#include "machinecapper.h"
+#include "machinelabeler.h"
 #include "texture.h"
 #include "sprite.h"
 #include "player.h"
@@ -55,7 +57,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 
 
     //placing machines based on screen resolution
-    const int numMachines = 5;
+    const int numMachines = 7;
     float screenWidth = static_cast<float>(renderer.GetWidth());
     float screenHeight = static_cast<float>(renderer.GetHeight());
 
@@ -71,7 +73,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         totalWidth += width;
     }
 
-    float startX = screenWidth * 0.03f;
+    float startX = screenWidth * 0.04f;
     float currentX = startX;
 
     //dynamic upgrade area size
@@ -84,15 +86,23 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 
         switch (i)
         {
-        case 0: case 4:
+        case 0:
             pMachine = new MachineBottler();
             break;
-        case 1: case 3:
+        case 1: case 3: case 5: case 7:
             pMachine = new MachineConveyor();
             break;
         case 2:
             pMachine = new MachineFiller();
             break;
+		case 4:
+			pMachine = new MachineCapper();
+			break;
+		case 6:
+			pMachine = new MachineLabeler();
+			break;
+		default:
+			break;
         }
 
         if (!pMachine->Initialise(renderer))
@@ -113,7 +123,15 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         }
         else if (dynamic_cast<MachineFiller*>(pMachine))
         {
-            basePath = "../assets/machine_bottler_";/*"../assets/machine_filler_";*/
+            basePath = "../assets/machine_filler_";
+        }
+        else if (dynamic_cast<MachineCapper*>(pMachine))
+        {
+            basePath = "../assets/machine_capper_";
+        }
+        else if (dynamic_cast<MachineLabeler*>(pMachine))
+        {
+            basePath = "../assets/machine_labeler_";
         }
 
         for (int level = 0; level <= numUpgrades; ++level)
@@ -134,7 +152,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         pMachine->SetPosition(Vector2(currentX + width / 2.0f, yOffset));
 
         //set upgrade area width to match the specific machine width
-        pMachine->SetUpgradeArea(Vector2(currentX, upgradeAreaYOffset), width, screenHeight * 0.05f); //using machine width
+        pMachine->SetUpgradeArea(Vector2(currentX, upgradeAreaYOffset), width, screenHeight * 0.075f); //using machine width
 
         m_machines.push_back(pMachine);
         currentX += width;

@@ -55,7 +55,6 @@ bool Machine::IsPlayerInUpgradeArea(Player* player)
 {
     //get player position
     Vector2 playerPos = player->GetPosition();
-    //std::cout << "Entity Position: x = " << playerPos.x << ", y = " << playerPos.y << std::endl;
 
 
     //check if player is within the upgrade area
@@ -70,8 +69,6 @@ void Machine::SetUpgradeArea(const Vector2& position, float width, float height)
     m_upgradeAreaPosition = position;
     m_upgradeAreaWidth = width;
     m_upgradeAreaHeight = height;
-
-	//std::cout << "Upgrade area set to: " << m_upgradeAreaPosition.x << ", " << m_upgradeAreaPosition.y << ", " << m_upgradeAreaWidth << ", " << m_upgradeAreaHeight << std::endl;
 }
 
 void Machine::Upgrade()
@@ -83,9 +80,7 @@ void Machine::Upgrade()
 
         if (m_upgradeLevel + 1 < static_cast<int>(m_upgradeSprites.size()))
         {
-			std::cout << "Upgrade lvl before: " << m_upgradeLevel << std::endl;
             ++m_upgradeLevel;
-            std::cout << "Upgrade lvl after: " << m_upgradeLevel << std::endl;
 
             m_pSprite = m_upgradeSprites[m_upgradeLevel];
             m_bUpgraded = true;

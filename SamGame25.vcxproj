@@ -37,8 +37,10 @@
     <ClInclude Include="logmanager.h" />
     <ClInclude Include="machine.h" />
     <ClInclude Include="machinebottler.h" />
+    <ClInclude Include="machinecapper.h" />
     <ClInclude Include="machineconveyor.h" />
     <ClInclude Include="machinefiller.h" />
+    <ClInclude Include="machinelabeler.h" />
     <ClInclude Include="matrix4.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="renderer.h" />
@@ -70,8 +72,10 @@
     <ClCompile Include="logmanager.cpp" />
     <ClCompile Include="machine.cpp" />
     <ClCompile Include="machinebottler.cpp" />
+    <ClCompile Include="machinecapper.cpp" />
     <ClCompile Include="machineconveyor.cpp" />
     <ClCompile Include="machinefiller.cpp" />
+    <ClCompile Include="machinelabeler.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="matrix4.cpp" />
     <ClCompile Include="player.cpp" />
