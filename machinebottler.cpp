@@ -12,7 +12,9 @@ bool MachineBottler::Initialise(Renderer& renderer)
         return false;
 
 
-    m_pSprite = renderer.CreateSprite("../assets/bottler_00.png");
+    m_pSprite = renderer.CreateSprite("../assets/explosion.png");
+
+    //m_pSpriteBroken = renderer.CreateSprite("../assets/bottler_00.png");
     if (m_pSprite == nullptr)
     {
         return false;

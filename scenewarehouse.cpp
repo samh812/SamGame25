@@ -8,6 +8,7 @@
 #include "sprite.h"
 #include "player.h"
 #include <iostream>
+#include <string>
 
 #include "imgui/imgui_impl_sdl2.h"
 #include "imgui/imgui_impl_opengl3.h"
@@ -34,25 +35,24 @@ SceneWarehouse::~SceneWarehouse()
 
 bool SceneWarehouse::Initialise(Renderer& renderer)
 {
-
-
     m_pWarehouseBackground = renderer.CreateSprite("../assets/warehouse_background.png");
-
 
     float scaleX = static_cast<float>(renderer.GetWidth()) / m_pWarehouseBackground->GetWidth();
     float scaleY = static_cast<float>(renderer.GetHeight()) / m_pWarehouseBackground->GetHeight();
-    float scale = std::max(scaleX, scaleY);  // Use max to ensure it covers the whole screen
+    float scale = std::max(scaleX, scaleY);  //ensuring background covers whole screen
 
-    m_pWarehouseBackground->SetX(renderer.GetWidth()/2);
-	m_pWarehouseBackground->SetY(renderer.GetHeight()/2);
+    m_pWarehouseBackground->SetX(renderer.GetWidth() / 2);
+    m_pWarehouseBackground->SetY(renderer.GetHeight() / 2);
     m_pWarehouseBackground->SetScale(scale);
-
 
     m_pPlayer = new Player();
     if (!m_pPlayer->Initialise(renderer))
     {
         return false;
     }
+
+
+
 
     //placing machines based on screen resolution
     const int numMachines = 5;
@@ -70,15 +70,12 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         machineWidths.push_back(width);
         totalWidth += width;
     }
+
     float startX = screenWidth * 0.03f;
     float currentX = startX;
 
     //dynamic upgrade area size
-    float upgradeAreaWidth = screenWidth * 0.05f;  //5% of screen width
-    float upgradeAreaHeight = screenHeight * 0.05f; //5% of screen height
-
-    //and positioning
-    float dynamicYOffset = screenHeight * 0.10f;  //15% above the machine
+    float dynamicYOffset = screenHeight * 0.15f;  //15% above the machine
     float upgradeAreaYOffset = yOffset - dynamicYOffset;
 
     for (int i = 0; i < numMachines; ++i)
@@ -103,17 +100,45 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
             delete pMachine;
             return false;
         }
+        std::string basePath;
+        int numUpgrades = 2;
 
+        if (dynamic_cast<MachineBottler*>(pMachine))
+        {
+            basePath = "../assets/machine_bottler_";
+        }
+        else if (dynamic_cast<MachineConveyor*>(pMachine))
+        {
+            basePath = "../assets/machine_conveyor_";
+        }
+        else if (dynamic_cast<MachineFiller*>(pMachine))
+        {
+            basePath = "../assets/machine_bottler_";/*"../assets/machine_filler_";*/
+        }
+
+        for (int level = 0; level <= numUpgrades; ++level)
+        {
+            std::string fullPath = basePath + std::to_string(level) + ".png";
+            Sprite* upgradeSprite = renderer.CreateSprite(fullPath.c_str());
+            if (upgradeSprite)
+            {
+                pMachine->AddUpgradeSprite(upgradeSprite);
+            }
+        }
+
+        if (!pMachine->GetUpgradeSprites().empty())
+        {
+            pMachine->SetSprite(pMachine->GetUpgradeSprites()[0]);  //base sprite
+        }
         float width = machineWidths[i];
         pMachine->SetPosition(Vector2(currentX + width / 2.0f, yOffset));
 
-        //set upgrade area with dynamic size and dynamic Y offset
-        pMachine->SetUpgradeArea(Vector2(currentX + width / 2.0f, upgradeAreaYOffset), upgradeAreaWidth, upgradeAreaHeight);
+        //set upgrade area width to match the specific machine width
+        pMachine->SetUpgradeArea(Vector2(currentX, upgradeAreaYOffset), width, screenHeight * 0.05f); //using machine width
 
         m_machines.push_back(pMachine);
         currentX += width;
     }
-
 
     return true;
 }
@@ -128,7 +153,7 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
         for (Machine* pMachine : m_machines)
         {
 
-            if (pMachine->IsPlayerInUpgradeArea(m_pPlayer) && inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_HELD) //Upgrade on E or ENTER
+            if (pMachine->IsPlayerInUpgradeArea(m_pPlayer) && inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED) //Upgrade on E or ENTER
             {
                 pMachine->Upgrade();
             }
@@ -162,7 +187,6 @@ void SceneWarehouse::Draw(Renderer& renderer)
         }
     }
 }
-
 void SceneWarehouse::DebugDraw()
 {
     if (m_pPlayer)
@@ -178,9 +202,12 @@ void SceneWarehouse::DebugDraw()
         {
             bool inArea = machine->IsPlayerInUpgradeArea(m_pPlayer);
             bool upgraded = machine->IsUpgraded();
+            int upgradeLevel = machine->GetUpgradeLevel(); // Get the upgrade level
+
             ImGui::Text("Machine %d:", i);
             ImGui::BulletText("In Upgrade Area: %s", inArea ? "YES" : "no");
             ImGui::BulletText("Upgraded: %s", upgraded ? "YES" : "no");
+            ImGui::BulletText("Upgrade Level: %d", upgradeLevel); // Display upgrade level
             ++i;
         }
     }

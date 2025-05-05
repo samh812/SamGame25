@@ -3,6 +3,7 @@
 #include "sprite.h"
 #include "inlinehelpers.h"
 #include "vector2.h"
+#include "texture.h"
 #include <iostream>
 
 #include <algorithm>
@@ -21,16 +22,6 @@ Machine::~Machine()
 
 bool Machine::Initialise(Renderer& renderer)
 {
-    m_pRenderer = &renderer;
-    m_pSprite = m_pRenderer->CreateSprite("../assets/bottler_00.png");
-    if (m_pSprite == nullptr)
-    {
-        return false;
-    }
-
-    m_position = Vector2(400.0f, 300.0f);
-    m_pSprite->SetScale(0.2f);
-    m_bAlive = true;
     return true;
 }
 
@@ -62,12 +53,12 @@ Vector2 Machine::GetPosition() const
 
 bool Machine::IsPlayerInUpgradeArea(Player* player)
 {
-    // Get player position
+    //get player position
     Vector2 playerPos = player->GetPosition();
     //std::cout << "Entity Position: x = " << playerPos.x << ", y = " << playerPos.y << std::endl;
 
 
-    // Check if player is within the upgrade area
+    //check if player is within the upgrade area
     bool isWithinX = playerPos.x >= m_upgradeAreaPosition.x && playerPos.x <= m_upgradeAreaPosition.x + m_upgradeAreaWidth;
     bool isWithinY = playerPos.y >= m_upgradeAreaPosition.y && playerPos.y <= m_upgradeAreaPosition.y + m_upgradeAreaHeight;
 
@@ -88,12 +79,41 @@ void Machine::Upgrade()
     //upgrade function
     if (m_pSprite)
     {
-		m_bUpgraded = true;
-        //m_pSprite->SetTexture("../assets/updated_machine_sprite.png");
+
+
+        if (m_upgradeLevel + 1 < static_cast<int>(m_upgradeSprites.size()))
+        {
+			std::cout << "Upgrade lvl before: " << m_upgradeLevel << std::endl;
+            ++m_upgradeLevel;
+            std::cout << "Upgrade lvl after: " << m_upgradeLevel << std::endl;
+
+            m_pSprite = m_upgradeSprites[m_upgradeLevel];
+            m_bUpgraded = true;
+        }
     }
+}
+
+int Machine::GetUpgradeLevel() const
+{
+	return m_upgradeLevel;
 }
 
 bool Machine::IsUpgraded() const
 {
     return m_bUpgraded;
+}
+
+void Machine::AddUpgradeSprite(Sprite* sprite)
+{
+	m_upgradeSprites.push_back(sprite);
+}
+
+void Machine::SetSprite(Sprite* pSprite)
+{
+    m_pSprite = pSprite;
+}
+
+const std::vector<Sprite*>& Machine::GetUpgradeSprites() const
+{
+    return m_upgradeSprites;
 }

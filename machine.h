@@ -4,6 +4,7 @@
 #include "entity.h"
 #include "inputsystem.h"
 #include "player.h"
+#include <vector>
 
 class Machine : public Entity {
 
@@ -25,6 +26,16 @@ public:
 
 	bool IsUpgraded() const;
 
+	void AddUpgradeSprite(Sprite* sprite);
+	int GetUpgradeLevel() const;
+	virtual void SetSprite(Sprite* pSprite);
+	const std::vector<Sprite*>& GetUpgradeSprites() const;
+
+
+
+protected:
+
+	bool m_bUpgraded;
 
 private:
 	Renderer* m_pRenderer;
@@ -33,7 +44,9 @@ private:
 	Vector2 m_upgradeAreaPosition;
 	float m_upgradeAreaWidth;
 	float m_upgradeAreaHeight;
-	bool m_bUpgraded;
+
+	std::vector<Sprite*> m_upgradeSprites;
+	int m_upgradeLevel;
 };
 
 #endif // MACHINE_H

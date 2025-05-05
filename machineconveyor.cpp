@@ -11,7 +11,7 @@ bool MachineConveyor::Initialise(Renderer& renderer)
         return false;
 
 
-    m_pSprite = renderer.CreateSprite("../assets/conveyor_00.png");
+    m_pSprite = renderer.CreateSprite("../assets/explosion.png");
     if (m_pSprite == nullptr)
     {
         return false;
