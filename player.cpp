@@ -98,3 +98,12 @@ void Player::AddMoney(int amount) {
 		m_Shekels = 0;
 	}
 }
+
+
+bool Player::SpendMoney(int amount) {
+	if (m_Shekels >= amount) {
+		m_Shekels -= amount;
+		return true;
+	}
+	return false;
+}

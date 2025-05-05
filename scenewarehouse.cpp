@@ -61,10 +61,9 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         m_pPlayer = nullptr;
         return false;
     }
+    m_pPlayer->AddMoney(1400);
 
-
-
-
+	m_upgradeCost = 100;
     //placing machines based on screen resolution
     const int numMachines = 7;
     float screenWidth = static_cast<float>(renderer.GetWidth());
@@ -184,7 +183,13 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 
             if (pMachine->IsPlayerInUpgradeArea(m_pPlayer) && inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED) //Upgrade on E or ENTER
             {
-                pMachine->Upgrade();
+                if (m_pPlayer->SpendMoney(m_upgradeCost)) {
+                    pMachine->Upgrade();
+
+                }
+				else {
+				}
+                //pMachine->Upgrade();
             }
         }
     }
@@ -217,7 +222,6 @@ void SceneWarehouse::Draw(Renderer& renderer)
     }
 
     if (m_pPlayer) {
-        m_pPlayer->AddMoney(500);
         DrawNumber(renderer, m_pPlayer->GetMoney(), 150, 50);
     }
 }
@@ -227,6 +231,7 @@ void SceneWarehouse::DebugDraw()
     {
         Vector2 playerPos = m_pPlayer->GetPosition();
         ImGui::Text("Player Position: X = %.2f, Y = %.2f", playerPos.x, playerPos.y);
+		ImGui::Text("Player Money: %d", m_pPlayer->GetMoney());
     }
 
     int i = 0;
@@ -259,7 +264,7 @@ void SceneWarehouse::InitDigitSprites(Renderer& renderer) {
 void SceneWarehouse::DrawNumber(Renderer& renderer, int number, int startX, int startY) {
 
 	std::string numStr = std::to_string(number);
-    int spacing = 40;
+    int spacing = 30;
 
     for (size_t i = 0; i < numStr.length(); ++i) {
         char digit = numStr[i];

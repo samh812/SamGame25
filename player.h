@@ -17,8 +17,8 @@ public:
 
 
 	void AddMoney(int amount);
-	//bool SpendMoney(int amount);
-	int GetMoney() const { return m_Shekels; }
+	bool SpendMoney(int amount);
+	int GetMoney() { return m_Shekels; }
 
 private:
 	float m_speed;

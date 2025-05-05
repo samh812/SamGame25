@@ -28,6 +28,7 @@ private:
 	Renderer* m_pRenderer;
 	Sprite* m_pWarehouseBackground;
 	std::map<char, Sprite*> m_digitSprites;
+	int m_upgradeCost;
 };
 
 #endif // __SCENEWAREHOUSE_H__
