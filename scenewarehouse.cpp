@@ -61,7 +61,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         m_pPlayer = nullptr;
         return false;
     }
-    m_pPlayer->AddMoney(410);
+	m_pPlayer->AddMoney(410); //start with 410 shekels
 
 
     //placing machines based on screen resolution
@@ -190,16 +190,18 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
             {
 				int upgradeCost = pMachine->GetUpgradeCost(); //get specific machine's upgrade cost
                 if (m_pPlayer->SpendMoney(upgradeCost)) { //if player has enough money
-                    //record totalupgradelevel here instead and start production in this class
                     pMachine->Upgrade();
+                    m_totalUpgradeLevel++;
 
                 }
 				else {
 				}
             }
 
-
         }
+		if (StartProduction()) {
+            Production(deltaTime);
+		}
     }
 
 
@@ -239,6 +241,9 @@ void SceneWarehouse::DebugDraw()
     {
         Vector2 playerPos = m_pPlayer->GetPosition();
         ImGui::Text("Player Position: X = %.2f, Y = %.2f", playerPos.x, playerPos.y);
+        if (StartProduction()) {ImGui::Text("Production: ON");}
+        else{ImGui::Text("Production: OFF");}
+
 		ImGui::Text("Player Money: %d", m_pPlayer->GetMoney());
     }
 
@@ -252,7 +257,7 @@ void SceneWarehouse::DebugDraw()
             bool upgraded = machine->IsUpgraded();
             int upgradeLevel = machine->GetUpgradeLevel(); // Get the upgrade level
 
-            ImGui::Text("Machine %d:", i);
+            ImGui::Text("Machine %d:", i+1);
             ImGui::BulletText("In Upgrade Area: %s", inArea ? "YES" : "no");
             ImGui::BulletText("Upgraded: %s", upgraded ? "YES" : "no");
             ImGui::BulletText("Upgrade Level: %d", upgradeLevel); // Display upgrade level
@@ -281,5 +286,22 @@ void SceneWarehouse::DrawNumber(Renderer& renderer, int number, int startX, int 
         sprite->SetX(startX + (i * spacing));
         sprite->SetY(startY);
         sprite->Draw(renderer);
+    }
+}
+
+bool SceneWarehouse::StartProduction() {
+    if (m_totalUpgradeLevel >= 7) {
+        return true;
+    }
+	else {
+		return false;
+	}
+}
+
+void SceneWarehouse::Production(float time) {
+    m_timer += time;
+    if (m_timer >= 2.0f) {
+		m_pPlayer->AddMoney(10);
+        m_timer = 0.0f;
     }
 }
