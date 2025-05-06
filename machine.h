@@ -28,6 +28,12 @@ public:
 
 	void AddUpgradeSprite(Sprite* sprite);
 	int GetUpgradeLevel() const;
+	int GetNumUpgrades() const;
+
+	int GetUpgradeCost() const;
+	void SetUpgradeCosts(const std::vector<int>& costs);
+
+
 	virtual void SetSprite(Sprite* pSprite);
 	const std::vector<Sprite*>& GetUpgradeSprites() const;
 
@@ -47,6 +53,8 @@ private:
 
 	std::vector<Sprite*> m_upgradeSprites;
 	int m_upgradeLevel;
+	int m_numUpgrades = 2;
+	std::vector<int> m_upgradeCosts;
 };
 
 #endif // MACHINE_H

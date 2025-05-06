@@ -61,9 +61,9 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         m_pPlayer = nullptr;
         return false;
     }
-    m_pPlayer->AddMoney(1400);
+    m_pPlayer->AddMoney(410);
 
-	m_upgradeCost = 100;
+
     //placing machines based on screen resolution
     const int numMachines = 7;
     float screenWidth = static_cast<float>(renderer.GetWidth());
@@ -119,27 +119,32 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
             return false;
         }
         std::string basePath;
-        int numUpgrades = 2;
+        int numUpgrades = pMachine->GetNumUpgrades();
 
         if (dynamic_cast<MachineBottler*>(pMachine))
         {
             basePath = "../assets/machine_bottler_";
+            pMachine->SetUpgradeCosts({ 100, 1000 });
         }
         else if (dynamic_cast<MachineConveyor*>(pMachine))
         {
             basePath = "../assets/machine_conveyor_";
+            pMachine->SetUpgradeCosts({ 50, 550 });
         }
         else if (dynamic_cast<MachineFiller*>(pMachine))
         {
             basePath = "../assets/machine_filler_";
+            pMachine->SetUpgradeCosts({ 80, 800 });
         }
         else if (dynamic_cast<MachineCapper*>(pMachine))
         {
             basePath = "../assets/machine_capper_";
+            pMachine->SetUpgradeCosts({ 30, 400 });
         }
         else if (dynamic_cast<MachineLabeler*>(pMachine))
         {
             basePath = "../assets/machine_labeler_";
+            pMachine->SetUpgradeCosts({ 50, 625 });
         }
 
         for (int level = 0; level <= numUpgrades; ++level)
@@ -181,16 +186,19 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
         for (Machine* pMachine : m_machines)
         {
 
-            if (pMachine->IsPlayerInUpgradeArea(m_pPlayer) && inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED) //Upgrade on E or ENTER
+            if (pMachine->GetUpgradeLevel() < pMachine ->GetNumUpgrades() && pMachine->IsPlayerInUpgradeArea(m_pPlayer) && inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED) //Upgrade on E or ENTER
             {
-                if (m_pPlayer->SpendMoney(m_upgradeCost)) {
+				int upgradeCost = pMachine->GetUpgradeCost(); //get specific machine's upgrade cost
+                if (m_pPlayer->SpendMoney(upgradeCost)) { //if player has enough money
+                    //record totalupgradelevel here instead and start production in this class
                     pMachine->Upgrade();
 
                 }
 				else {
 				}
-                //pMachine->Upgrade();
             }
+
+
         }
     }
 
@@ -222,7 +230,7 @@ void SceneWarehouse::Draw(Renderer& renderer)
     }
 
     if (m_pPlayer) {
-        DrawNumber(renderer, m_pPlayer->GetMoney(), 150, 50);
+        DrawNumber(renderer, m_pPlayer->GetMoney(), 100, 80);
     }
 }
 void SceneWarehouse::DebugDraw()
@@ -233,6 +241,7 @@ void SceneWarehouse::DebugDraw()
         ImGui::Text("Player Position: X = %.2f, Y = %.2f", playerPos.x, playerPos.y);
 		ImGui::Text("Player Money: %d", m_pPlayer->GetMoney());
     }
+
 
     int i = 0;
     for (Machine* machine : m_machines)

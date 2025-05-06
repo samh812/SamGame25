@@ -81,16 +81,21 @@ void Machine::Upgrade()
         if (m_upgradeLevel + 1 < static_cast<int>(m_upgradeSprites.size()))
         {
             ++m_upgradeLevel;
-
             m_pSprite = m_upgradeSprites[m_upgradeLevel];
             m_bUpgraded = true;
         }
+
+
     }
 }
 
 int Machine::GetUpgradeLevel() const
 {
 	return m_upgradeLevel;
+}
+int Machine::GetNumUpgrades() const
+{
+	return m_numUpgrades;
 }
 
 bool Machine::IsUpgraded() const
@@ -112,3 +117,15 @@ const std::vector<Sprite*>& Machine::GetUpgradeSprites() const
 {
     return m_upgradeSprites;
 }
+
+void Machine::SetUpgradeCosts(const std::vector<int>& costs) {
+    m_upgradeCosts = costs;
+}
+
+int Machine::GetUpgradeCost() const {
+    if (m_upgradeLevel < static_cast<int>(m_upgradeCosts.size())) {
+        return m_upgradeCosts[m_upgradeLevel];
+    }
+    return 0;
+}
+
