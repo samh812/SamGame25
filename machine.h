@@ -33,9 +33,14 @@ public:
 	int GetUpgradeCost() const;
 	void SetUpgradeCosts(const std::vector<int>& costs);
 
+	void SetValueIncrease(const std::vector<float>& values);
 
 	virtual void SetSprite(Sprite* pSprite);
 	const std::vector<Sprite*>& GetUpgradeSprites() const;
+
+	float GetValueIncreases() const;
+
+	void IncreaseValue(float value);
 
 
 
@@ -55,6 +60,9 @@ private:
 	int m_upgradeLevel;
 	int m_numUpgrades = 2;
 	std::vector<int> m_upgradeCosts;
+	std::vector<float> m_increases;
+
+	float m_valueIncrease = 1.0f;
 };
 
 #endif // MACHINE_H

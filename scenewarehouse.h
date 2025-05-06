@@ -33,6 +33,8 @@ private:
 	std::map<char, Sprite*> m_digitSprites;
 	int m_totalUpgradeLevel;
 	float m_timer;
+	float m_baseValue = 1.0f;
+	int m_bevValue;
 };
 
 #endif // __SCENEWAREHOUSE_H__

@@ -125,26 +125,35 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         {
             basePath = "../assets/machine_bottler_";
             pMachine->SetUpgradeCosts({ 100, 1000 });
+            pMachine->SetValueIncrease({ 0.0f, 3.9f, 2.2f });
         }
         else if (dynamic_cast<MachineConveyor*>(pMachine))
         {
             basePath = "../assets/machine_conveyor_";
             pMachine->SetUpgradeCosts({ 50, 550 });
+            pMachine->SetValueIncrease({ 0.0f, 1.0f, 2.5f });
+
         }
         else if (dynamic_cast<MachineFiller*>(pMachine))
         {
             basePath = "../assets/machine_filler_";
             pMachine->SetUpgradeCosts({ 80, 800 });
+            pMachine->SetValueIncrease({ 0.0f, 2.7f, 2.3f });
+
         }
         else if (dynamic_cast<MachineCapper*>(pMachine))
         {
             basePath = "../assets/machine_capper_";
             pMachine->SetUpgradeCosts({ 30, 400 });
+            pMachine->SetValueIncrease({ 0.0f, 2.6f, 4.5f });
+
         }
         else if (dynamic_cast<MachineLabeler*>(pMachine))
         {
             basePath = "../assets/machine_labeler_";
             pMachine->SetUpgradeCosts({ 50, 625 });
+            pMachine->SetValueIncrease({ 0.0f, 3.5f, 2.4f });
+
         }
 
         for (int level = 0; level <= numUpgrades; ++level)
@@ -243,7 +252,7 @@ void SceneWarehouse::DebugDraw()
         ImGui::Text("Player Position: X = %.2f, Y = %.2f", playerPos.x, playerPos.y);
         if (StartProduction()) {ImGui::Text("Production: ON");}
         else{ImGui::Text("Production: OFF");}
-
+        ImGui::Text("Beverage value (rounded int): %d base value: %f", m_bevValue, m_baseValue);
 		ImGui::Text("Player Money: %d", m_pPlayer->GetMoney());
     }
 
@@ -259,7 +268,7 @@ void SceneWarehouse::DebugDraw()
 
             ImGui::Text("Machine %d:", i+1);
             ImGui::BulletText("In Upgrade Area: %s", inArea ? "YES" : "no");
-            ImGui::BulletText("Upgraded: %s", upgraded ? "YES" : "no");
+            ImGui::BulletText("Machine value increase float: %f", machine->GetValueIncreases());
             ImGui::BulletText("Upgrade Level: %d", upgradeLevel); // Display upgrade level
             ++i;
         }
@@ -300,8 +309,19 @@ bool SceneWarehouse::StartProduction() {
 
 void SceneWarehouse::Production(float time) {
     m_timer += time;
+
+	m_baseValue = 1.0f;
+    for (Machine* machine : m_machines) {
+        m_baseValue *= machine->GetValueIncreases();
+    }
+    m_bevValue = static_cast<int>(std::round(m_baseValue));
     if (m_timer >= 2.0f) {
-		m_pPlayer->AddMoney(10);
+		m_pPlayer->AddMoney(m_bevValue);
         m_timer = 0.0f;
     }
 }
+
+//TODO
+//Tracking total upgrade level to start production. 
+// Add effects of upgrades next i.e conveyors reduce 
+// timer time, other machines increase value.

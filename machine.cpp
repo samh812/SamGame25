@@ -129,3 +129,24 @@ int Machine::GetUpgradeCost() const {
     return 0;
 }
 
+
+
+void Machine::IncreaseValue(float value) {
+    m_valueIncrease * value;
+}
+
+
+
+void Machine::SetValueIncrease(const std::vector<float>& values) {
+    m_increases = values;
+}
+
+float Machine::GetValueIncreases() const {
+    if (m_upgradeLevel >= 0 && m_upgradeLevel < static_cast<int>(m_increases.size())) {
+        return m_increases[m_upgradeLevel];
+    }
+    return 0.0f;
+
+
+}
+
