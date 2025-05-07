@@ -3,7 +3,8 @@
 
 MachineLabeler::MachineLabeler() {}
 
-MachineLabeler::~MachineLabeler() {}
+MachineLabeler::~MachineLabeler() {
+}
 
 bool MachineLabeler::Initialise(Renderer& renderer)
 {

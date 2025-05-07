@@ -42,6 +42,7 @@ public:
 
 	void IncreaseValue(float value);
 
+	void SetSharedSprite();
 
 
 protected:
@@ -63,6 +64,8 @@ private:
 	std::vector<float> m_increases;
 
 	float m_valueIncrease = 1.0f;
+	bool m_ownsSprite = true;
+
 };
 
 #endif // MACHINE_H

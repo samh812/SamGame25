@@ -30,9 +30,12 @@ SceneWarehouse::~SceneWarehouse()
     }
     m_machines.clear();
 
+
+
     delete m_pWarehouseBackground;
     m_pWarehouseBackground = nullptr;
-
+    delete m_pBagSprite;
+    m_pBagSprite = nullptr;
     for (auto& pair : m_digitSprites)
     {
         delete pair.second;
@@ -138,6 +141,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
             pMachine->SetUpgradeCosts({ 50, 550 });
             pMachine->SetValueIncrease({ 0.0f, 1.0f, 0.8f });
 
+
         }
         else if (dynamic_cast<MachineFiller*>(pMachine))
         {
@@ -173,7 +177,8 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 
         if (!pMachine->GetUpgradeSprites().empty())
         {
-            pMachine->SetSprite(pMachine->GetUpgradeSprites()[0]);  //base sprite
+            pMachine->SetSprite(pMachine->GetUpgradeSprites()[0]); 
+            
         }
         float width = machineWidths[i];
         pMachine->SetPosition(Vector2(currentX + width / 2.0f, yOffset));
@@ -187,8 +192,8 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 
 	InitDigitSprites(renderer);
 
-    Sprite* bagSprite = renderer.CreateSprite("../assets/ball.png");
-    bagSprite->SetScale(0.13f);
+    m_pBagSprite = renderer.CreateSprite("../assets/ball.png");
+    m_pBagSprite->SetScale(0.13f);
     //float screenWidth = static_cast<float>(renderer.GetWidth());
     //float screenHeight = static_cast<float>(renderer.GetHeight());
 
@@ -199,7 +204,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
     {
         MoneyBag* pBag = new MoneyBag();
         pBag->Initialise(renderer);
-        pBag->SetSprite(bagSprite);  // all bags share the same sprite
+        pBag->SetSprite(m_pBagSprite);  // all bags share the same sprite
 
         pBag->Deactivate();
         m_moneyBags.push_back(pBag);
@@ -304,11 +309,9 @@ void SceneWarehouse::Draw(Renderer& renderer)
     }
     for (MoneyBag* pBag : m_moneyBags)
     {
-        //if (pBag->IsActive())
-        //{
-            pBag->Draw(renderer);
 
-        //}
+        pBag->Draw(renderer);
+
     }
 }
 void SceneWarehouse::DebugDraw()

@@ -32,6 +32,7 @@ private:
 	std::vector<Machine*> m_machines;
 	Renderer* m_pRenderer;
 	Sprite* m_pWarehouseBackground;
+	Sprite* m_pBagSprite = nullptr;
 	std::map<char, Sprite*> m_digitSprites;
 	int m_totalUpgradeLevel;
 	float m_timer;

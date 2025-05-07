@@ -13,12 +13,19 @@ Machine::Machine()
 
 {
 }
-
 Machine::~Machine()
 {
     delete m_pSprite;
     m_pSprite = nullptr;
+
+    // Clean up upgrade sprites
+    //for (Sprite* sprite : m_upgradeSprites)
+    //{
+    //    delete sprite;
+    //}
+    //m_upgradeSprites.clear();
 }
+
 
 bool Machine::Initialise(Renderer& renderer)
 {
@@ -141,6 +148,10 @@ void Machine::SetValueIncrease(const std::vector<float>& values) {
     m_increases = values;
 }
 
+void Machine::SetSharedSprite() {
+	m_ownsSprite = false; // Set to false to indicate that the sprite is shared
+}
+
 float Machine::GetValueIncreases() const {
     if (m_upgradeLevel >= 0 && m_upgradeLevel < static_cast<int>(m_increases.size())) {
         return m_increases[m_upgradeLevel];
@@ -149,4 +160,6 @@ float Machine::GetValueIncreases() const {
 
 
 }
+
+
 
