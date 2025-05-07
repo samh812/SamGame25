@@ -36,6 +36,7 @@ protected:
 	Vector2 m_position;
 	Vector2 m_velocity;
 	bool m_bAlive;
+	bool m_bOwnsSprite = true;
 private:
 };
 #endif // ENTITY_H

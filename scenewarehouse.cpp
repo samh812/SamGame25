@@ -39,7 +39,12 @@ SceneWarehouse::~SceneWarehouse()
     }
     m_digitSprites.clear();
 
-
+    for (MoneyBag* pBag : m_moneyBags)
+    {
+        printf("Deleting bag at address: %p\n", pBag);
+        delete pBag;  // Only deletes the MoneyBag, not its sprite
+    }
+    m_moneyBags.clear();
 }
 
 bool SceneWarehouse::Initialise(Renderer& renderer)
@@ -182,6 +187,24 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 
 	InitDigitSprites(renderer);
 
+    Sprite* bagSprite = renderer.CreateSprite("../assets/ball.png");
+    bagSprite->SetScale(0.13f);
+    //float screenWidth = static_cast<float>(renderer.GetWidth());
+    //float screenHeight = static_cast<float>(renderer.GetHeight());
+
+    m_spawnXDist = std::uniform_real_distribution<float>(screenWidth * 0.1f, screenWidth * 0.9f);
+    m_spawnYDist = std::uniform_real_distribution<float>(screenHeight*0.1f, screenHeight * 0.65f);
+
+    for (int i = 0; i < 10; ++i)
+    {
+        MoneyBag* pBag = new MoneyBag();
+        pBag->Initialise(renderer);
+        pBag->SetSprite(bagSprite);  // all bags share the same sprite
+
+        pBag->Deactivate();
+        m_moneyBags.push_back(pBag);
+    }
+
     return true;
 }
 
@@ -211,6 +234,34 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 		if (StartProduction()) {
             Production(deltaTime);
 		}
+        m_moneySpawnTimer += deltaTime;
+        if (StartProduction() && m_moneySpawnTimer >= m_interval)
+        {
+            for (MoneyBag* pBag : m_moneyBags)
+            {
+                if (!pBag->IsActive())
+                {
+                    Vector2 randPos(m_spawnXDist(m_rng), m_spawnYDist(m_rng));
+                    pBag->SetValue(m_bevValue);
+                    pBag->Activate(randPos);
+                    break;
+                }
+            }
+            m_moneySpawnTimer = 0.0f;
+        }
+
+        // Check player pickup
+        for (MoneyBag* pBag : m_moneyBags)
+        {
+            if (pBag->IsActive() && m_pPlayer->IsCollidingWith(*pBag))
+            {
+                if (inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED)
+                {
+                    m_pPlayer->AddMoney(pBag->GetValue());
+                    pBag->Deactivate();
+                }
+            }
+        }
     }
 
 
@@ -243,6 +294,14 @@ void SceneWarehouse::Draw(Renderer& renderer)
     if (m_pPlayer) {
         DrawNumber(renderer, m_pPlayer->GetMoney(), 100, 80);
     }
+    for (MoneyBag* pBag : m_moneyBags)
+    {
+        //if (pBag->IsActive())
+        //{
+            pBag->Draw(renderer);
+
+        //}
+    }
 }
 void SceneWarehouse::DebugDraw()
 {
@@ -267,10 +326,23 @@ void SceneWarehouse::DebugDraw()
             int upgradeLevel = machine->GetUpgradeLevel(); // Get the upgrade level
 
             ImGui::Text("Machine %d:", i+1);
+            Vector2 pos = machine->GetPosition();
+            ImGui::Text("machine position: X = %.2f, Y = %.2f", pos.x, pos.y);
+
             ImGui::BulletText("In Upgrade Area: %s", inArea ? "YES" : "no");
             ImGui::BulletText("Machine value increase float: %f", machine->GetValueIncreases());
             ImGui::BulletText("Upgrade Level: %d", upgradeLevel); // Display upgrade level
             ++i;
+        }
+    }
+
+    for (MoneyBag* bag : m_moneyBags) {
+        if (bag->IsActive()) {
+            ImGui::Text("Bag %d:", i + 1);
+            Vector2 pos = bag->GetPosition();
+            ImGui::Text("Bag position: X = %.2f, Y = %.2f", pos.x, pos.y);
+
+
         }
     }
 }
@@ -330,7 +402,7 @@ void SceneWarehouse::Production(float time) {
     }
     m_bevValue = static_cast<int>(std::round(m_baseValue));
     if (m_timer >= m_interval) {
-		m_pPlayer->AddMoney(m_bevValue);
+		//m_pPlayer->AddMoney(m_bevValue);
         m_timer = 0.0f;
     }
 }

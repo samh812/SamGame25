@@ -4,8 +4,10 @@
 #include "scene.h"
 #include "player.h"
 #include "machine.h"
+#include "moneybag.h"
 #include <vector>
 #include <map>
+#include <random>
 
 
 class SceneWarehouse : public Scene
@@ -36,6 +38,12 @@ private:
 	float m_baseValue;
 	int m_bevValue;
 	float m_interval;
+
+	std::vector<MoneyBag*> m_moneyBags;
+	float m_moneySpawnTimer = 0.0f;
+	std::default_random_engine m_rng;
+	std::uniform_real_distribution<float> m_spawnXDist;
+	std::uniform_real_distribution<float> m_spawnYDist;
 };
 
 #endif // __SCENEWAREHOUSE_H__

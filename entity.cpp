@@ -14,7 +14,10 @@ Entity::Entity()
 
 Entity::~Entity()
 {
-    delete m_pSprite;
+    if (m_bOwnsSprite)
+    {
+        delete m_pSprite;
+    }
     m_pSprite = nullptr;
 }
 

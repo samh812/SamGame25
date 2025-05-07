@@ -42,6 +42,7 @@
     <ClInclude Include="machinefiller.h" />
     <ClInclude Include="machinelabeler.h" />
     <ClInclude Include="matrix4.h" />
+    <ClInclude Include="moneybag.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="scene.h" />
@@ -78,6 +79,7 @@
     <ClCompile Include="machinelabeler.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="matrix4.cpp" />
+    <ClCompile Include="moneybag.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="scene.cpp" />
