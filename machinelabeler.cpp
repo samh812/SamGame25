@@ -12,11 +12,11 @@ bool MachineLabeler::Initialise(Renderer& renderer)
         return false;
 
 
-    m_pSprite = renderer.CreateSprite("../assets/explosion.png");
-    if (m_pSprite == nullptr)
-    {
-        return false;
-    }
+    //m_pSprite = renderer.CreateSprite("../assets/explosion.png");
+    //if (m_pSprite == nullptr)
+    //{
+    //    return false;
+    //}
 
     return true;
 }

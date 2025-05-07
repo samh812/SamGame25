@@ -8,6 +8,8 @@
 #include <vector>
 #include <map>
 #include <random>
+#include <memory>
+
 
 
 class SceneWarehouse : public Scene
@@ -26,6 +28,7 @@ public:
 
 	bool StartProduction();
 	void Production(float time);
+
 
 private:
 	Player* m_pPlayer;

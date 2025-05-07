@@ -5,6 +5,7 @@
 #include "inputsystem.h"
 #include "player.h"
 #include <vector>
+#include <memory>
 
 class Machine : public Entity {
 
@@ -26,7 +27,7 @@ public:
 
 	bool IsUpgraded() const;
 
-	void AddUpgradeSprite(Sprite* sprite);
+	void AddUpgradeSprite(std::unique_ptr<Sprite> sprite);
 	int GetUpgradeLevel() const;
 	int GetNumUpgrades() const;
 
@@ -36,7 +37,7 @@ public:
 	void SetValueIncrease(const std::vector<float>& values);
 
 	virtual void SetSprite(Sprite* pSprite);
-	const std::vector<Sprite*>& GetUpgradeSprites() const;
+	std::vector<Sprite*> GetUpgradeSprites() const;
 
 	float GetValueIncreases() const;
 
@@ -53,11 +54,13 @@ private:
 	Renderer* m_pRenderer;
 	Vector2 m_position;
 
+	Sprite* m_pSprite;
+
 	Vector2 m_upgradeAreaPosition;
 	float m_upgradeAreaWidth;
 	float m_upgradeAreaHeight;
 
-	std::vector<Sprite*> m_upgradeSprites;
+	std::vector<std::unique_ptr<Sprite>> m_upgradeSprites;
 	int m_upgradeLevel;
 	int m_numUpgrades = 2;
 	std::vector<int> m_upgradeCosts;

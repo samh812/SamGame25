@@ -15,15 +15,9 @@ Machine::Machine()
 }
 Machine::~Machine()
 {
-    delete m_pSprite;
-    m_pSprite = nullptr;
+    //delete m_pSprite;
+    //m_pSprite = nullptr;
 
-    // Clean up upgrade sprites
-    //for (Sprite* sprite : m_upgradeSprites)
-    //{
-    //    delete sprite;
-    //}
-    //m_upgradeSprites.clear();
 }
 
 
@@ -80,19 +74,14 @@ void Machine::SetUpgradeArea(const Vector2& position, float width, float height)
 
 void Machine::Upgrade()
 {
-    //upgrade function
     if (m_pSprite)
     {
-
-
         if (m_upgradeLevel + 1 < static_cast<int>(m_upgradeSprites.size()))
         {
             ++m_upgradeLevel;
-            m_pSprite = m_upgradeSprites[m_upgradeLevel];
+            m_pSprite = m_upgradeSprites[m_upgradeLevel].get(); // <-- use .get()
             m_bUpgraded = true;
         }
-
-
     }
 }
 
@@ -110,9 +99,9 @@ bool Machine::IsUpgraded() const
     return m_bUpgraded;
 }
 
-void Machine::AddUpgradeSprite(Sprite* sprite)
+void Machine::AddUpgradeSprite(std::unique_ptr<Sprite> sprite)
 {
-	m_upgradeSprites.push_back(sprite);
+    m_upgradeSprites.push_back(std::move(sprite));
 }
 
 void Machine::SetSprite(Sprite* pSprite)
@@ -120,9 +109,15 @@ void Machine::SetSprite(Sprite* pSprite)
     m_pSprite = pSprite;
 }
 
-const std::vector<Sprite*>& Machine::GetUpgradeSprites() const
+std::vector<Sprite*> Machine::GetUpgradeSprites() const
 {
-    return m_upgradeSprites;
+    std::vector<Sprite*> result;
+    result.reserve(m_upgradeSprites.size());
+    for (const auto& uptr : m_upgradeSprites)
+    {
+        result.push_back(uptr.get());
+    }
+    return result;
 }
 
 void Machine::SetUpgradeCosts(const std::vector<int>& costs) {

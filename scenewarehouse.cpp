@@ -11,6 +11,7 @@
 #include "player.h"
 #include <iostream>
 #include <string>
+#include <set>
 
 #include "imgui/imgui_impl_sdl2.h"
 #include "imgui/imgui_impl_opengl3.h"
@@ -82,7 +83,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
     std::vector<float> machineWidths;
 
     //determine the widths of all the machines so they can be dynamically placed
-    for (int i = 0; i < numMachines; ++i)
+    for (int i = 0; i <= numMachines; ++i)
     {
         float width = (i == 1 || i == 3 || i == 5) ? 225.0f : 160.0f; //conveyors are 225 vs 160
         machineWidths.push_back(width);
@@ -164,14 +165,14 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
             pMachine->SetValueIncrease({ 0.0f, 3.5f, 2.4f });
 
         }
-
         for (int level = 0; level <= numUpgrades; ++level)
         {
             std::string fullPath = basePath + std::to_string(level) + ".png";
-            Sprite* upgradeSprite = renderer.CreateSprite(fullPath.c_str());
+            std::unique_ptr<Sprite> upgradeSprite = std::unique_ptr<Sprite>(renderer.CreateSprite(fullPath.c_str()));
+
             if (upgradeSprite)
             {
-                pMachine->AddUpgradeSprite(upgradeSprite);
+                pMachine->AddUpgradeSprite(std::move(upgradeSprite));
             }
         }
 
@@ -194,8 +195,6 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 
     m_pBagSprite = renderer.CreateSprite("../assets/ball.png");
     m_pBagSprite->SetScale(0.13f);
-    //float screenWidth = static_cast<float>(renderer.GetWidth());
-    //float screenHeight = static_cast<float>(renderer.GetHeight());
 
     m_spawnXDist = std::uniform_real_distribution<float>(screenWidth * 0.1f, screenWidth * 0.9f);
     m_spawnYDist = std::uniform_real_distribution<float>(screenHeight*0.1f, screenHeight * 0.65f);
@@ -419,4 +418,5 @@ void SceneWarehouse::Production(float time) {
     m_bevValue = static_cast<int>(std::round(m_baseValue));
 
 }
+
 

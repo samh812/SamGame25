@@ -4,6 +4,7 @@
 // Local includes:
 #include "renderer.h"
 #include "texture.h"
+#include <iostream>
 Sprite::Sprite()
 	: m_pTexture(0)
 	, m_x(0)
