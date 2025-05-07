@@ -95,6 +95,7 @@
     <ClCompile Include="xboxcontroller.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="game\shader\sprite.frag" />
     <None Include="game\shader\sprite.vert" />
   </ItemGroup>

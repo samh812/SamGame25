@@ -123,6 +123,9 @@
     <ClCompile Include="machinelabeler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="moneybag.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h">
@@ -233,6 +236,9 @@
     <ClInclude Include="machinelabeler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="moneybag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="game\shader\sprite.vert">
@@ -241,5 +247,6 @@
     <None Include="game\shader\sprite.frag">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

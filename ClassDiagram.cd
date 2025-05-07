@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Ball">
+    <Position X="4" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAABGABAwCgAgAAAAgAAAAAAAQQQEEwAAAAAIA=</HashCode>
+      <FileName>ball.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Entity">
+    <Position X="6.25" Y="1.25" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>EQAAAAAAAGAAAwAAAoAAAAAAECAAAEQAAAFgAAgAgAA=</HashCode>
+      <FileName>entity.h</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_position" />
+      <Field Name="m_pSprite" />
+      <Field Name="m_velocity" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Vector2">
+    <Position X="11.5" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIQAAAAAABBAAAAAAAAQBBAAAAAAAAgABgAgAAAAA=</HashCode>
+      <FileName>vector2.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sprite">
+    <Position X="11.25" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>SBAEAAERAIAAGyYFAgAAAgBCwAEBAACQYAAgAmQAAAI=</HashCode>
+      <FileName>sprite.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SceneWarehouse">
+    <Position X="19.25" Y="5.25" Width="1.5" />
+    <Members>
+      <Field Name="m_machines" Hidden="true" />
+      <Field Name="m_moneyBags" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AACBCAQQAAEFCwBgAgAEEAAAAAABAgEwQAIAAEiAMAQ=</HashCode>
+      <FileName>scenewarehouse.h</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_digitSprites" />
+      <Field Name="m_machines" />
+      <Field Name="m_moneyBags" />
+      <Field Name="m_pBagSprite" />
+      <Field Name="m_pPlayer" />
+      <Field Name="m_pRenderer" />
+      <Field Name="m_pWarehouseBackground" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="std::map&lt;_Kty, _Ty, _Pr, _Alloc&gt;" Collapsed="true">
+    <Position X="22.75" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAABAAACwAAAAAAAAAAEBBAABgQAgAAAAAAA=</HashCode>
+      <FileName>C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.43.34808\include\map</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="std::vector&lt;_Ty, _Alloc&gt;">
+    <Position X="23" Y="10.75" Width="1.5" />
+    <NestedTypes>
+      <Class Name="std::vector&lt;_Ty, _Alloc&gt;::_Asan_extend_guard" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.43.34808\include\vector</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="std::vector&lt;_Ty, _Alloc&gt;::_Asan_create_guard" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.43.34808\include\vector</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Struct Name="std::vector&lt;_Ty, _Alloc&gt;::_Reallocation_guard" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.43.34808\include\vector</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Struct Name="std::vector&lt;_Ty, _Alloc&gt;::_Simple_reallocation_guard" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.43.34808\include\vector</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Struct Name="std::vector&lt;_Ty, _Alloc&gt;::_Vaporization_guard" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.43.34808\include\vector</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Enum Name="std::vector&lt;_Ty, _Alloc&gt;::_Reallocation_policy" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.43.34808\include\vector</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>A2AAEYEiAbLsCEBAAONYMAkWM0UARBIggQkwghAFQko=</HashCode>
+      <FileName>C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.43.34808\include\vector</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Player" Collapsed="true">
+    <Position X="24" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAwAgAgIAABAAAAgAAgAAAAEAAQAAABA=</HashCode>
+      <FileName>player.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Renderer" Collapsed="true">
+    <Position X="23.75" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAApACBAAEAAARAAAARAAABEQAIRAAAIAECiDsDAAAA=</HashCode>
+      <FileName>renderer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
