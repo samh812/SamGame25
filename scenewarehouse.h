@@ -37,10 +37,19 @@ private:
 	float m_timer;
 	float m_baseValue;
 	int m_bevValue;
-	float m_interval;
 
-	std::vector<MoneyBag*> m_moneyBags;
+	float m_moneyGrowTimer;
+	float m_growInterval;
+
+	//grow and spawn money bags seperately
 	float m_moneySpawnTimer = 0.0f;
+	float m_spawnInterval = 3.8f;
+
+	int m_totalSold;
+
+	int m_moneyPot;
+	std::vector<MoneyBag*> m_moneyBags;
+
 	std::default_random_engine m_rng;
 	std::uniform_real_distribution<float> m_spawnXDist;
 	std::uniform_real_distribution<float> m_spawnYDist;

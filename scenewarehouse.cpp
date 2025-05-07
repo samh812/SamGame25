@@ -234,20 +234,27 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 		if (StartProduction()) {
             Production(deltaTime);
 		}
-        m_moneySpawnTimer += deltaTime;
-        if (StartProduction() && m_moneySpawnTimer >= m_interval)
+
+
+        if (StartProduction() && m_moneyGrowTimer >= m_growInterval) //grow pot for every drink sold, but only spawn money bags occasionally
         {
-            for (MoneyBag* pBag : m_moneyBags)
-            {
-                if (!pBag->IsActive())
+			m_moneyPot += m_bevValue;//add money to a total pot every time beverage is sold
+			m_totalSold++;
+            if (m_moneySpawnTimer >= m_spawnInterval) {//if bag is ready to be spawned
+                for (MoneyBag* pBag : m_moneyBags)
                 {
-                    Vector2 randPos(m_spawnXDist(m_rng), m_spawnYDist(m_rng));
-                    pBag->SetValue(m_bevValue);
-                    pBag->Activate(randPos);
-                    break;
+                    if (!pBag->IsActive())
+                    {
+                        Vector2 randPos(m_spawnXDist(m_rng), m_spawnYDist(m_rng));
+                        pBag->SetValue(m_moneyPot);
+                        pBag->Activate(randPos);
+						m_moneyPot = 0; //reset pot after spawning
+                        break;
+                    }
                 }
+				m_moneySpawnTimer = 0.0f;
             }
-            m_moneySpawnTimer = 0.0f;
+            m_moneyGrowTimer = 0.0f;
         }
 
         // Check player pickup
@@ -293,6 +300,7 @@ void SceneWarehouse::Draw(Renderer& renderer)
 
     if (m_pPlayer) {
         DrawNumber(renderer, m_pPlayer->GetMoney(), 100, 80);
+        DrawNumber(renderer, m_totalSold, 100, 180);
     }
     for (MoneyBag* pBag : m_moneyBags)
     {
@@ -309,10 +317,14 @@ void SceneWarehouse::DebugDraw()
     {
         Vector2 playerPos = m_pPlayer->GetPosition();
         ImGui::Text("Player Position: X = %.2f, Y = %.2f", playerPos.x, playerPos.y);
-        if (StartProduction()) {ImGui::Text("Production: ON Interval: %f", m_interval);}
+        if (StartProduction()) {ImGui::Text("Production: ON Interval: %f", m_growInterval);}
         else{ImGui::Text("Production: OFF");}
         ImGui::Text("Beverage value (rounded int): %d base value: %f", m_bevValue, m_baseValue);
 		ImGui::Text("Player Money: %d", m_pPlayer->GetMoney());
+
+		ImGui::Text("Money Spawn interval: %f", m_spawnInterval);
+		ImGui::Text("Money Grow interval: %f", m_growInterval);
+		ImGui::Text("Money Pot: %d", m_moneyPot);
     }
 
 
@@ -381,14 +393,15 @@ bool SceneWarehouse::StartProduction() {
 
 void SceneWarehouse::Production(float time) {
     m_timer += time;
-
+    m_moneyGrowTimer += time;
+    m_moneySpawnTimer += time;
 	m_baseValue = 1.0f;
-    m_interval = 2.0f;
+    m_growInterval = 2.0f;
     for (Machine* machine : m_machines) {
 
         if (machine) {
             if (dynamic_cast<MachineConveyor*>(machine)) {
-				m_interval *= machine->GetValueIncreases();
+				m_growInterval *= machine->GetValueIncreases();
 
             }
             else {
@@ -401,9 +414,6 @@ void SceneWarehouse::Production(float time) {
 
     }
     m_bevValue = static_cast<int>(std::round(m_baseValue));
-    if (m_timer >= m_interval) {
-		//m_pPlayer->AddMoney(m_bevValue);
-        m_timer = 0.0f;
-    }
+
 }
 
