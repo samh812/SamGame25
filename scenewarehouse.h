@@ -5,6 +5,7 @@
 #include "player.h"
 #include "machine.h"
 #include "moneybag.h"
+#include "animatedsprite.h"
 #include <vector>
 #include <map>
 #include <random>
@@ -32,6 +33,7 @@ public:
 
 private:
 	Player* m_pPlayer;
+	AnimatedSprite* m_pPlayerSprite;
 	std::vector<Machine*> m_machines;
 	Renderer* m_pRenderer;
 	Sprite* m_pWarehouseBackground;

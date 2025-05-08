@@ -58,6 +58,17 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 {
     m_pWarehouseBackground = renderer.CreateSprite("../assets/warehouse_background.png");
 
+    m_pPlayerSprite = renderer.CreateAnimatedSprite("../assets/64gridtest.png");
+    m_pPlayerSprite->SetupFrames(64, 64);
+    m_pPlayerSprite->SetLooping(true);
+    m_pPlayerSprite->SetFrameDuration(1.0f);
+    m_pPlayerSprite->Animate();
+    m_pPlayerSprite->SetScale(1.0f);
+
+	m_pPlayerSprite->SetX(renderer.GetWidth() / 2);
+    m_pPlayerSprite->SetY(renderer.GetHeight() / 2);
+
+
     float scaleX = static_cast<float>(renderer.GetWidth()) / m_pWarehouseBackground->GetWidth();
     float scaleY = static_cast<float>(renderer.GetHeight()) / m_pWarehouseBackground->GetHeight();
     float scale = std::max(scaleX, scaleY);  //ensuring background covers whole screen
@@ -172,7 +183,14 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         {
             std::string fullPath = basePath + std::to_string(level) + ".png";
             std::unique_ptr<Sprite> upgradeSprite = std::unique_ptr<Sprite>(renderer.CreateSprite(fullPath.c_str()));
-
+            if (dynamic_cast<MachineConveyor*>(pMachine)) {
+				upgradeSprite->SetScale(0.5f); //conveyor scale
+                //std::unique_ptr<Sprite> upgradeSprite = std::unique_ptr<Sprite>(renderer.CreateSprite(fullPath.c_str()));
+			}
+            else
+            {
+                upgradeSprite->SetScale(0.25f); //other machines scale
+            }
             if (upgradeSprite)
             {
                 pMachine->AddUpgradeSprite(std::move(upgradeSprite));
@@ -284,6 +302,8 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
     {
         pMachine->Process(deltaTime, inputSystem);
     }
+
+    m_pPlayerSprite->Process(deltaTime);
 }
 
 void SceneWarehouse::Draw(Renderer& renderer)
@@ -315,6 +335,7 @@ void SceneWarehouse::Draw(Renderer& renderer)
         pBag->Draw(renderer);
 
     }
+	m_pPlayerSprite->Draw(renderer);
 }
 void SceneWarehouse::DebugDraw()
 {
@@ -397,7 +418,6 @@ bool SceneWarehouse::StartProduction() {
 }
 
 void SceneWarehouse::Production(float time) {
-    m_timer += time;
     m_moneyGrowTimer += time;
     m_moneySpawnTimer += time;
 	m_baseValue = 1.0f;
