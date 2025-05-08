@@ -22,6 +22,7 @@ public:
 	bool IsAnimating() const;
 	void Restart();
 	void SetFrameDuration(float seconds);
+	float GetFrameDuration() const;
 	int GetWidth() const;
 	int GetHeight() const;
 	void DebugDraw();

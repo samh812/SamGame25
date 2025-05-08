@@ -146,6 +146,10 @@ AnimatedSprite::SetFrameDuration(float seconds)
 {
 	m_frameDuration = seconds;
 }
+float AnimatedSprite::GetFrameDuration() const
+{
+	return m_frameDuration;
+}
 void
 AnimatedSprite::SetLooping(bool loop)
 {

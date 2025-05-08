@@ -31,8 +31,9 @@ bool Machine::Initialise(Renderer& renderer)
 void Machine::Process(float deltaTime, InputSystem& inputSystem)
 {
     if (m_pAnimatedSprite) {
+        m_pAnimatedSprite->SetFrameDuration(GetValueIncreases());
         m_pAnimatedSprite->Process(deltaTime);
-		m_pAnimatedSprite->SetFrameDuration(1.0f/**sceneWarehouse.GetGrowInterval()*/);
+
     }
 }
 
@@ -194,6 +195,7 @@ float Machine::GetValueIncreases() const {
 
 
 }
+
 
 
 

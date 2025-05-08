@@ -61,7 +61,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
     m_pPlayerSprite = renderer.CreateAnimatedSprite("../assets/ball.png");
     m_pPlayerSprite->SetupFrames(64, 64);
     m_pPlayerSprite->SetLooping(true);
-    m_pPlayerSprite->SetFrameDuration(1.0f);
+    m_pPlayerSprite->SetFrameDuration(10.0f);
     m_pPlayerSprite->Animate();
     m_pPlayerSprite->SetScale(1.0f);
 
@@ -154,7 +154,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         {
             basePath = "../assets/machine_conveyor_";
             pMachine->SetUpgradeCosts({ 5, 40 });
-            pMachine->SetValueIncrease({ 1.0f, 0.8f, 0.6f });
+            pMachine->SetValueIncrease({ 1.0f, 0.2f, 0.1f }); //0.8, 0.6 originally
 
 
         }
@@ -188,7 +188,6 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
                 std::unique_ptr<AnimatedSprite> animatedUpgradeSprite = std::unique_ptr<AnimatedSprite>(renderer.CreateAnimatedSprite(fullPath.c_str()));
                 animatedUpgradeSprite->SetupFrames(128, 64);
                 animatedUpgradeSprite->SetLooping(true);
-                animatedUpgradeSprite->SetFrameDuration(0.1f);
                 animatedUpgradeSprite->Animate();
                 animatedUpgradeSprite->SetScale(1.0f);
                 pMachine->AddAnimatedUpgradeSprite(std::move(animatedUpgradeSprite));
@@ -449,6 +448,7 @@ void SceneWarehouse::Production(float time) {
         if (machine) {
             if (dynamic_cast<MachineConveyor*>(machine)) {
 				m_growInterval *= machine->GetValueIncreases();
+
 
             }
             else {
