@@ -30,6 +30,8 @@ public:
 	bool StartProduction();
 	void Production(float time);
 
+	float GetGrowInterval() const;
+
 
 private:
 	Player* m_pPlayer;

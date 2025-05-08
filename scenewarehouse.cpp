@@ -58,7 +58,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 {
     m_pWarehouseBackground = renderer.CreateSprite("../assets/warehouse_background.png");
 
-    m_pPlayerSprite = renderer.CreateAnimatedSprite("../assets/64gridtest.png");
+    m_pPlayerSprite = renderer.CreateAnimatedSprite("../assets/ball.png");
     m_pPlayerSprite->SetupFrames(64, 64);
     m_pPlayerSprite->SetLooping(true);
     m_pPlayerSprite->SetFrameDuration(1.0f);
@@ -182,25 +182,39 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         for (int level = 0; level <= numUpgrades; ++level)
         {
             std::string fullPath = basePath + std::to_string(level) + ".png";
-            std::unique_ptr<Sprite> upgradeSprite = std::unique_ptr<Sprite>(renderer.CreateSprite(fullPath.c_str()));
+
+            //animated conveyor
             if (dynamic_cast<MachineConveyor*>(pMachine)) {
-				upgradeSprite->SetScale(0.5f); //conveyor scale
-                //std::unique_ptr<Sprite> upgradeSprite = std::unique_ptr<Sprite>(renderer.CreateSprite(fullPath.c_str()));
+                std::unique_ptr<AnimatedSprite> animatedUpgradeSprite = std::unique_ptr<AnimatedSprite>(renderer.CreateAnimatedSprite(fullPath.c_str()));
+                animatedUpgradeSprite->SetupFrames(128, 64);
+                animatedUpgradeSprite->SetLooping(true);
+                animatedUpgradeSprite->SetFrameDuration(0.1f);
+                animatedUpgradeSprite->Animate();
+                animatedUpgradeSprite->SetScale(1.0f);
+                pMachine->AddAnimatedUpgradeSprite(std::move(animatedUpgradeSprite));
 			}
-            else
+            else //normal machine
             {
-                upgradeSprite->SetScale(0.25f); //other machines scale
-            }
-            if (upgradeSprite)
-            {
+                std::unique_ptr<Sprite> upgradeSprite = std::unique_ptr<Sprite>(renderer.CreateSprite(fullPath.c_str()));
                 pMachine->AddUpgradeSprite(std::move(upgradeSprite));
+                //upgradeSprite->SetScale(0.25f); //other machines scale
+            }
+
+        }
+        if (dynamic_cast<MachineConveyor*>(pMachine)) {
+            if (!pMachine->GetAnimatedUpgradeSprites().empty())
+            {
+
+                pMachine->SetAnimatedSprite(pMachine->GetAnimatedUpgradeSprites()[0]);
+
             }
         }
+        else {
+            if (!pMachine->GetUpgradeSprites().empty())
+            {
+                pMachine->SetSprite(pMachine->GetUpgradeSprites()[0]);
 
-        if (!pMachine->GetUpgradeSprites().empty())
-        {
-            pMachine->SetSprite(pMachine->GetUpgradeSprites()[0]); 
-            
+            }
         }
         float width = machineWidths[i];
         pMachine->SetPosition(Vector2(currentX + width / 2.0f, yOffset));
@@ -301,6 +315,14 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
     for (Machine* pMachine : m_machines)
     {
         pMachine->Process(deltaTime, inputSystem);
+    }
+
+    for (auto& machine : m_machines)
+    {
+        if (machine)
+        {
+            machine->Process(deltaTime, inputSystem);
+        }
     }
 
     m_pPlayerSprite->Process(deltaTime);
@@ -440,6 +462,10 @@ void SceneWarehouse::Production(float time) {
     }
     m_bevValue = static_cast<int>(std::round(m_baseValue));
 
+}
+
+float SceneWarehouse::GetGrowInterval() const{
+	return m_growInterval;
 }
 
 

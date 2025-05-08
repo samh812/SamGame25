@@ -4,6 +4,8 @@
 #include "entity.h"
 #include "inputsystem.h"
 #include "player.h"
+#include "animatedsprite.h"
+#include "sprite.h"
 #include <vector>
 #include <memory>
 
@@ -28,6 +30,8 @@ public:
 	bool IsUpgraded() const;
 
 	void AddUpgradeSprite(std::unique_ptr<Sprite> sprite);
+	void AddAnimatedUpgradeSprite(std::unique_ptr<AnimatedSprite> sprite);
+
 	int GetUpgradeLevel() const;
 	int GetNumUpgrades() const;
 
@@ -37,7 +41,10 @@ public:
 	void SetValueIncrease(const std::vector<float>& values);
 
 	virtual void SetSprite(Sprite* pSprite);
+	virtual void SetAnimatedSprite(AnimatedSprite* pSprite);
+
 	std::vector<Sprite*> GetUpgradeSprites() const;
+	std::vector<AnimatedSprite*> GetAnimatedUpgradeSprites() const;
 
 	float GetValueIncreases() const;
 
@@ -55,12 +62,15 @@ private:
 	Vector2 m_position;
 
 	Sprite* m_pSprite;
+	AnimatedSprite* m_pAnimatedSprite;
 
 	Vector2 m_upgradeAreaPosition;
 	float m_upgradeAreaWidth;
 	float m_upgradeAreaHeight;
 
 	std::vector<std::unique_ptr<Sprite>> m_upgradeSprites;
+	std::vector<std::unique_ptr<AnimatedSprite>> m_animatedUpgradeSprites;
+
 	int m_upgradeLevel;
 	int m_numUpgrades = 2;
 	std::vector<int> m_upgradeCosts;

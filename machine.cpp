@@ -1,7 +1,9 @@
 #include "machine.h"
 #include "renderer.h"
 #include "sprite.h"
+#include "animatedsprite.h"
 #include "inlinehelpers.h"
+#include "scenewarehouse.h"
 #include "vector2.h"
 #include "texture.h"
 #include <iostream>
@@ -28,12 +30,21 @@ bool Machine::Initialise(Renderer& renderer)
 
 void Machine::Process(float deltaTime, InputSystem& inputSystem)
 {
-
+    if (m_pAnimatedSprite) {
+        m_pAnimatedSprite->Process(deltaTime);
+		m_pAnimatedSprite->SetFrameDuration(1.0f/**sceneWarehouse.GetGrowInterval()*/);
+    }
 }
 
 void Machine::Draw(Renderer& renderer)
 {
-    if (m_pSprite && m_bAlive)
+    if (m_pAnimatedSprite && m_bAlive)
+    {
+        m_pAnimatedSprite->SetX(m_position.x);
+        m_pAnimatedSprite->SetY(m_position.y);
+        m_pAnimatedSprite->Draw(renderer);
+    }
+    else if (m_pSprite && m_bAlive)
     {
         m_pSprite->SetX(m_position.x);
         m_pSprite->SetY(m_position.y);
@@ -74,12 +85,21 @@ void Machine::SetUpgradeArea(const Vector2& position, float width, float height)
 
 void Machine::Upgrade()
 {
-    if (m_pSprite)
+    if (!m_animatedUpgradeSprites.empty())
+    {
+        if (m_upgradeLevel + 1 < static_cast<int>(m_animatedUpgradeSprites.size()))
+        {
+            ++m_upgradeLevel;
+            m_pAnimatedSprite = m_animatedUpgradeSprites[m_upgradeLevel].get();
+            m_bUpgraded = true;
+        }
+    }
+    else if (!m_upgradeSprites.empty())
     {
         if (m_upgradeLevel + 1 < static_cast<int>(m_upgradeSprites.size()))
         {
             ++m_upgradeLevel;
-            m_pSprite = m_upgradeSprites[m_upgradeLevel].get(); // <-- use .get()
+            m_pSprite = m_upgradeSprites[m_upgradeLevel].get();
             m_bUpgraded = true;
         }
     }
@@ -103,10 +123,18 @@ void Machine::AddUpgradeSprite(std::unique_ptr<Sprite> sprite)
 {
     m_upgradeSprites.push_back(std::move(sprite));
 }
+void Machine::AddAnimatedUpgradeSprite(std::unique_ptr<AnimatedSprite> sprite)
+{
+    m_animatedUpgradeSprites.push_back(std::move(sprite));
+}
 
 void Machine::SetSprite(Sprite* pSprite)
 {
     m_pSprite = pSprite;
+}
+void Machine::SetAnimatedSprite(AnimatedSprite* pSprite)
+{
+    m_pAnimatedSprite = pSprite;
 }
 
 std::vector<Sprite*> Machine::GetUpgradeSprites() const
@@ -114,6 +142,17 @@ std::vector<Sprite*> Machine::GetUpgradeSprites() const
     std::vector<Sprite*> result;
     result.reserve(m_upgradeSprites.size());
     for (const auto& uptr : m_upgradeSprites)
+    {
+        result.push_back(uptr.get());
+    }
+    return result;
+}
+
+std::vector<AnimatedSprite*> Machine::GetAnimatedUpgradeSprites() const
+{
+    std::vector<AnimatedSprite*> result;
+    result.reserve(m_animatedUpgradeSprites.size());
+    for (const auto& uptr : m_animatedUpgradeSprites)
     {
         result.push_back(uptr.get());
     }
