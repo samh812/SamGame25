@@ -28,6 +28,8 @@ SceneWarehouse::~SceneWarehouse()
     delete m_pPlayer;
 	m_pPlayer = nullptr;
 
+	delete m_pPlayerSprite;
+	m_pPlayerSprite = nullptr;
     for (Machine* machine : m_machines)
     {
         delete machine;
@@ -38,6 +40,9 @@ SceneWarehouse::~SceneWarehouse()
 
     delete m_pWarehouseBackground;
     m_pWarehouseBackground = nullptr;
+
+    delete m_pCoinSprite;
+    m_pCoinSprite = nullptr;
     delete m_pBagSprite;
     m_pBagSprite = nullptr;
     for (auto& pair : m_digitSprites)
@@ -68,6 +73,14 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 	m_pPlayerSprite->SetX(renderer.GetWidth() / 2);
     m_pPlayerSprite->SetY(renderer.GetHeight() / 2);
 
+    m_pCoinSprite = renderer.CreateSprite("../assets/coin.png");
+
+    // Create a pool of coin particles
+    for (int i = 0; i < 50; ++i) {
+        Particle particle;
+        particle.Initialise(m_pCoinSprite);
+        m_coinParticles.push_back(particle);
+    }
 
     float scaleX = static_cast<float>(renderer.GetWidth()) / m_pWarehouseBackground->GetWidth();
     float scaleY = static_cast<float>(renderer.GetHeight()) / m_pWarehouseBackground->GetHeight();
@@ -295,14 +308,20 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
             m_moneyGrowTimer = 0.0f;
         }
 
-        // Check player pickup
+        //check player pickup
         for (MoneyBag* pBag : m_moneyBags)
         {
-            if (pBag->IsActive() && m_pPlayer->IsCollidingWith(*pBag))
-            {
-                if (inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED)
-                {
+            if (pBag->IsActive() && m_pPlayer->IsCollidingWith(*pBag)) {
+                if (inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED) {
                     m_pPlayer->AddMoney(pBag->GetValue());
+
+                    //trigger coin particle effect
+                    for (Particle& particle : m_coinParticles) {
+                        if (!particle.IsAlive()) {
+                            particle.Activate(pBag->GetPosition());
+                        }
+                    }
+
                     pBag->Deactivate();
                 }
             }
@@ -325,6 +344,9 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
     }
 
     m_pPlayerSprite->Process(deltaTime);
+    for (Particle& particle : m_coinParticles) {
+        particle.Update(deltaTime);
+    }
 }
 
 void SceneWarehouse::Draw(Renderer& renderer)
@@ -357,6 +379,9 @@ void SceneWarehouse::Draw(Renderer& renderer)
 
     }
 	m_pPlayerSprite->Draw(renderer);
+    for (Particle& particle : m_coinParticles) {
+        particle.Draw(renderer);
+    }
 }
 void SceneWarehouse::DebugDraw()
 {
@@ -404,6 +429,7 @@ void SceneWarehouse::DebugDraw()
 
         }
     }
+
 }
 
 

@@ -6,6 +6,7 @@
 #include "machine.h"
 #include "moneybag.h"
 #include "animatedsprite.h"
+#include "particle.h"
 #include <vector>
 #include <map>
 #include <random>
@@ -61,6 +62,9 @@ private:
 	std::default_random_engine m_rng;
 	std::uniform_real_distribution<float> m_spawnXDist;
 	std::uniform_real_distribution<float> m_spawnYDist;
+
+	std::vector<Particle> m_coinParticles;
+	Sprite* m_pCoinSprite = nullptr;
 };
 
 #endif // __SCENEWAREHOUSE_H__
