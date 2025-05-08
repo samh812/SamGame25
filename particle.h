@@ -20,5 +20,6 @@ private:
     float m_lifetime = 0.0f;
     float m_maxLifetime = 1.0f;
     bool m_active = false;
+	float m_speedMultiplier = 1.0f;
 };
 #endif // PARTICLE_H

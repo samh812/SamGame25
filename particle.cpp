@@ -9,9 +9,13 @@ void Particle::Initialise(Sprite* sprite) {
 
 void Particle::Activate(Vector2 position) {
     m_position = position;
-    m_velocity = Vector2(((rand() % 200) - 100) / 100.0f, ((rand() % 200) - 100) / 100.0f);
+	m_speedMultiplier = 0.5f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (3.0f - 1.0f))); // Random speed multiplier between 0.5 and 1.5
+    m_velocity = Vector2(
+        (((rand() % 200) - 100) / 100.0f) * m_speedMultiplier,
+        (((rand() % 200) - 100) / 100.0f) * m_speedMultiplier
+    );
     m_lifetime = 0.0f;
-    m_maxLifetime = 1.0f;
+    m_maxLifetime = 10.0f;
     m_active = true;
 }
 
