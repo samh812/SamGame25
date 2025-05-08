@@ -75,12 +75,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 
     m_pCoinSprite = renderer.CreateSprite("../assets/coin.png");
 
-    // Create a pool of coin particles
-    for (int i = 0; i < 50; ++i) {
-        Particle particle;
-        particle.Initialise(m_pCoinSprite);
-        m_coinParticles.push_back(particle);
-    }
+
 
     float scaleX = static_cast<float>(renderer.GetWidth()) / m_pWarehouseBackground->GetWidth();
     float scaleY = static_cast<float>(renderer.GetHeight()) / m_pWarehouseBackground->GetHeight();
@@ -316,11 +311,10 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
                     m_pPlayer->AddMoney(pBag->GetValue());
 
                     //trigger coin particle effect
-                    for (Particle& particle : m_coinParticles) {
-                        if (!particle.IsAlive()) {
-                            particle.Activate(pBag->GetPosition());
-                        }
-                    }
+                    ParticleSystem ps;
+                    ps.Initialise(m_pCoinSprite);
+                    ps.ActivateAt(pBag->GetPosition());
+                    m_particleSystems.push_back(std::move(ps));
 
                     pBag->Deactivate();
                 }
@@ -328,7 +322,15 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
         }
     }
 
-
+    for (auto it = m_particleSystems.begin(); it != m_particleSystems.end(); ) {
+        it->Update(deltaTime);
+        if (it->IsFinished()) {
+            it = m_particleSystems.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }
 
     for (Machine* pMachine : m_machines)
     {
@@ -379,8 +381,9 @@ void SceneWarehouse::Draw(Renderer& renderer)
 
     }
 	m_pPlayerSprite->Draw(renderer);
-    for (Particle& particle : m_coinParticles) {
-        particle.Draw(renderer);
+
+    for (auto& ps : m_particleSystems) {
+        ps.Draw(renderer);
     }
 }
 void SceneWarehouse::DebugDraw()

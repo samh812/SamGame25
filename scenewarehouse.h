@@ -7,10 +7,12 @@
 #include "moneybag.h"
 #include "animatedsprite.h"
 #include "particle.h"
+#include "particlesystem.h"
 #include <vector>
 #include <map>
 #include <random>
 #include <memory>
+#include <list>
 
 
 
@@ -65,6 +67,7 @@ private:
 
 	std::vector<Particle> m_coinParticles;
 	Sprite* m_pCoinSprite = nullptr;
+	std::list<ParticleSystem> m_particleSystems;
 };
 
 #endif // __SCENEWAREHOUSE_H__
