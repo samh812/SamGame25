@@ -4,10 +4,14 @@
 #include "sprite.h"
 #include "vector2.h"
 
+enum class ParticleType {
+    Coin,
+    Spark
+};
 class Particle {
 public:
     Particle();
-    void Initialise(Sprite* sprite);
+    void Initialise(Sprite* sprite, ParticleType type = ParticleType::Coin); //default coin for now
     void Activate(Vector2 position);
     void Update(float deltaTime);
     void Draw(Renderer& renderer);
@@ -21,5 +25,6 @@ private:
     float m_maxLifetime = 1.0f;
     bool m_active = false;
 	float m_speedMultiplier = 1.0f;
+    ParticleType m_type;
 };
 #endif // PARTICLE_H

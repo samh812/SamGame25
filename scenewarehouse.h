@@ -66,6 +66,7 @@ private:
 	std::uniform_real_distribution<float> m_spawnYDist;
 
 	std::vector<Particle> m_coinParticles;
+	std::vector<Particle> m_sparkParticles; //for future
 	Sprite* m_pCoinSprite = nullptr;
 	std::list<ParticleSystem> m_particleSystems;
 };
