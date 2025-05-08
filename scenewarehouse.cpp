@@ -74,6 +74,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
     m_pPlayerSprite->SetY(renderer.GetHeight() / 2);
 
     m_pCoinSprite = renderer.CreateSprite("../assets/coin.png");
+	m_pCoinSprite->SetScale(0.3f);
 
 
 
