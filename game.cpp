@@ -84,15 +84,6 @@ bool Game::Initialise()
 	m_pRenderer->SetClearColour(0, 255, 255);
 
 	Scene* pScene = 0;
-	//pScene = new SceneCheckerboards();
-	//pScene->Initialise(*m_pRenderer);
-	//m_scenes.push_back(pScene);
-
-
-
-	//pScene = new SceneBouncingBalls();
-	//pScene->Initialise(*m_pRenderer);
-	//m_scenes.push_back(pScene);
 
 
 	pScene = new SceneWarehouse();

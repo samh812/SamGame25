@@ -6,7 +6,8 @@
 
 class ParticleSystem {
 public:
-    void Initialise(Sprite* sprite, int maxParticles = 50);
+    void Initialise(Sprite* sprite, Player* player, int maxParticles);
+
     void ActivateAt(Vector2 position);
     void Update(float deltaTime);
     void Draw(Renderer& renderer);

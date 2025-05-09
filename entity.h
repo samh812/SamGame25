@@ -7,6 +7,7 @@
 // Forward declarations:
 class Renderer;
 class Sprite;
+class AnimatedSprite;
 // Class declaration:
 class Entity
 {
@@ -33,6 +34,7 @@ private:
 public:
 protected:
 	Sprite* m_pSprite;
+	AnimatedSprite* m_pAnimSprite;
 	Vector2 m_position;
 	Vector2 m_velocity;
 	bool m_bAlive;

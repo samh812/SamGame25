@@ -1,8 +1,10 @@
 #include "player.h"
 #include "renderer.h"
 #include "sprite.h"
+#include "animatedsprite.h"
 #include "inlinehelpers.h"
 #include "vector2.h"
+
 
 #include <algorithm>
 
@@ -14,21 +16,26 @@ Player::Player()
 
 Player::~Player()
 {
-	delete m_pSprite;
-	m_pSprite = nullptr;
+	delete m_pAnimSprite;
+	m_pAnimSprite = nullptr;
 }
 
 bool Player::Initialise(Renderer& renderer)
 {
+
     m_pRenderer = &renderer;
-    m_pSprite = m_pRenderer->CreateSprite("../assets/ball.png");
-    if (m_pSprite == nullptr)
+    m_pAnimSprite = m_pRenderer->CreateAnimatedSprite("../assets/explosion.png");
+    m_pAnimSprite->SetupFrames(66, 66);
+    m_pAnimSprite->SetLooping(true);
+    m_pAnimSprite->SetFrameDuration(0.2f);
+    m_pAnimSprite->Animate();
+    m_pAnimSprite->SetScale(1.0f);
+    if (m_pAnimSprite == nullptr)
     {
         return false;
     }
 
     m_position = Vector2(400.0f, 300.0f);
-    m_pSprite->SetScale(0.2f);
     m_bAlive = true;
     return true;
 }
@@ -57,8 +64,8 @@ void Player::Process(float deltaTime, InputSystem& inputSystem)
     const int screenWidth = m_pRenderer->GetWidth();
     const int screenHeight = m_pRenderer->GetHeight();
 
-    const float spriteHalfWidth = m_pSprite->GetWidth() / 2.0f;
-    const float spriteHalfHeight = m_pSprite->GetHeight() / 2.0f;
+    const float spriteHalfWidth = m_pAnimSprite->GetWidth() / 2.0f;
+    const float spriteHalfHeight = m_pAnimSprite->GetHeight() / 2.0f;
 
     float wallMarginX = screenWidth * 0.02f;  //2% horizontal margin (for the walls)
     float wallMarginY = screenHeight * 0.02f; //2% vertical margin
@@ -74,15 +81,17 @@ void Player::Process(float deltaTime, InputSystem& inputSystem)
 
     m_position.x = std::max(minX, std::min(maxX, m_position.x));
     m_position.y = std::max(minY, std::min(maxY, m_position.y));
+
+    m_pAnimSprite->Process(deltaTime);
 }
 
 void Player::Draw(Renderer& renderer)
 {
-    if (m_pSprite && m_bAlive)
+    if (m_pAnimSprite && m_bAlive)
     {
-        m_pSprite->SetX(m_position.x);
-        m_pSprite->SetY(m_position.y);
-        m_pSprite->Draw(renderer);
+        m_pAnimSprite->SetX(m_position.x);
+        m_pAnimSprite->SetY(m_position.y);
+        m_pAnimSprite->Draw(renderer);
     }
 }
 

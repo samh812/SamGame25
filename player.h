@@ -3,6 +3,7 @@
 
 #include "entity.h"
 #include "inputsystem.h"
+#include "particle.h"
 
 class Player : public Entity {
 
@@ -18,7 +19,9 @@ public:
 
 	void AddMoney(int amount);
 	bool SpendMoney(int amount);
-	int GetMoney() { return m_Shekels; }
+	int GetMoney() { return m_Shekels; };
+	Vector2 GetPosition() const { return m_position; };
+
 
 private:
 	float m_speed;

@@ -66,7 +66,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
     m_pPlayerSprite = renderer.CreateAnimatedSprite("../assets/ball.png");
     m_pPlayerSprite->SetupFrames(64, 64);
     m_pPlayerSprite->SetLooping(true);
-    m_pPlayerSprite->SetFrameDuration(10.0f);
+    m_pPlayerSprite->SetFrameDuration(1.0f);
     m_pPlayerSprite->Animate();
     m_pPlayerSprite->SetScale(1.0f);
 
@@ -261,6 +261,7 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
     {
         m_pPlayer->Process(deltaTime, inputSystem);
 
+
         //check for upgrade collision
         for (Machine* pMachine : m_machines)
         {
@@ -313,7 +314,7 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 
                     //trigger coin particle effect
                     ParticleSystem ps;
-                    ps.Initialise(m_pCoinSprite);
+                    ps.Initialise(m_pCoinSprite, m_pPlayer, 50);
                     ps.ActivateAt(pBag->GetPosition());
                     m_particleSystems.push_back(std::move(ps));
 

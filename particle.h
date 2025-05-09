@@ -3,7 +3,10 @@
 
 #include "sprite.h"
 #include "vector2.h"
+#include "player.h"
+#include "entity.h"
 
+class Player;
 enum class ParticleType {
     Coin,
     Spark
@@ -11,11 +14,14 @@ enum class ParticleType {
 class Particle {
 public:
     Particle();
+
     void Initialise(Sprite* sprite, ParticleType type = ParticleType::Coin); //default coin for now
     void Activate(Vector2 position);
     void Update(float deltaTime);
     void Draw(Renderer& renderer);
+    void SetTargetPosition(Vector2 target);
     bool IsAlive() const;
+    void SetPlayer(Player* player);
 
 private:
     Sprite* m_pSprite = nullptr;
@@ -29,5 +35,6 @@ private:
 	bool m_seekingTarget = false;
     Vector2 m_targetPosition;
     ParticleType m_type;
+    Player* m_pPlayer;
 };
 #endif // PARTICLE_H
