@@ -41,13 +41,14 @@ public:
 
 	bool StartProduction();
 	void Production(float time);
+	void Tutorial(Renderer& renderer);
+	bool InitMachines(Renderer& renderer);
 
 	float GetGrowInterval() const;
 
 
 private:
 	Player* m_pPlayer;
-	AnimatedSprite* m_pPlayerSprite;
 	std::vector<Machine*> m_machines;
 	Renderer* m_pRenderer;
 	Sprite* m_pWarehouseBackground;
@@ -69,6 +70,11 @@ private:
 	int m_totalSold;
 
 	int m_moneyPot;
+
+	float m_tutInterval;
+	int m_tutStage = 0;
+
+	bool m_coinsAdded = false;
 	std::vector<MoneyBag*> m_moneyBags;
 
 	std::default_random_engine m_rng;

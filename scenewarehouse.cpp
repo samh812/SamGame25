@@ -28,8 +28,7 @@ SceneWarehouse::~SceneWarehouse()
     delete m_pPlayer;
 	m_pPlayer = nullptr;
 
-	delete m_pPlayerSprite;
-	m_pPlayerSprite = nullptr;
+
     for (Machine* machine : m_machines)
     {
         delete machine;
@@ -62,23 +61,27 @@ SceneWarehouse::~SceneWarehouse()
 bool SceneWarehouse::Initialise(Renderer& renderer)
 {
 
+    float screenWidth = static_cast<float>(renderer.GetWidth());
+    float screenHeight = static_cast<float>(renderer.GetHeight());
 
-    //renderer.CreateStaticText("Auckland University of Technology", 60);
-    //m_pTitleText = renderer.CreateSprite("Auckland University of Technology");
-    //m_pTitleText->SetY(200);
-    //m_pTitleText->SetX(500);
+	m_tutInterval = 2.0f;
+    m_pBagSprite = renderer.CreateSprite("../assets/ball.png");
+    m_pBagSprite->SetScale(0.13f);
+    for (int i = 0; i < 10; ++i)
+    {
+        MoneyBag* pBag = new MoneyBag();
+        pBag->Initialise(renderer);
+        pBag->SetSprite(m_pBagSprite);  // all bags share the same sprite
+
+        pBag->Deactivate();
+        m_moneyBags.push_back(pBag);
+    }
+    DrawText("Shekels       $", 55, 75, 0.0f, true);
+    DrawText("Beverages", 55, 125, 0.0f, true);
 
     m_pWarehouseBackground = renderer.CreateSprite("../assets/warehouse_background.png");
 
-    m_pPlayerSprite = renderer.CreateAnimatedSprite("../assets/ball.png");
-    m_pPlayerSprite->SetupFrames(64, 64);
-    m_pPlayerSprite->SetLooping(true);
-    m_pPlayerSprite->SetFrameDuration(1.0f);
-    m_pPlayerSprite->Animate();
-    m_pPlayerSprite->SetScale(1.0f);
 
-	m_pPlayerSprite->SetX(renderer.GetWidth() / 2);
-    m_pPlayerSprite->SetY(renderer.GetHeight() / 2);
 
     m_pCoinSprite = renderer.CreateSprite("../assets/coin.png");
 	m_pCoinSprite->SetScale(0.3f);
@@ -100,164 +103,17 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         m_pPlayer = nullptr;
         return false;
     }
-	m_pPlayer->AddMoney(40); //start with 40 shekels
 
+    InitMachines(renderer);
 
-    //placing machines based on screen resolution
-    const int numMachines = 7;
-    float screenWidth = static_cast<float>(renderer.GetWidth());
-    float screenHeight = static_cast<float>(renderer.GetHeight());
-
-    float yOffset = screenHeight * 0.85f; //dynamically placing machines near the bottom of the screen
-    float totalWidth = 0.0f;
-    std::vector<float> machineWidths;
-
-    //determine the widths of all the machines so they can be dynamically placed
-    for (int i = 0; i <= numMachines; ++i)
-    {
-        float width = (i == 1 || i == 3 || i == 5) ? 225.0f : 160.0f; //conveyors are 225 vs 160
-        machineWidths.push_back(width);
-        totalWidth += width;
-    }
-
-    float startX = screenWidth * 0.04f;
-    float currentX = startX;
-
-    //dynamic upgrade area size
-    float dynamicYOffset = screenHeight * 0.15f;  //15% above the machine
-    float upgradeAreaYOffset = yOffset - dynamicYOffset;
-
-    for (int i = 0; i < numMachines; ++i)
-    {
-        Machine* pMachine = nullptr;
-
-        switch (i)
-        {
-        case 0:
-            pMachine = new MachineBottler();
-            break;
-        case 1: case 3: case 5:
-            pMachine = new MachineConveyor();
-            break;
-        case 2:
-            pMachine = new MachineFiller();
-            break;
-		case 4:
-			pMachine = new MachineCapper();
-			break;
-		case 6:
-			pMachine = new MachineLabeler();
-			break;
-		default:
-			break;
-        }
-
-        if (!pMachine->Initialise(renderer))
-        {
-            delete pMachine;
-            return false;
-        }
-        std::string basePath;
-        int numUpgrades = pMachine->GetNumUpgrades();
-
-        if (dynamic_cast<MachineBottler*>(pMachine))
-        {
-            basePath = "../assets/machine_bottler_";
-            pMachine->SetUpgradeCosts({ 10, 75 }); // to lvl 1, to lvl 2
-            pMachine->SetValueIncrease({ 1.0f, 1.9f, 2.3f }); // broken, lvl1, lvl2
-        }
-        else if (dynamic_cast<MachineConveyor*>(pMachine))
-        {
-            basePath = "../assets/machine_conveyor_";
-            pMachine->SetUpgradeCosts({ 5, 40 });
-            pMachine->SetValueIncrease({ 1.0f, 0.8f, 0.6f }); //0.8, 0.6 originally
-
-
-        }
-        else if (dynamic_cast<MachineFiller*>(pMachine))
-        {
-            basePath = "../assets/machine_filler_";
-            pMachine->SetUpgradeCosts({ 7, 80 });
-            pMachine->SetValueIncrease({ 1.0f, 1.6f, 1.9f });
-
-        }
-        else if (dynamic_cast<MachineCapper*>(pMachine))
-        {
-            basePath = "../assets/machine_capper_";
-            pMachine->SetUpgradeCosts({ 3, 60 });
-            pMachine->SetValueIncrease({ 1.0f, 1.5f, 1.8f });
-
-        }
-        else if (dynamic_cast<MachineLabeler*>(pMachine))
-        {
-            basePath = "../assets/machine_labeler_";
-            pMachine->SetUpgradeCosts({ 5, 65 });
-            pMachine->SetValueIncrease({ 1.0f, 1.5f, 1.9f });
-
-        }
-        for (int level = 0; level <= numUpgrades; ++level)
-        {
-            std::string fullPath = basePath + std::to_string(level) + ".png";
-
-            //animated conveyor
-            if (dynamic_cast<MachineConveyor*>(pMachine)) {
-                std::unique_ptr<AnimatedSprite> animatedUpgradeSprite = std::unique_ptr<AnimatedSprite>(renderer.CreateAnimatedSprite(fullPath.c_str()));
-                animatedUpgradeSprite->SetupFrames(128, 64);
-                animatedUpgradeSprite->SetLooping(true);
-                animatedUpgradeSprite->Animate();
-                animatedUpgradeSprite->SetScale(1.0f);
-                pMachine->AddAnimatedUpgradeSprite(std::move(animatedUpgradeSprite));
-			}
-            else //normal machine
-            {
-                std::unique_ptr<Sprite> upgradeSprite = std::unique_ptr<Sprite>(renderer.CreateSprite(fullPath.c_str()));
-                pMachine->AddUpgradeSprite(std::move(upgradeSprite));
-                //upgradeSprite->SetScale(0.25f); //other machines scale
-            }
-
-        }
-        if (dynamic_cast<MachineConveyor*>(pMachine)) {
-            if (!pMachine->GetAnimatedUpgradeSprites().empty())
-            {
-
-                pMachine->SetAnimatedSprite(pMachine->GetAnimatedUpgradeSprites()[0]);
-
-            }
-        }
-        else {
-            if (!pMachine->GetUpgradeSprites().empty())
-            {
-                pMachine->SetSprite(pMachine->GetUpgradeSprites()[0]);
-
-            }
-        }
-        float width = machineWidths[i];
-        pMachine->SetPosition(Vector2(currentX + width / 2.0f, yOffset));
-
-        //set upgrade area width to match the specific machine width
-        pMachine->SetUpgradeArea(Vector2(currentX, upgradeAreaYOffset), width, screenHeight * 0.075f); //using machine width
-
-        m_machines.push_back(pMachine);
-        currentX += width;
-    }
 
 	InitCharSprites(renderer);
-
-    m_pBagSprite = renderer.CreateSprite("../assets/ball.png");
-    m_pBagSprite->SetScale(0.13f);
 
     m_spawnXDist = std::uniform_real_distribution<float>(screenWidth * 0.1f, screenWidth * 0.9f);
     m_spawnYDist = std::uniform_real_distribution<float>(screenHeight*0.1f, screenHeight * 0.65f);
 
-    for (int i = 0; i < 10; ++i)
-    {
-        MoneyBag* pBag = new MoneyBag();
-        pBag->Initialise(renderer);
-        pBag->SetSprite(m_pBagSprite);  // all bags share the same sprite
 
-        pBag->Deactivate();
-        m_moneyBags.push_back(pBag);
-    }
+
 
     return true;
 }
@@ -265,6 +121,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 {
 
+	m_tutInterval += deltaTime;
     //m_pTitleText->Process(deltaTime);
     if (m_pPlayer)
     {
@@ -274,7 +131,7 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
         //check for upgrade collision
         for (Machine* pMachine : m_machines)
         {
-
+            // if pmachine isinupgradearea, display upgrade cost and details, with smaller text?
             if (pMachine->GetUpgradeLevel() < pMachine ->GetNumUpgrades() && pMachine->IsPlayerInUpgradeArea(m_pPlayer) && inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED) //Upgrade on E or ENTER
             {
 				int upgradeCost = pMachine->GetUpgradeCost(); //get specific machine's upgrade cost
@@ -320,8 +177,6 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
             if (pBag->IsActive() && m_pPlayer->IsCollidingWith(*pBag)) {
                 if (inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED) {
                     m_pPlayer->AddMoney(pBag->GetValue());
-                    DrawText("Collected 23948576", 300, 120, 0.0f, true);
-                    DrawText("The money!", 300, 220, 3.0f, true);
 
 
                     //trigger coin particle effect
@@ -359,7 +214,6 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
         }
     }
 
-    m_pPlayerSprite->Process(deltaTime);
     for (Particle& particle : m_coinParticles) {
         particle.Update(deltaTime);
     }
@@ -375,7 +229,7 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 
         if (it->typeWriter && it->charsVisible < it->text.size()) {
             it->typeTimer += deltaTime;
-            if (it->typeTimer >= 0.05f) { // 50ms per character
+            if (it->typeTimer >= 0.05f) {
                 ++it->charsVisible;
                 it->typeTimer = 0.0f;
             }
@@ -383,6 +237,8 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 
         ++it;
     }
+
+
 }
 
 void SceneWarehouse::Draw(Renderer& renderer)
@@ -413,14 +269,13 @@ void SceneWarehouse::Draw(Renderer& renderer)
         pBag->Draw(renderer);
 
     }
-	m_pPlayerSprite->Draw(renderer);
 
     for (auto& ps : m_particleSystems) {
         ps.Draw(renderer);
     }
     if (m_pPlayer) {
-        DrawNumber(renderer, m_pPlayer->GetMoney(), 100, 80);
-        DrawNumber(renderer, m_totalSold, 100, 180);
+        DrawNumber(renderer, m_pPlayer->GetMoney(), 400, 75);
+        DrawNumber(renderer, m_totalSold, 400, 125);
     }
 
 
@@ -439,6 +294,24 @@ void SceneWarehouse::Draw(Renderer& renderer)
             }
         }
     }
+    if (m_tutInterval >= 5.0f && m_tutStage < 7) {
+        Tutorial(renderer);
+        printf("THis should happen thrice only /n");
+        if (!m_coinsAdded) {
+            ParticleSystem ps;
+            ps.Initialise(m_pCoinSprite, m_pPlayer, 20);
+            ps.ActivateAt(m_pPlayer->GetPosition());
+            m_particleSystems.push_back(std::move(ps));
+			m_coinsAdded = true;
+        }
+
+
+        m_tutInterval = 0.0f;
+        m_tutStage++;
+
+
+
+    }
 }
 void SceneWarehouse::DebugDraw()
 {
@@ -454,6 +327,7 @@ void SceneWarehouse::DebugDraw()
 		ImGui::Text("Money Spawn interval: %f", m_spawnInterval);
 		ImGui::Text("Money Grow interval: %f", m_growInterval);
 		ImGui::Text("Money Pot: %d", m_moneyPot);
+        ImGui::Text("Tutorial interval: %f", m_tutInterval);
     }
 
 
@@ -491,21 +365,28 @@ void SceneWarehouse::DebugDraw()
 
 
 void SceneWarehouse::InitCharSprites(Renderer& renderer) {
+	int textSize = 40;
     for (char c = '0'; c <= '9'; ++c) {
         std::string text(1, c);
-        renderer.CreateStaticText(text.c_str(), 50);
+        renderer.CreateStaticText(text.c_str(), textSize);
         m_charSprites[c] = renderer.CreateSprite(text.c_str());
     }
 
     for (char c = 'A'; c <= 'Z'; ++c) {
         std::string text(1, c);
-        renderer.CreateStaticText(text.c_str(), 50);
+        renderer.CreateStaticText(text.c_str(), textSize);
         m_charSprites[c] = renderer.CreateSprite(text.c_str());
     }
 
     for (char c = 'a'; c <= 'z'; ++c) {
         std::string text(1, c);
-        renderer.CreateStaticText(text.c_str(), 50);
+        renderer.CreateStaticText(text.c_str(), textSize);
+        m_charSprites[c] = renderer.CreateSprite(text.c_str());
+    }
+    const std::string extras = "!,:$";
+    for (char c : extras) {
+        std::string text(1, c);
+        renderer.CreateStaticText(text.c_str(), textSize);
         m_charSprites[c] = renderer.CreateSprite(text.c_str());
     }
 }
@@ -513,7 +394,7 @@ void SceneWarehouse::InitCharSprites(Renderer& renderer) {
 void SceneWarehouse::DrawNumber(Renderer& renderer, int number, int startX, int startY) {
 
 	std::string numStr = std::to_string(number);
-    int spacing = 30;
+    int spacing = 23;
 
     for (size_t i = 0; i < numStr.length(); ++i) {
         char digit = numStr[i];
@@ -574,4 +455,184 @@ float SceneWarehouse::GetGrowInterval() const{
 	return m_growInterval;
 }
 
+void SceneWarehouse::Tutorial(Renderer& renderer) {
+
+    float screenWidth = static_cast<float>(renderer.GetWidth());
+    float screenHeight = static_cast<float>(renderer.GetHeight());
+	int xOffset = 350;
+    switch (m_tutStage) {
+	    case 0:
+		    DrawText("Hey, fresh meat!", screenWidth*0.27f, screenHeight*0.4f, 5.0f, true);
+		    DrawText("This is your new home now", screenWidth * 0.27f, screenHeight * 0.45f, 5.0f, true);
+			m_coinsAdded = true;
+		    break;
+        case 1:
+			m_coinsAdded = false;
+            DrawText("Take these shekels", screenWidth * 0.3f, screenHeight * 0.45f, 5.0f, true);
+            m_pPlayer->AddMoney(40); //start with 40 shekels
+            break;
+
+        case 2:
+            DrawText("Walk over and repair those machines!", screenWidth * 0.23f, screenHeight * 0.4f, 5.0f, true);
+            DrawText("We need to get production going FAST", screenWidth * 0.23f, screenHeight * 0.45f, 5.0f, true);
+            break;
+		case 3:
+			DrawText("Press E to upgrade machines", screenWidth*0.04f, screenHeight * 0.63f, 10.0f, true);
+            break;
+
+        case 5:
+            DrawText("Lets see...", screenWidth * 0.25f, screenHeight * 0.4f, 5.0f, true);
+            DrawText("One million beverages should do!", screenWidth * 0.25f, screenHeight * 0.45f, 5.0f, true);
+            break;
+        case 6:
+            DrawText("Press E to pick up money bags", screenWidth * 0.3f, screenHeight * 0.25f, 7.0f, true);
+
+            break;
+        default:
+	        break;
+    }
+
+}
+
+
+bool SceneWarehouse::InitMachines(Renderer& renderer) {
+    //placing machines based on screen resolution
+    const int numMachines = 7;
+    float screenWidth = static_cast<float>(renderer.GetWidth());
+    float screenHeight = static_cast<float>(renderer.GetHeight());
+
+    float yOffset = screenHeight * 0.85f; //dynamically placing machines near the bottom of the screen
+    float totalWidth = 0.0f;
+    std::vector<float> machineWidths;
+
+    //determine the widths of all the machines so they can be dynamically placed
+    for (int i = 0; i <= numMachines; ++i)
+    {
+        float width = (i == 1 || i == 3 || i == 5) ? 225.0f : 160.0f; //conveyors are 225 vs 160
+        machineWidths.push_back(width);
+        totalWidth += width;
+    }
+
+    float startX = screenWidth * 0.04f;
+    float currentX = startX;
+
+    //dynamic upgrade area size
+    float dynamicYOffset = screenHeight * 0.15f;  //15% above the machine
+    float upgradeAreaYOffset = yOffset - dynamicYOffset;
+
+    for (int i = 0; i < numMachines; ++i)
+    {
+        Machine* pMachine = nullptr;
+
+        switch (i)
+        {
+        case 0:
+            pMachine = new MachineBottler();
+            break;
+        case 1: case 3: case 5:
+            pMachine = new MachineConveyor();
+            break;
+        case 2:
+            pMachine = new MachineFiller();
+            break;
+        case 4:
+            pMachine = new MachineCapper();
+            break;
+        case 6:
+            pMachine = new MachineLabeler();
+            break;
+        default:
+            break;
+        }
+
+        if (!pMachine->Initialise(renderer))
+        {
+            delete pMachine;
+            return false;
+        }
+        std::string basePath;
+        int numUpgrades = pMachine->GetNumUpgrades();
+
+        if (dynamic_cast<MachineBottler*>(pMachine))
+        {
+            basePath = "../assets/machine_bottler_";
+            pMachine->SetUpgradeCosts({ 10, 75 }); // to lvl 1, to lvl 2
+            pMachine->SetValueIncrease({ 1.0f, 1.9f, 2.3f }); // broken, lvl1, lvl2
+        }
+        else if (dynamic_cast<MachineConveyor*>(pMachine))
+        {
+            basePath = "../assets/machine_conveyor_";
+            pMachine->SetUpgradeCosts({ 5, 40 });
+            pMachine->SetValueIncrease({ 1.0f, 0.8f, 0.6f }); //0.8, 0.6 originally
+
+
+        }
+        else if (dynamic_cast<MachineFiller*>(pMachine))
+        {
+            basePath = "../assets/machine_filler_";
+            pMachine->SetUpgradeCosts({ 7, 80 });
+            pMachine->SetValueIncrease({ 1.0f, 1.6f, 1.9f });
+
+        }
+        else if (dynamic_cast<MachineCapper*>(pMachine))
+        {
+            basePath = "../assets/machine_capper_";
+            pMachine->SetUpgradeCosts({ 3, 60 });
+            pMachine->SetValueIncrease({ 1.0f, 1.5f, 1.8f });
+
+        }
+        else if (dynamic_cast<MachineLabeler*>(pMachine))
+        {
+            basePath = "../assets/machine_labeler_";
+            pMachine->SetUpgradeCosts({ 5, 65 });
+            pMachine->SetValueIncrease({ 1.0f, 1.5f, 1.9f });
+
+        }
+        for (int level = 0; level <= numUpgrades; ++level)
+        {
+            std::string fullPath = basePath + std::to_string(level) + ".png";
+
+            //animated conveyor
+            if (dynamic_cast<MachineConveyor*>(pMachine)) {
+                std::unique_ptr<AnimatedSprite> animatedUpgradeSprite = std::unique_ptr<AnimatedSprite>(renderer.CreateAnimatedSprite(fullPath.c_str()));
+                animatedUpgradeSprite->SetupFrames(128, 64);
+                animatedUpgradeSprite->SetLooping(true);
+                animatedUpgradeSprite->Animate();
+                animatedUpgradeSprite->SetScale(1.0f);
+                pMachine->AddAnimatedUpgradeSprite(std::move(animatedUpgradeSprite));
+            }
+            else //normal machine
+            {
+                std::unique_ptr<Sprite> upgradeSprite = std::unique_ptr<Sprite>(renderer.CreateSprite(fullPath.c_str()));
+                pMachine->AddUpgradeSprite(std::move(upgradeSprite));
+                //upgradeSprite->SetScale(0.25f); //other machines scale
+            }
+
+        }
+        if (dynamic_cast<MachineConveyor*>(pMachine)) {
+            if (!pMachine->GetAnimatedUpgradeSprites().empty())
+            {
+
+                pMachine->SetAnimatedSprite(pMachine->GetAnimatedUpgradeSprites()[0]);
+
+            }
+        }
+        else {
+            if (!pMachine->GetUpgradeSprites().empty())
+            {
+                pMachine->SetSprite(pMachine->GetUpgradeSprites()[0]);
+
+            }
+        }
+        float width = machineWidths[i];
+        pMachine->SetPosition(Vector2(currentX + width / 2.0f, yOffset));
+
+        //set upgrade area width to match the specific machine width
+        pMachine->SetUpgradeArea(Vector2(currentX, upgradeAreaYOffset), width, screenHeight * 0.075f); //using machine width
+
+        m_machines.push_back(pMachine);
+        currentX += width;
+    }
+    return true;
+}
 
