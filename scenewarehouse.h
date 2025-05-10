@@ -13,8 +13,16 @@
 #include <random>
 #include <memory>
 #include <list>
+#include <string>
 
-
+struct TimedText {
+	std::string text;
+	int x, y;
+	float timeRemaining;
+	bool typeWriter;
+	float typeTimer = 0.0f;
+	size_t charsVisible = 0;
+};
 
 class SceneWarehouse : public Scene
 {
@@ -27,8 +35,9 @@ public:
 	void Draw(Renderer& renderer) override;
 	void DebugDraw() override;
 
-	void InitDigitSprites(Renderer& renderer);
+	void InitCharSprites(Renderer& renderer);
 	void DrawNumber(Renderer& renderer, int number, int startX, int startY);
+	void DrawText(const std::string& text, int startX, int startY, float duration, bool typeWriter);
 
 	bool StartProduction();
 	void Production(float time);
@@ -43,7 +52,8 @@ private:
 	Renderer* m_pRenderer;
 	Sprite* m_pWarehouseBackground;
 	Sprite* m_pBagSprite = nullptr;
-	std::map<char, Sprite*> m_digitSprites;
+	std::map<char, Sprite*> m_charSprites;
+	std::vector<TimedText> m_activeTexts;
 	int m_totalUpgradeLevel;
 	float m_timer;
 	float m_baseValue;

@@ -24,7 +24,6 @@ Texture::~Texture()
 }
 bool Texture::Initialise(const char* pcFilename)
 {
-	std::cout << "Attempting to load: " << pcFilename << std::endl;
 	SDL_Surface* pSurface = IMG_Load(pcFilename);
 	if (pSurface)
 	{

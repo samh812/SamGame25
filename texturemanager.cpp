@@ -52,6 +52,5 @@ Texture* TextureManager::GetTexture(const char* pcFilename)
 void
 TextureManager::AddTexture(const char* key, Texture* pTexture)
 {
-	std::cout << "Adding texture with key: " << key << std::endl;
 	m_pLoadedTextures[key] = pTexture;
 }

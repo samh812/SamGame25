@@ -306,6 +306,6 @@ void
 Renderer::CreateStaticText(const char* pText, int pointsize)
 {
 	Texture* pTexture = new Texture();
-	pTexture->LoadTextTexture(pText, "comic.ttf", pointsize);
+	pTexture->LoadTextTexture(pText, "ComicMono.ttf", pointsize);
 	m_pTextureManager->AddTexture(pText, pTexture);
 }

@@ -45,11 +45,11 @@ SceneWarehouse::~SceneWarehouse()
     m_pCoinSprite = nullptr;
     delete m_pBagSprite;
     m_pBagSprite = nullptr;
-    for (auto& pair : m_digitSprites)
+    for (auto& pair : m_charSprites)
     {
         delete pair.second;
     }
-    m_digitSprites.clear();
+    m_charSprites.clear();
 
     for (MoneyBag* pBag : m_moneyBags)
     {
@@ -241,7 +241,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         currentX += width;
     }
 
-	InitDigitSprites(renderer);
+	InitCharSprites(renderer);
 
     m_pBagSprite = renderer.CreateSprite("../assets/ball.png");
     m_pBagSprite->SetScale(0.13f);
@@ -320,6 +320,9 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
             if (pBag->IsActive() && m_pPlayer->IsCollidingWith(*pBag)) {
                 if (inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED) {
                     m_pPlayer->AddMoney(pBag->GetValue());
+                    DrawText("Collected 23948576", 300, 120, 0.0f, true);
+                    DrawText("The money!", 300, 220, 3.0f, true);
+
 
                     //trigger coin particle effect
                     ParticleSystem ps;
@@ -360,6 +363,26 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
     for (Particle& particle : m_coinParticles) {
         particle.Update(deltaTime);
     }
+
+    for (auto it = m_activeTexts.begin(); it != m_activeTexts.end(); ) {
+        if (it->timeRemaining > 0.0f) {
+            it->timeRemaining -= deltaTime;
+            if (it->timeRemaining <= 0.0f) {
+                it = m_activeTexts.erase(it);
+                continue;
+            }
+        }
+
+        if (it->typeWriter && it->charsVisible < it->text.size()) {
+            it->typeTimer += deltaTime;
+            if (it->typeTimer >= 0.05f) { // 50ms per character
+                ++it->charsVisible;
+                it->typeTimer = 0.0f;
+            }
+        }
+
+        ++it;
+    }
 }
 
 void SceneWarehouse::Draw(Renderer& renderer)
@@ -383,10 +406,7 @@ void SceneWarehouse::Draw(Renderer& renderer)
         }
     }
 
-    if (m_pPlayer) {
-        DrawNumber(renderer, m_pPlayer->GetMoney(), 100, 80);
-        DrawNumber(renderer, m_totalSold, 100, 180);
-    }
+
     for (MoneyBag* pBag : m_moneyBags)
     {
 
@@ -398,7 +418,27 @@ void SceneWarehouse::Draw(Renderer& renderer)
     for (auto& ps : m_particleSystems) {
         ps.Draw(renderer);
     }
-    //m_pTitleText->Draw(renderer);
+    if (m_pPlayer) {
+        DrawNumber(renderer, m_pPlayer->GetMoney(), 100, 80);
+        DrawNumber(renderer, m_totalSold, 100, 180);
+    }
+
+
+    for (const TimedText& timed : m_activeTexts) {
+        int spacing = 23;
+        int maxChars = std::min(timed.charsVisible, timed.text.length());
+
+        for (int i = 0; i < maxChars; ++i) {
+            char c = timed.text[i];
+            auto it = m_charSprites.find(c);
+            if (it != m_charSprites.end()) {
+                Sprite* sprite = it->second;
+                sprite->SetX(timed.x + (i * spacing));
+                sprite->SetY(timed.y);
+                sprite->Draw(renderer);
+            }
+        }
+    }
 }
 void SceneWarehouse::DebugDraw()
 {
@@ -450,11 +490,23 @@ void SceneWarehouse::DebugDraw()
 }
 
 
-void SceneWarehouse::InitDigitSprites(Renderer& renderer) {
-    for (char digit = '0'; digit <= '9'; ++digit) {
-		std::string text(1, digit);
-		renderer.CreateStaticText(text.c_str(), 50);
-		m_digitSprites[digit] = renderer.CreateSprite(text.c_str());
+void SceneWarehouse::InitCharSprites(Renderer& renderer) {
+    for (char c = '0'; c <= '9'; ++c) {
+        std::string text(1, c);
+        renderer.CreateStaticText(text.c_str(), 50);
+        m_charSprites[c] = renderer.CreateSprite(text.c_str());
+    }
+
+    for (char c = 'A'; c <= 'Z'; ++c) {
+        std::string text(1, c);
+        renderer.CreateStaticText(text.c_str(), 50);
+        m_charSprites[c] = renderer.CreateSprite(text.c_str());
+    }
+
+    for (char c = 'a'; c <= 'z'; ++c) {
+        std::string text(1, c);
+        renderer.CreateStaticText(text.c_str(), 50);
+        m_charSprites[c] = renderer.CreateSprite(text.c_str());
     }
 }
 
@@ -465,11 +517,22 @@ void SceneWarehouse::DrawNumber(Renderer& renderer, int number, int startX, int 
 
     for (size_t i = 0; i < numStr.length(); ++i) {
         char digit = numStr[i];
-        Sprite* sprite = m_digitSprites[digit];
+        Sprite* sprite = m_charSprites[digit];
         sprite->SetX(startX + (i * spacing));
         sprite->SetY(startY);
         sprite->Draw(renderer);
     }
+}
+
+void SceneWarehouse::DrawText(const std::string& text, int startX, int startY, float duration, bool typeWriter) {
+    TimedText timed;
+    timed.text = text;
+    timed.x = startX;
+    timed.y = startY;
+    timed.timeRemaining = duration;
+    timed.typeWriter = typeWriter;
+    timed.charsVisible = typeWriter ? 0 : text.length();
+    m_activeTexts.push_back(timed);
 }
 
 bool SceneWarehouse::StartProduction() {
