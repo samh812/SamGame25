@@ -61,6 +61,13 @@ SceneWarehouse::~SceneWarehouse()
 
 bool SceneWarehouse::Initialise(Renderer& renderer)
 {
+
+
+    //renderer.CreateStaticText("Auckland University of Technology", 60);
+    //m_pTitleText = renderer.CreateSprite("Auckland University of Technology");
+    //m_pTitleText->SetY(200);
+    //m_pTitleText->SetX(500);
+
     m_pWarehouseBackground = renderer.CreateSprite("../assets/warehouse_background.png");
 
     m_pPlayerSprite = renderer.CreateAnimatedSprite("../assets/ball.png");
@@ -93,7 +100,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         m_pPlayer = nullptr;
         return false;
     }
-	m_pPlayer->AddMoney(400); //start with 40 shekels
+	m_pPlayer->AddMoney(40); //start with 40 shekels
 
 
     //placing machines based on screen resolution
@@ -163,7 +170,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         {
             basePath = "../assets/machine_conveyor_";
             pMachine->SetUpgradeCosts({ 5, 40 });
-            pMachine->SetValueIncrease({ 1.0f, 0.2f, 0.1f }); //0.8, 0.6 originally
+            pMachine->SetValueIncrease({ 1.0f, 0.8f, 0.6f }); //0.8, 0.6 originally
 
 
         }
@@ -257,6 +264,8 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 
 void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 {
+
+    //m_pTitleText->Process(deltaTime);
     if (m_pPlayer)
     {
         m_pPlayer->Process(deltaTime, inputSystem);
@@ -355,6 +364,8 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 
 void SceneWarehouse::Draw(Renderer& renderer)
 {
+
+    
     if (m_pWarehouseBackground)
     {
         m_pWarehouseBackground->Draw(renderer);
@@ -387,6 +398,7 @@ void SceneWarehouse::Draw(Renderer& renderer)
     for (auto& ps : m_particleSystems) {
         ps.Draw(renderer);
     }
+    //m_pTitleText->Draw(renderer);
 }
 void SceneWarehouse::DebugDraw()
 {

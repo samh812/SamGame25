@@ -9,6 +9,7 @@
 #include "glew.h"
 #include <SDL.h>
 #include <cstring>
+#include <iostream>
 
 #include <SDL_ttf.h>
 Texture::Texture()
@@ -23,6 +24,7 @@ Texture::~Texture()
 }
 bool Texture::Initialise(const char* pcFilename)
 {
+	std::cout << "Attempting to load: " << pcFilename << std::endl;
 	SDL_Surface* pSurface = IMG_Load(pcFilename);
 	if (pSurface)
 	{

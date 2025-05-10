@@ -13,6 +13,7 @@
 #include "scenecheckerboards.h"
 #include "scenebouncingballs.h"
 #include "scenewarehouse.h"
+#include "scenemainmenu.h"
 
 #include "inputsystem.h"
 
@@ -83,10 +84,16 @@ bool Game::Initialise()
 	m_iLastTime = SDL_GetPerformanceCounter();
 	m_pRenderer->SetClearColour(0, 255, 255);
 
-	Scene* pScene = 0;
 
+	//Scene* pScene = new SceneMainMenu();
+	//pScene->Initialise(*m_pRenderer);
+	//m_scenes.push_back(pScene);
 
-	pScene = new SceneWarehouse();
+	//pScene = new SceneBouncingBalls();
+	//pScene->Initialise(*m_pRenderer);
+	//m_scenes.push_back(pScene);
+
+	Scene* pScene = new SceneWarehouse();
 	pScene->Initialise(*m_pRenderer);
 	m_scenes.push_back(pScene);
 
@@ -188,4 +195,13 @@ void Game::ToggleDebugWindow
 	m_bShowDebugWindow = !m_bShowDebugWindow;
 	m_pInputSystem->ShowMouseCursor(m_bShowDebugWindow);
 }
+
+void Game::SetCurrentScene(int index)
+{
+	if (index >= 0 && index < static_cast<int>(m_scenes.size()))
+	{
+		m_iCurrentScene = index;
+	}
+}
+
 

@@ -61,7 +61,7 @@ SceneBouncingBalls::Initialise(Renderer& renderer)
 
 
 
-	m_pAnimSprite1 = renderer.CreateAnimatedSprite("../assets/anim8strip.png");
+	m_pAnimSprite1 = renderer.CreateAnimatedSprite("../assets/ball.png");
 	m_pAnimSprite1->SetupFrames(64, 64); // 8 frames, 1 row
 	m_pAnimSprite1->SetLooping(true);
 	m_pAnimSprite1->SetFrameDuration(0.1f);
@@ -83,11 +83,10 @@ SceneBouncingBalls::Initialise(Renderer& renderer)
 	m_pAnimSprite2->SetY(renderer.GetHeight() / 2);
 
 
-	// Load static text textures into the Texture Manager...
-	renderer.CreateStaticText("Auckland University of Technology", 60);
-	m_pWelcomeText = renderer.CreateSprite("Auckland University of Technology");
-	m_pWelcomeText->SetY(200);
-	m_pWelcomeText->SetX(500);
+	//renderer.CreateStaticText("Auckland University of Technology", 60);
+	//m_pWelcomeText = renderer.CreateSprite("Auckland University of Technology");
+	//m_pWelcomeText->SetY(200);
+	//m_pWelcomeText->SetX(500);
 
 
 

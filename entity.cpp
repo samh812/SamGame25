@@ -85,6 +85,6 @@ Vector2& Entity::GetVelocity()
 bool Entity::IsCollidingWith(Entity& toCheck)
 {
     float distance = (m_position - toCheck.GetPosition()).Length();
-    float combinedRadius = GetRadius() + toCheck.GetRadius();
+    float combinedRadius = GetRadius() + toCheck.GetRadius()+30.0f;
     return distance < combinedRadius;
 }
