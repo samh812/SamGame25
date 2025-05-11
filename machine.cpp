@@ -197,5 +197,15 @@ float Machine::GetValueIncreases() const {
 }
 
 
+float Machine::GetNextValueIncrease() const {
+    if (m_upgradeLevel >= 0 && m_upgradeLevel < static_cast<int>(m_increases.size())) {
+        return m_increases[m_upgradeLevel+1];
+    }
+    return 0.0f;
+
+
+}
+
+
 
 

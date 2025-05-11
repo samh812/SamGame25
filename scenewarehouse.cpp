@@ -76,8 +76,8 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         pBag->Deactivate();
         m_moneyBags.push_back(pBag);
     }
-    DrawText("Shekels       $", 55, 75, 0.0f, true);
-    DrawText("Beverages", 55, 125, 0.0f, true);
+    DrawText("Shekels       $", m_screenWidth * 0.04f, m_screenHeight * 0.09f, 0.0f, true);
+    DrawText("Beverages", m_screenWidth * 0.04f, m_screenHeight * 0.16f, 0.0f, true);
 
     m_pWarehouseBackground = renderer.CreateSprite("../assets/warehouse_background.png");
 
@@ -283,13 +283,13 @@ void SceneWarehouse::Draw(Renderer& renderer)
         ps.Draw(renderer);
     }
     if (m_pPlayer) {
-        DrawNumber(renderer, m_pPlayer->GetMoney(), 400, 75);
-        DrawNumber(renderer, m_totalSold, 400, 125);
+        DrawNumber(renderer, m_pPlayer->GetMoney(), m_screenWidth * 0.185f, m_screenHeight*0.09f);
+        DrawNumber(renderer, m_totalSold, m_screenWidth * 0.185f, m_screenHeight*0.16f);
     }
 
 
     for (const TimedText& timed : m_activeTexts) {
-        int spacing = 19;
+        int spacing = 14;
         int maxChars = std::min(timed.charsVisible, timed.text.length());
 
         for (int i = 0; i < maxChars; ++i) {
@@ -392,7 +392,7 @@ void SceneWarehouse::InitCharSprites(Renderer& renderer) {
         renderer.CreateStaticText(text.c_str(), textSize);
         m_charSprites[c] = renderer.CreateSprite(text.c_str());
     }
-    const std::string extras = "!,:$";
+    const std::string extras = "!,:$.+%";
     for (char c : extras) {
         std::string text(1, c);
         renderer.CreateStaticText(text.c_str(), textSize);
@@ -437,7 +437,7 @@ bool SceneWarehouse::StartProduction() {
 void SceneWarehouse::Production(float time) {
     m_moneyGrowTimer += time;
     m_moneySpawnTimer += time;
-	m_baseValue = 1.0f;
+	m_baseValue = 15.0f;
     m_growInterval = 2.0f;
     for (Machine* machine : m_machines) {
 
@@ -467,33 +467,33 @@ float SceneWarehouse::GetGrowInterval() const{
 void SceneWarehouse::Tutorial(Renderer& renderer) {
 
 
-	int xOffset = 350;
+    float xText = 0.60f;
     switch (m_tutStage) {
 	    case 0:
-		    DrawText("Hey, fresh meat!", m_screenWidth*0.27f, m_screenHeight*0.4f, 5.0f, true);
-		    DrawText("This is your new home now", m_screenWidth * 0.27f, m_screenHeight * 0.45f, 5.0f, true);
+		    DrawText("Hey, fresh meat!", m_screenWidth*xText, m_screenHeight*0.15f, 5.0f, true);
+		    DrawText("This is your new home now", m_screenWidth * xText, m_screenHeight * 0.2f, 5.0f, true);
 			m_coinsAdded = true;
 		    break;
         case 1:
 			m_coinsAdded = false;
-            DrawText("Take these shekels", m_screenWidth * 0.3f, m_screenHeight * 0.45f, 5.0f, true);
+            DrawText("Take these shekels", m_screenWidth * xText, m_screenHeight * 0.15f, 5.0f, true);
             m_pPlayer->AddMoney(40); //start with 40 shekels
             break;
 
         case 2:
-            DrawText("Walk over and repair those machines!", m_screenWidth * 0.23f, m_screenHeight * 0.4f, 5.0f, true);
-            DrawText("We need to get production going FAST", m_screenWidth * 0.23f, m_screenHeight * 0.45f, 5.0f, true);
+            DrawText("Walk over and repair those machines!", m_screenWidth * xText, m_screenHeight * 0.15f, 5.0f, true);
+            DrawText("We need to get production going FAST", m_screenWidth * xText, m_screenHeight * 0.2f, 5.0f, true);
             break;
 		case 3:
-			DrawText("Press E to upgrade machines", m_screenWidth*0.04f, m_screenHeight * 0.63f, 10.0f, true);
+            DrawText("Press E next to a machine to upgrade it", m_screenWidth * xText, m_screenHeight * 0.15f, 7.0f, true);
             break;
 
         case 5:
-            DrawText("Lets see...", m_screenWidth * 0.25f, m_screenHeight * 0.4f, 5.0f, true);
-            DrawText("One million beverages should do!", m_screenWidth * 0.25f, m_screenHeight * 0.45f, 5.0f, true);
+            DrawText("Lets see...", m_screenWidth * xText, m_screenHeight * 0.15f, 5.0f, true);
+            DrawText("One million beverages should do!", m_screenWidth * xText, m_screenHeight * 0.2f, 5.0f, true);
             break;
         case 6:
-            DrawText("Press E to pick up money bags", m_screenWidth * 0.3f, m_screenHeight * 0.25f, 7.0f, true);
+            DrawText("Press E to pick up money bags", m_screenWidth * xText, m_screenHeight * 0.15f, 7.0f, true);
 
             break;
         default:
@@ -564,36 +564,36 @@ bool SceneWarehouse::InitMachines(Renderer& renderer) {
         if (dynamic_cast<MachineBottler*>(pMachine))
         {
             basePath = "../assets/machine_bottler_";
-            pMachine->SetUpgradeCosts({ 10, 75 }); // to lvl 1, to lvl 2
-            pMachine->SetValueIncrease({ 1.0f, 1.9f, 2.3f }); // broken, lvl1, lvl2
+            pMachine->SetUpgradeCosts({ 10, 75 , 1000}); // to lvl 1, to lvl 2
+            pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.5f , 2.3f }); // broken, lvl1, lvl2
         }
         else if (dynamic_cast<MachineConveyor*>(pMachine))
         {
             basePath = "../assets/machine_conveyor_";
-            pMachine->SetUpgradeCosts({ 5, 40 });
-            pMachine->SetValueIncrease({ 1.0f, 0.8f, 0.6f }); //0.8, 0.6 originally
+            pMachine->SetUpgradeCosts({ 5, 40, 1000 });
+            pMachine->SetValueIncrease({ 1.0f, 1.0f, 0.8f, 0.6f }); //0.8, 0.6 originally
 
 
         }
         else if (dynamic_cast<MachineFiller*>(pMachine))
         {
             basePath = "../assets/machine_filler_";
-            pMachine->SetUpgradeCosts({ 7, 80 });
-            pMachine->SetValueIncrease({ 1.0f, 1.6f, 1.9f });
+            pMachine->SetUpgradeCosts({ 7, 80, 1000 });
+            pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.6f, 2.3f });
 
         }
         else if (dynamic_cast<MachineCapper*>(pMachine))
         {
             basePath = "../assets/machine_capper_";
-            pMachine->SetUpgradeCosts({ 3, 60 });
-            pMachine->SetValueIncrease({ 1.0f, 1.5f, 1.8f });
+            pMachine->SetUpgradeCosts({ 3, 60, 1000 });
+            pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.4f, 2.3f });
 
         }
         else if (dynamic_cast<MachineLabeler*>(pMachine))
         {
             basePath = "../assets/machine_labeler_";
-            pMachine->SetUpgradeCosts({ 5, 65 });
-            pMachine->SetValueIncrease({ 1.0f, 1.5f, 1.9f });
+            pMachine->SetUpgradeCosts({ 5, 65, 1000 });
+            pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.7f, 2.3f });
 
         }
         for (int level = 0; level <= numUpgrades; ++level)
@@ -646,5 +646,53 @@ bool SceneWarehouse::InitMachines(Renderer& renderer) {
 
 
 void SceneWarehouse::DisplayUpgrade(int mindex) {
-    DrawText("Upgradeeearea", m_screenWidth * 0.25f, m_screenHeight * 0.4f, 0.016f, false);
+
+    std::string currentLevel = std::to_string(m_machines[mindex]->GetUpgradeLevel());
+    std::string nextCost = std::to_string(m_machines[mindex]->GetUpgradeCost());
+    std::string upgradeDetails;
+    int increase;
+
+
+
+    if (dynamic_cast<MachineConveyor*>(m_machines[mindex])) { //if conveyor display production increase
+        upgradeDetails = "Production speed +";
+        increase = (static_cast<int>(m_machines[mindex]->GetNextValueIncrease() * 100.0f));
+        upgradeDetails += std::to_string(100-increase);
+        upgradeDetails += "%";
+    }
+    else {                                                     //else display value increase
+        upgradeDetails = "Beverage value +";
+        increase = (static_cast<int>(m_machines[mindex]->GetNextValueIncrease() * 100.0f));
+        upgradeDetails += std::to_string(increase);
+        upgradeDetails += "%";
+
+    }
+
+
+    if (currentLevel == "0") { //if broken
+        currentLevel = "Broken";
+        upgradeDetails = " ";
+        DrawText(currentLevel, m_screenWidth * 0.04f, m_screenHeight * 0.4f, 0.006f, false);
+    }
+    else { //if not broken, show level 
+
+        DrawText("Level ", m_screenWidth * 0.04f, m_screenHeight * 0.4f, 0.006f, false);
+        DrawText(currentLevel, m_screenWidth * 0.09f, m_screenHeight * 0.4f, 0.006f, false);
+    }
+
+
+    if (nextCost == "0") { //if max upgrade level
+        DrawText("Maxed out!", m_screenWidth * 0.04f, m_screenHeight * 0.45f, 0.006f, false);
+
+    }
+    else { //
+        DrawText("Upgrade Cost $", m_screenWidth * 0.04f, m_screenHeight * 0.45f, 0.006f, false);
+        DrawText(nextCost, m_screenWidth * 0.17f, m_screenHeight * 0.45f, 0.006f, false);
+        DrawText(upgradeDetails, m_screenWidth * 0.04f, m_screenHeight * 0.5f, 0.006f, false);
+
+    }
+
+
+
+
 }

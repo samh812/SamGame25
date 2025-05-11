@@ -47,6 +47,7 @@ public:
 	std::vector<AnimatedSprite*> GetAnimatedUpgradeSprites() const;
 
 	float GetValueIncreases() const;
+	float GetNextValueIncrease() const;
 
 	void IncreaseValue(float value);
 
