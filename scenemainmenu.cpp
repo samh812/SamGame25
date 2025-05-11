@@ -27,7 +27,7 @@ void SceneMainMenu::Process(float deltaTime, InputSystem& inputSystem)
     // Example: Press RETURN to go to warehouse scene
     if (inputSystem.GetKeyState(SDL_SCANCODE_RETURN) == BS_PRESSED)
     {
-        Game::GetInstance().SetCurrentScene(1); // Switch to SceneWarehouse
+        Game::GetInstance().SetCurrentScene(2); // Switch to SceneWarehouse
     }
     //m_pTitleText->Process(deltaTime);
 }

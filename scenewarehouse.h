@@ -49,6 +49,7 @@ public:
 	float GetGrowInterval() const;
 	void OnEnter() override;
 	void OnExit() override;
+	std::string FormatWithCommas(int value);
 
 
 

@@ -1,14 +1,14 @@
-#ifndef SCENEMAINMENU_H
-#define SCENEMAINMENU_H
+#ifndef SPLASHSCREENS_H
+#define SPLACHSCREENS_H
 
 #include "scene.h"
 #include "sprite.h"
 
-class SceneMainMenu : public Scene
+class Splashscreens : public Scene
 {
 public:
-    SceneMainMenu();
-    virtual ~SceneMainMenu();
+    Splashscreens();
+    virtual ~Splashscreens();
 
     bool Initialise(Renderer& renderer) override;
     void Process(float deltaTime, InputSystem& inputSystem) override;
@@ -16,7 +16,9 @@ public:
     void DebugDraw() override;
 
 private:
-    bool m_startPressed;
+    float m_timer;
+    Sprite* FMOD_splash;
+    Sprite* AUT_splash;
 };
 
 #endif 

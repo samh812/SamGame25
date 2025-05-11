@@ -14,6 +14,7 @@
 #include "scenebouncingballs.h"
 #include "scenewarehouse.h"
 #include "scenemainmenu.h"
+#include "splashscreens.h"
 
 #include "inputsystem.h"
 
@@ -85,7 +86,11 @@ bool Game::Initialise()
 	m_pRenderer->SetClearColour(0, 0, 0);
 
 
-	Scene* pScene = new SceneMainMenu();
+	Scene* pScene = new Splashscreens();
+	pScene->Initialise(*m_pRenderer);
+	m_scenes.push_back(pScene);
+
+	pScene = new SceneMainMenu();
 	pScene->Initialise(*m_pRenderer);
 	m_scenes.push_back(pScene);
 

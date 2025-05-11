@@ -353,20 +353,41 @@ void SceneWarehouse::DebugDraw()
 {
     if (m_pPlayer)
     {
-        Vector2 playerPos = m_pPlayer->GetPosition();
-        ImGui::Text("Player Position: X = %.2f, Y = %.2f", playerPos.x, playerPos.y);
-        if (StartProduction()) {ImGui::Text("Production: ON Interval: %f", m_growInterval);}
-        else{ImGui::Text("Production: OFF");}
-        ImGui::Text("Beverage value (rounded int): %d base value: %f", m_bevValue, m_baseValue);
-		ImGui::Text("Active texts count: %d", m_activeTexts.size());
+  //      Vector2 playerPos = m_pPlayer->GetPosition();
+  //      ImGui::Text("Player Position: X = %.2f, Y = %.2f", playerPos.x, playerPos.y);
+  //      if (StartProduction()) {ImGui::Text("Production: ON Interval: %f", m_growInterval);}
+  //      else{ImGui::Text("Production: OFF");}
+  //      ImGui::Text("Beverage value (rounded int): %d base value: %f", m_bevValue, m_baseValue);
+		//ImGui::Text("Active texts count: %d", m_activeTexts.size());
 
-		ImGui::Text("Money Spawn interval: %f", m_spawnInterval);
-		ImGui::Text("Money Grow interval: %f", m_growInterval);
-		ImGui::Text("Money Pot: %d", m_moneyPot);
-        ImGui::Text("Tutorial interval: %f", m_tutInterval);
+		//ImGui::Text("Money Spawn interval: %f", m_spawnInterval);
+		//ImGui::Text("Money Grow interval: %f", m_growInterval);
+		//ImGui::Text("Money Pot: %d", m_moneyPot);
+  //      ImGui::Text("Tutorial interval: %f", m_tutInterval);
+
+
+
+        //ACTUAL DEBUGGING
+
+        //1. Grant player shekels
+        static int giveMoney = 0;
+        ImGui::InputInt("Give player shekels", &giveMoney);
+        if (ImGui::Button("Apply")) {
+            m_pPlayer->AddMoney(giveMoney);
+        }
     }
 
 
+
+    //void SceneBouncingBalls::DebugDraw
+    //()
+    //{
+    //    ImGui::Text("Scene: Bouncing Balls");
+    //    ImGui::SliderInt("Show Count", &m_iShowCount, 1, 10);
+    //    static int editBallNumber = 0;
+    //    ImGui::SliderInt("Edit ball", &editBallNumber, 0, 9);
+    //    m_pBalls[editBallNumber]->DebugDraw();
+    //}
     int i = 0;
     for (Machine* machine : m_machines)
     {
@@ -376,26 +397,26 @@ void SceneWarehouse::DebugDraw()
             bool upgraded = machine->IsUpgraded();
             int upgradeLevel = machine->GetUpgradeLevel(); // Get the upgrade level
 
-            ImGui::Text("Machine %d:", i+1);
-            Vector2 pos = machine->GetPosition();
-            ImGui::Text("machine position: X = %.2f, Y = %.2f", pos.x, pos.y);
+            //ImGui::Text("Machine %d:", i+1);
+            //Vector2 pos = machine->GetPosition();
+            //ImGui::Text("machine position: X = %.2f, Y = %.2f", pos.x, pos.y);
 
-            ImGui::BulletText("In Upgrade Area: %s", inArea ? "YES" : "no");
-            ImGui::BulletText("Machine value increase float: %f", machine->GetValueIncreases());
-            ImGui::BulletText("Upgrade Level: %d", upgradeLevel); // Display upgrade level
+            //ImGui::BulletText("In Upgrade Area: %s", inArea ? "YES" : "no");
+            //ImGui::BulletText("Machine value increase float: %f", machine->GetValueIncreases());
+            //ImGui::BulletText("Upgrade Level: %d", upgradeLevel); // Display upgrade level
             ++i;
         }
     }
 
-    for (MoneyBag* bag : m_moneyBags) {
-        if (bag->IsActive()) {
-            ImGui::Text("Bag %d:", i + 1);
-            Vector2 pos = bag->GetPosition();
-            ImGui::Text("Bag position: X = %.2f, Y = %.2f", pos.x, pos.y);
+    //for (MoneyBag* bag : m_moneyBags) {
+    //    if (bag->IsActive()) {
+    //        ImGui::Text("Bag %d:", i + 1);
+    //        Vector2 pos = bag->GetPosition();
+    //        ImGui::Text("Bag position: X = %.2f, Y = %.2f", pos.x, pos.y);
 
 
-        }
-    }
+    //    }
+    //}
 
 }
 
@@ -428,17 +449,33 @@ void SceneWarehouse::InitCharSprites(Renderer& renderer) {
 }
 
 void SceneWarehouse::DrawNumber(Renderer& renderer, int number, int startX, int startY) {
-
-	std::string numStr = std::to_string(number);
+    std::string numStr = FormatWithCommas(number);
     int spacing = 23;
 
     for (size_t i = 0; i < numStr.length(); ++i) {
-        char digit = numStr[i];
-        Sprite* sprite = m_charSprites[digit];
+        char c = numStr[i];
+
+        if (m_charSprites.find(c) == m_charSprites.end()) {
+            continue;
+        }
+
+        Sprite* sprite = m_charSprites[c];
         sprite->SetX(startX + (i * spacing));
         sprite->SetY(startY);
         sprite->Draw(renderer);
     }
+}
+
+std::string SceneWarehouse::FormatWithCommas(int value) {
+    std::string numStr = std::to_string(value);
+    int insertPosition = numStr.length() - 3;
+
+    while (insertPosition > 0) {
+        numStr.insert(insertPosition, ",");
+        insertPosition -= 3;
+    }
+
+    return numStr;
 }
 
 void SceneWarehouse::DrawText(const std::string& text, int startX, int startY, float duration, bool typeWriter) {
