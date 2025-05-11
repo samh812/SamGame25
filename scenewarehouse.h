@@ -8,6 +8,7 @@
 #include "animatedsprite.h"
 #include "particle.h"
 #include "particlesystem.h"
+#include "soundsystem.h"
 #include <vector>
 #include <map>
 #include <random>
@@ -50,6 +51,7 @@ public:
 
 private:
 
+	SoundSystem m_soundSystem;
 	float m_screenWidth;
 	float m_screenHeight;
 	Player* m_pPlayer;

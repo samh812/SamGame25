@@ -14,6 +14,9 @@
 #include <set>
 #include <chrono>
 
+#include <fmod.hpp>
+#include <fmod_errors.h>
+
 #include "imgui/imgui_impl_sdl2.h"
 #include "imgui/imgui_impl_opengl3.h"
 
@@ -52,10 +55,10 @@ SceneWarehouse::~SceneWarehouse()
 
     for (MoneyBag* pBag : m_moneyBags)
     {
-        printf("Deleting bag at address: %p\n", pBag);
         delete pBag;  // Only deletes the MoneyBag, not its sprite
     }
     m_moneyBags.clear();
+    m_soundSystem.Release();
 }
 
 bool SceneWarehouse::Initialise(Renderer& renderer)
@@ -63,6 +66,16 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 
     m_screenWidth = static_cast<float>(renderer.GetWidth());
     m_screenHeight = static_cast<float>(renderer.GetHeight());
+
+    if (!m_soundSystem.Initialise()) {
+        std::cerr << "Failed to initialise FMOD system!" << std::endl;
+        return false;
+    }
+    m_soundSystem.LoadSound("bgm", "../assets/sounds/bgm.mp3", true);
+    m_soundSystem.PlaySound("bgm");
+
+    m_soundSystem.LoadSound("coin", "../assets/sounds/coin.wav");
+
 
 	m_tutInterval = 2.0f;
     m_pBagSprite = renderer.CreateSprite("../assets/ball.png");
@@ -136,8 +149,6 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
             {
 
                 DisplayUpgrade(i);
-                printf("Displaying the upgrade\n");
-                m_displayingUpgrade = true;
 
                 if (m_machines[i]->GetUpgradeLevel() < m_machines[i]->GetNumUpgrades() && inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED) {
                     int upgradeCost = m_machines[i]->GetUpgradeCost(); //get specific machine's upgrade cost
@@ -187,7 +198,7 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
                 if (inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED) {
                     m_pPlayer->AddMoney(pBag->GetValue());
 
-
+                    m_soundSystem.PlaySound("coin");
                     //trigger coin particle effect
                     ParticleSystem ps;
                     ps.Initialise(m_pCoinSprite, m_pPlayer, 50);
@@ -247,6 +258,7 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
         ++it;
     }
 
+    m_soundSystem.Update();
 
 }
 
@@ -305,7 +317,6 @@ void SceneWarehouse::Draw(Renderer& renderer)
     }
     if (m_tutInterval >= 5.0f && m_tutStage < 7) {
         Tutorial(renderer);
-        printf("THis should happen thrice only /n");
         if (!m_coinsAdded) {
             ParticleSystem ps;
             ps.Initialise(m_pCoinSprite, m_pPlayer, 20);
@@ -470,6 +481,7 @@ void SceneWarehouse::Tutorial(Renderer& renderer) {
     float xText = 0.60f;
     switch (m_tutStage) {
 	    case 0:
+            //m_soundSystem.PlaySound("bgm");
 		    DrawText("Hey, fresh meat!", m_screenWidth*xText, m_screenHeight*0.15f, 5.0f, true);
 		    DrawText("This is your new home now", m_screenWidth * xText, m_screenHeight * 0.2f, 5.0f, true);
 			m_coinsAdded = true;
