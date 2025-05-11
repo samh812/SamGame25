@@ -15,8 +15,11 @@ public:
     void Draw(Renderer& renderer) override;
     void DebugDraw() override;
 
+    void OnEnter() override;
+    void OnExit() override;
+
 private:
-    bool m_startPressed;
+    bool m_menuActive;
 };
 
 #endif 

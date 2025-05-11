@@ -11,6 +11,7 @@
 #include "player.h"
 #include "game.h"
 #include "scene.h"
+#include "xboxcontroller.h"
 #include <iostream>
 #include <string>
 #include <set>
@@ -144,11 +145,8 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 
 void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 {
+    XboxController* controller = inputSystem.GetController(0);
 
-    if (inputSystem.GetKeyState(SDL_SCANCODE_RETURN) == BS_PRESSED)
-    {
-        Game::GetInstance().SetCurrentScene(0); // Switch to SceneWarehouse
-    }
 
 	m_tutInterval += deltaTime;
     //m_pTitleText->Process(deltaTime);
@@ -166,7 +164,8 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 
                 DisplayUpgrade(i);
 
-                if (m_machines[i]->GetUpgradeLevel() < m_machines[i]->GetNumUpgrades() && inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED) {
+                if (m_machines[i]->GetUpgradeLevel() < m_machines[i]->GetNumUpgrades() && inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED ||
+                    controller->GetButtonState(SDL_CONTROLLER_BUTTON_A) == BS_PRESSED) {
                     int upgradeCost = m_machines[i]->GetUpgradeCost(); //get specific machine's upgrade cost
                     if (m_pPlayer->SpendMoney(upgradeCost)) { //if player has enough money
                         m_machines[i]->Upgrade();
@@ -208,10 +207,12 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
         }
 
         //check player pickup
+
         for (MoneyBag* pBag : m_moneyBags)
         {
             if (pBag->IsActive() && m_pPlayer->IsCollidingWith(*pBag)) {
-                if (inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED) {
+                if (inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED ||
+                    controller->GetButtonState(SDL_CONTROLLER_BUTTON_A) == BS_PRESSED) {
                     m_pPlayer->AddMoney(pBag->GetValue());
 
                     m_soundSystem.PlaySound("coin");
@@ -534,7 +535,6 @@ void SceneWarehouse::Tutorial(Renderer& renderer) {
     float xText = 0.60f;
     switch (m_tutStage) {
 	    case 0:
-            //m_soundSystem.PlaySound("bgm");
 		    DrawText("Hey, fresh meat!", m_screenWidth*xText, m_screenHeight*0.15f, 5.0f, true);
 		    DrawText("This is your new home now", m_screenWidth * xText, m_screenHeight * 0.2f, 5.0f, true);
 			m_coinsAdded = true;
@@ -550,7 +550,7 @@ void SceneWarehouse::Tutorial(Renderer& renderer) {
             DrawText("We need to get production going FAST", m_screenWidth * xText, m_screenHeight * 0.2f, 5.0f, true);
             break;
 		case 3:
-            DrawText("Press E next to a machine to upgrade it", m_screenWidth * xText, m_screenHeight * 0.15f, 7.0f, true);
+            DrawText("Press E / A next to a machine to upgrade it", m_screenWidth * xText, m_screenHeight * 0.15f, 7.0f, true);
             break;
 
         case 5:
@@ -558,7 +558,7 @@ void SceneWarehouse::Tutorial(Renderer& renderer) {
             DrawText("One million beverages should do!", m_screenWidth * xText, m_screenHeight * 0.2f, 5.0f, true);
             break;
         case 6:
-            DrawText("Press E to pick up money bags", m_screenWidth * xText, m_screenHeight * 0.15f, 7.0f, true);
+            DrawText("Press E / A to pick up money bags", m_screenWidth * xText, m_screenHeight * 0.15f, 7.0f, true);
 
             break;
         default:

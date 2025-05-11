@@ -185,7 +185,7 @@ void Game::DebugDraw
 		{
 			Quit();
 		}
-		ImGui::SliderInt("Active scene", &m_iCurrentScene, 0, m_scenes.size() - 1, "%d");
+		ImGui::Text("Active scene: %d", m_iCurrentScene);
 		m_scenes[m_iCurrentScene]->DebugDraw();
 		ImGui::End();
 	}

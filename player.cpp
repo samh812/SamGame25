@@ -4,7 +4,7 @@
 #include "animatedsprite.h"
 #include "inlinehelpers.h"
 #include "vector2.h"
-
+#include "xboxcontroller.h"
 
 #include <algorithm>
 
@@ -48,6 +48,25 @@ void Player::Process(float deltaTime, InputSystem& inputSystem)
     if (IsKeyHeld(inputSystem, SDL_SCANCODE_S) || IsKeyHeld(inputSystem, SDL_SCANCODE_DOWN))  direction.y += 1.0f;
     if (IsKeyHeld(inputSystem, SDL_SCANCODE_A) || IsKeyHeld(inputSystem, SDL_SCANCODE_LEFT))  direction.x -= 1.0f;
     if (IsKeyHeld(inputSystem, SDL_SCANCODE_D) || IsKeyHeld(inputSystem, SDL_SCANCODE_RIGHT)) direction.x += 1.0f;
+
+    //controller input
+    XboxController* controller = inputSystem.GetController(0);
+    if (controller != nullptr)
+    {
+        Vector2 stick = controller->GetLeftStick();
+
+        //normalise
+        const float MAX_AXIS = 32768.0f;
+        Vector2 controllerDir(stick.x / MAX_AXIS, stick.y / MAX_AXIS);
+
+        //deadzone handling
+        const float DEADZONE = 0.2f;
+        if (std::abs(controllerDir.x) > DEADZONE || std::abs(controllerDir.y) > DEADZONE)
+        {
+            direction = controllerDir;
+        }
+    }
+
 
     //normalising to prevent faster diagonal movement
     if (direction.x != 0.0f || direction.y != 0.0f)
