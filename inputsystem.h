@@ -50,7 +50,7 @@ protected:
 	unsigned int m_previousMouseButtons;
 	unsigned int m_currentMouseButtons;
 	bool m_bRelativeMouseMode;
-	XboxController* m_pXboxController;
+	XboxController* m_pXboxController = nullptr;
 	int m_iNumAttachedControllers;
 private:
 };

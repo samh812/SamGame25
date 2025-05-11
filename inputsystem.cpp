@@ -26,30 +26,41 @@ InputSystem::~InputSystem()
 	delete[] m_pXboxController;
 	m_pXboxController = 0;
 }
-bool InputSystem::Initialise
-()
+bool InputSystem::Initialise()
 {
 	for (int k = 0; k < SDL_NUM_SCANCODES; ++k)
 	{
 		m_previousKeyboardState[k] = 0;
 	}
+
 	m_pCurrentKeyboardState = SDL_GetKeyboardState(0);
-	unsigned int alreadyInit = SDL_WasInit(SDL_INIT_GAMECONTROLLER);
-	if (alreadyInit == 0)
+
+	if (SDL_WasInit(SDL_INIT_GAMECONTROLLER) == 0)
 	{
-		int result = SDL_Init(SDL_INIT_GAMECONTROLLER);
+		SDL_Init(SDL_INIT_GAMECONTROLLER);
 		LogManager::GetInstance().Log("SDL Init Game Controller System");
 	}
+
 	ShowMouseCursor(false);
-	m_iNumAttachedControllers = SDL_NumJoysticks();
-	m_pXboxController = new XboxController[m_iNumAttachedControllers];
-	for (int k = 0; k < m_iNumAttachedControllers; ++k)
+
+
+
+	const int MAX_CONTROLLERS = 2;
+	m_pXboxController = new XboxController[MAX_CONTROLLERS];
+	m_iNumAttachedControllers = 0;
+
+	int totalJoysticks = SDL_NumJoysticks();
+	for (int i = 0; i < totalJoysticks && m_iNumAttachedControllers < MAX_CONTROLLERS; ++i)
 	{
-		if (SDL_IsGameController(k))
+		if (SDL_IsGameController(i))
 		{
-			m_pXboxController[k].Initialise(k);
+			if (m_pXboxController[m_iNumAttachedControllers].Initialise(i))
+			{
+				++m_iNumAttachedControllers;
+			}
 		}
 	}
+
 	return true;
 }
 void InputSystem::ProcessInput
@@ -204,9 +215,13 @@ InputSystem::GetNumberOfControllersAttached() const
 {
 	return m_iNumAttachedControllers;
 }
-XboxController*
-InputSystem::GetController(int controllerIndex)
-{
-	return &m_pXboxController[controllerIndex];
-}
 
+XboxController* InputSystem::GetController(int controllerIndex)
+{
+	if (controllerIndex >= 0 && controllerIndex < m_iNumAttachedControllers)
+	{
+		XboxController* controller = &m_pXboxController[controllerIndex];
+		return (controller->IsConnected()) ? controller : nullptr;
+	}
+	return nullptr;
+}

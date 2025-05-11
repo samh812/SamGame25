@@ -147,7 +147,9 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 {
     XboxController* controller = inputSystem.GetController(0);
 
-
+    if (inputSystem.GetKeyState(SDL_SCANCODE_ESCAPE) == (BS_PRESSED)) {
+        //PauseMenu();
+    };
 	m_tutInterval += deltaTime;
     //m_pTitleText->Process(deltaTime);
     if (m_pPlayer)
@@ -164,8 +166,12 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 
                 DisplayUpgrade(i);
 
-                if (m_machines[i]->GetUpgradeLevel() < m_machines[i]->GetNumUpgrades() && inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED ||
-                    controller->GetButtonState(SDL_CONTROLLER_BUTTON_A) == BS_PRESSED) {
+                bool controllerCheck = false;
+                if (controller != nullptr) {
+                    controllerCheck = controller->GetButtonState(SDL_CONTROLLER_BUTTON_A) == BS_PRESSED;
+                }
+
+                if (m_machines[i]->GetUpgradeLevel() < m_machines[i]->GetNumUpgrades() && inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED || controllerCheck) {
                     int upgradeCost = m_machines[i]->GetUpgradeCost(); //get specific machine's upgrade cost
                     if (m_pPlayer->SpendMoney(upgradeCost)) { //if player has enough money
                         m_machines[i]->Upgrade();
@@ -210,9 +216,14 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 
         for (MoneyBag* pBag : m_moneyBags)
         {
+
+            bool controllerCheck = false;
+            if (controller != nullptr) {
+                controllerCheck = controller->GetButtonState(SDL_CONTROLLER_BUTTON_A) == BS_PRESSED;
+            }
             if (pBag->IsActive() && m_pPlayer->IsCollidingWith(*pBag)) {
                 if (inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED ||
-                    controller->GetButtonState(SDL_CONTROLLER_BUTTON_A) == BS_PRESSED) {
+                    controllerCheck) {
                     m_pPlayer->AddMoney(pBag->GetValue());
 
                     m_soundSystem.PlaySound("coin");
@@ -243,13 +254,7 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
         pMachine->Process(deltaTime, inputSystem);
     }
 
-    for (auto& machine : m_machines)
-    {
-        if (machine)
-        {
-            machine->Process(deltaTime, inputSystem);
-        }
-    }
+
 
     for (Particle& particle : m_coinParticles) {
         particle.Update(deltaTime);
@@ -359,7 +364,7 @@ void SceneWarehouse::DebugDraw()
   //      if (StartProduction()) {ImGui::Text("Production: ON Interval: %f", m_growInterval);}
   //      else{ImGui::Text("Production: OFF");}
   //      ImGui::Text("Beverage value (rounded int): %d base value: %f", m_bevValue, m_baseValue);
-		//ImGui::Text("Active texts count: %d", m_activeTexts.size());
+		ImGui::Text("Active texts count: %d", m_activeTexts.size());
 
 		//ImGui::Text("Money Spawn interval: %f", m_spawnInterval);
 		//ImGui::Text("Money Grow interval: %f", m_growInterval);
@@ -479,7 +484,7 @@ std::string SceneWarehouse::FormatWithCommas(int value) {
     return numStr;
 }
 
-void SceneWarehouse::DrawText(const std::string& text, int startX, int startY, float duration, bool typeWriter) {
+void SceneWarehouse::DrawText(const std::string& text, int startX, int startY, float duration, bool typeWriter, const std::string& id) {
     TimedText timed;
     timed.text = text;
     timed.x = startX;
@@ -487,9 +492,16 @@ void SceneWarehouse::DrawText(const std::string& text, int startX, int startY, f
     timed.timeRemaining = duration;
     timed.typeWriter = typeWriter;
     timed.charsVisible = typeWriter ? 0 : text.length();
+    timed.id = id;
     m_activeTexts.push_back(timed);
 }
 
+void SceneWarehouse::RemoveTextById(const std::string& id) {
+    m_activeTexts.erase(
+        std::remove_if(m_activeTexts.begin(), m_activeTexts.end(),
+            [&](const TimedText& t) { return t.id == id; }),
+        m_activeTexts.end());
+}
 bool SceneWarehouse::StartProduction() {
     if (m_totalUpgradeLevel >= 7) {
         return true;
@@ -717,7 +729,7 @@ void SceneWarehouse::DisplayUpgrade(int mindex) {
     std::string upgradeDetails;
     int increase;
 
-
+    RemoveTextById("current_level");
 
     if (dynamic_cast<MachineConveyor*>(m_machines[mindex])) { //if conveyor display production increase
         upgradeDetails = "Production speed +";
@@ -737,7 +749,7 @@ void SceneWarehouse::DisplayUpgrade(int mindex) {
     if (currentLevel == "0") { //if broken
         currentLevel = "Broken";
         upgradeDetails = " ";
-        DrawText(currentLevel, m_screenWidth * 0.04f, m_screenHeight * 0.4f, 0.006f, false);
+        DrawText(currentLevel, m_screenWidth * 0.04f, m_screenHeight * 0.4f, 0.0f, false, "current_level");
     }
     else { //if not broken, show level 
 
@@ -757,6 +769,16 @@ void SceneWarehouse::DisplayUpgrade(int mindex) {
 
     }
 
+
+
+
+}
+
+void SceneWarehouse::PauseMenu() {
+
+
+    DrawText("Level ", m_screenWidth * 0.04f, m_screenHeight * 0.4f, 0.006f, false);
+    DrawText("Paused", m_screenWidth * 0.09f, m_screenHeight * 0.4f, 0.006f, false);
 
 
 

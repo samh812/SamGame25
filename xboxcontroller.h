@@ -20,6 +20,7 @@ public:
 	float GetRightTrigger() const;
 	const Vector2& GetLeftStick() const;
 	const Vector2& GetRightStick() const;
+	bool IsConnected() const { return m_bConnected; };
 protected:
 private:
 	XboxController(const XboxController& xboxcontroller);

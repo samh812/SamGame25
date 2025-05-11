@@ -23,6 +23,7 @@ struct TimedText {
 	bool typeWriter;
 	float typeTimer = 0.0f;
 	size_t charsVisible = 0;
+	std::string id;
 };
 
 class SceneWarehouse : public Scene
@@ -38,13 +39,15 @@ public:
 
 	void InitCharSprites(Renderer& renderer);
 	void DrawNumber(Renderer& renderer, int number, int startX, int startY);
-	void DrawText(const std::string& text, int startX, int startY, float duration, bool typeWriter);
+	void DrawText(const std::string& text, int startX, int startY, float duration, bool typeWriter, const std::string& id = "");
+	void RemoveTextById(const std::string& id);
 
 	bool StartProduction();
 	void Production(float time);
 	void Tutorial(Renderer& renderer);
 	bool InitMachines(Renderer& renderer);
 	void DisplayUpgrade(int mindex);
+	void PauseMenu();
 
 	float GetGrowInterval() const;
 	void OnEnter() override;
