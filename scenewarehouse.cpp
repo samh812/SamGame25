@@ -61,8 +61,8 @@ SceneWarehouse::~SceneWarehouse()
 bool SceneWarehouse::Initialise(Renderer& renderer)
 {
 
-    float screenWidth = static_cast<float>(renderer.GetWidth());
-    float screenHeight = static_cast<float>(renderer.GetHeight());
+    m_screenWidth = static_cast<float>(renderer.GetWidth());
+    m_screenHeight = static_cast<float>(renderer.GetHeight());
 
 	m_tutInterval = 2.0f;
     m_pBagSprite = renderer.CreateSprite("../assets/ball.png");
@@ -109,8 +109,8 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 
 	InitCharSprites(renderer);
 
-    m_spawnXDist = std::uniform_real_distribution<float>(screenWidth * 0.1f, screenWidth * 0.9f);
-    m_spawnYDist = std::uniform_real_distribution<float>(screenHeight*0.1f, screenHeight * 0.65f);
+    m_spawnXDist = std::uniform_real_distribution<float>(m_screenWidth * 0.1f, m_screenWidth * 0.9f);
+    m_spawnYDist = std::uniform_real_distribution<float>(m_screenHeight*0.1f, m_screenHeight * 0.65f);
 
 
 
@@ -129,22 +129,31 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 
 
         //check for upgrade collision
-        for (Machine* pMachine : m_machines)
+        for (size_t i = 0; i < m_machines.size(); ++i)
         {
-            // if pmachine isinupgradearea, display upgrade cost and details, with smaller text?
-            if (pMachine->GetUpgradeLevel() < pMachine ->GetNumUpgrades() && pMachine->IsPlayerInUpgradeArea(m_pPlayer) && inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED) //Upgrade on E or ENTER
+            // if pmachine isinupgradearea, display upgrade cost and details, with smaller text? Or i can jsut display in a central place?
+            if (m_machines[i]->IsPlayerInUpgradeArea(m_pPlayer)) //Upgrade on E or ENTER
             {
-				int upgradeCost = pMachine->GetUpgradeCost(); //get specific machine's upgrade cost
-                if (m_pPlayer->SpendMoney(upgradeCost)) { //if player has enough money
-                    pMachine->Upgrade();
-                    m_totalUpgradeLevel++;
 
+                DisplayUpgrade(i);
+                printf("Displaying the upgrade\n");
+                m_displayingUpgrade = true;
+
+                if (m_machines[i]->GetUpgradeLevel() < m_machines[i]->GetNumUpgrades() && inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED) {
+                    int upgradeCost = m_machines[i]->GetUpgradeCost(); //get specific machine's upgrade cost
+                    if (m_pPlayer->SpendMoney(upgradeCost)) { //if player has enough money
+                        m_machines[i]->Upgrade();
+                        m_totalUpgradeLevel++;
+
+                    }
                 }
-				else {
-				}
+
+            }
+            else {
             }
 
         }
+
 		if (StartProduction()) {
             Production(deltaTime);
 		}
@@ -280,7 +289,7 @@ void SceneWarehouse::Draw(Renderer& renderer)
 
 
     for (const TimedText& timed : m_activeTexts) {
-        int spacing = 23;
+        int spacing = 19;
         int maxChars = std::min(timed.charsVisible, timed.text.length());
 
         for (int i = 0; i < maxChars; ++i) {
@@ -322,7 +331,7 @@ void SceneWarehouse::DebugDraw()
         if (StartProduction()) {ImGui::Text("Production: ON Interval: %f", m_growInterval);}
         else{ImGui::Text("Production: OFF");}
         ImGui::Text("Beverage value (rounded int): %d base value: %f", m_bevValue, m_baseValue);
-		ImGui::Text("Player Money: %d", m_pPlayer->GetMoney());
+		ImGui::Text("Active texts count: %d", m_activeTexts.size());
 
 		ImGui::Text("Money Spawn interval: %f", m_spawnInterval);
 		ImGui::Text("Money Grow interval: %f", m_growInterval);
@@ -365,7 +374,7 @@ void SceneWarehouse::DebugDraw()
 
 
 void SceneWarehouse::InitCharSprites(Renderer& renderer) {
-	int textSize = 40;
+	int textSize = 30;
     for (char c = '0'; c <= '9'; ++c) {
         std::string text(1, c);
         renderer.CreateStaticText(text.c_str(), textSize);
@@ -457,35 +466,34 @@ float SceneWarehouse::GetGrowInterval() const{
 
 void SceneWarehouse::Tutorial(Renderer& renderer) {
 
-    float screenWidth = static_cast<float>(renderer.GetWidth());
-    float screenHeight = static_cast<float>(renderer.GetHeight());
+
 	int xOffset = 350;
     switch (m_tutStage) {
 	    case 0:
-		    DrawText("Hey, fresh meat!", screenWidth*0.27f, screenHeight*0.4f, 5.0f, true);
-		    DrawText("This is your new home now", screenWidth * 0.27f, screenHeight * 0.45f, 5.0f, true);
+		    DrawText("Hey, fresh meat!", m_screenWidth*0.27f, m_screenHeight*0.4f, 5.0f, true);
+		    DrawText("This is your new home now", m_screenWidth * 0.27f, m_screenHeight * 0.45f, 5.0f, true);
 			m_coinsAdded = true;
 		    break;
         case 1:
 			m_coinsAdded = false;
-            DrawText("Take these shekels", screenWidth * 0.3f, screenHeight * 0.45f, 5.0f, true);
+            DrawText("Take these shekels", m_screenWidth * 0.3f, m_screenHeight * 0.45f, 5.0f, true);
             m_pPlayer->AddMoney(40); //start with 40 shekels
             break;
 
         case 2:
-            DrawText("Walk over and repair those machines!", screenWidth * 0.23f, screenHeight * 0.4f, 5.0f, true);
-            DrawText("We need to get production going FAST", screenWidth * 0.23f, screenHeight * 0.45f, 5.0f, true);
+            DrawText("Walk over and repair those machines!", m_screenWidth * 0.23f, m_screenHeight * 0.4f, 5.0f, true);
+            DrawText("We need to get production going FAST", m_screenWidth * 0.23f, m_screenHeight * 0.45f, 5.0f, true);
             break;
 		case 3:
-			DrawText("Press E to upgrade machines", screenWidth*0.04f, screenHeight * 0.63f, 10.0f, true);
+			DrawText("Press E to upgrade machines", m_screenWidth*0.04f, m_screenHeight * 0.63f, 10.0f, true);
             break;
 
         case 5:
-            DrawText("Lets see...", screenWidth * 0.25f, screenHeight * 0.4f, 5.0f, true);
-            DrawText("One million beverages should do!", screenWidth * 0.25f, screenHeight * 0.45f, 5.0f, true);
+            DrawText("Lets see...", m_screenWidth * 0.25f, m_screenHeight * 0.4f, 5.0f, true);
+            DrawText("One million beverages should do!", m_screenWidth * 0.25f, m_screenHeight * 0.45f, 5.0f, true);
             break;
         case 6:
-            DrawText("Press E to pick up money bags", screenWidth * 0.3f, screenHeight * 0.25f, 7.0f, true);
+            DrawText("Press E to pick up money bags", m_screenWidth * 0.3f, m_screenHeight * 0.25f, 7.0f, true);
 
             break;
         default:
@@ -498,10 +506,10 @@ void SceneWarehouse::Tutorial(Renderer& renderer) {
 bool SceneWarehouse::InitMachines(Renderer& renderer) {
     //placing machines based on screen resolution
     const int numMachines = 7;
-    float screenWidth = static_cast<float>(renderer.GetWidth());
-    float screenHeight = static_cast<float>(renderer.GetHeight());
 
-    float yOffset = screenHeight * 0.85f; //dynamically placing machines near the bottom of the screen
+
+
+    float yOffset = m_screenHeight * 0.85f; //dynamically placing machines near the bottom of the screen
     float totalWidth = 0.0f;
     std::vector<float> machineWidths;
 
@@ -513,11 +521,11 @@ bool SceneWarehouse::InitMachines(Renderer& renderer) {
         totalWidth += width;
     }
 
-    float startX = screenWidth * 0.04f;
+    float startX = m_screenWidth * 0.04f;
     float currentX = startX;
 
     //dynamic upgrade area size
-    float dynamicYOffset = screenHeight * 0.15f;  //15% above the machine
+    float dynamicYOffset = m_screenHeight * 0.15f;  //15% above the machine
     float upgradeAreaYOffset = yOffset - dynamicYOffset;
 
     for (int i = 0; i < numMachines; ++i)
@@ -628,7 +636,7 @@ bool SceneWarehouse::InitMachines(Renderer& renderer) {
         pMachine->SetPosition(Vector2(currentX + width / 2.0f, yOffset));
 
         //set upgrade area width to match the specific machine width
-        pMachine->SetUpgradeArea(Vector2(currentX, upgradeAreaYOffset), width, screenHeight * 0.075f); //using machine width
+        pMachine->SetUpgradeArea(Vector2(currentX, upgradeAreaYOffset), width, m_screenHeight * 0.075f); //using machine width
 
         m_machines.push_back(pMachine);
         currentX += width;
@@ -636,3 +644,7 @@ bool SceneWarehouse::InitMachines(Renderer& renderer) {
     return true;
 }
 
+
+void SceneWarehouse::DisplayUpgrade(int mindex) {
+    DrawText("Upgradeeearea", m_screenWidth * 0.25f, m_screenHeight * 0.4f, 0.016f, false);
+}

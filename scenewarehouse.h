@@ -43,11 +43,15 @@ public:
 	void Production(float time);
 	void Tutorial(Renderer& renderer);
 	bool InitMachines(Renderer& renderer);
+	void DisplayUpgrade(int mindex);
 
 	float GetGrowInterval() const;
 
 
 private:
+
+	float m_screenWidth;
+	float m_screenHeight;
 	Player* m_pPlayer;
 	std::vector<Machine*> m_machines;
 	Renderer* m_pRenderer;
@@ -75,6 +79,7 @@ private:
 	int m_tutStage = 0;
 
 	bool m_coinsAdded = false;
+	bool m_displayingUpgrade = false;
 	std::vector<MoneyBag*> m_moneyBags;
 
 	std::default_random_engine m_rng;
