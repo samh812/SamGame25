@@ -15,6 +15,9 @@ public:
 	virtual void Process(float deltaTime, InputSystem& inputSystem) = 0;
 	virtual void Draw(Renderer& renderer) = 0;
 	virtual void DebugDraw() = 0;
+	virtual void OnEnter() {};   // Called when scene becomes active
+	virtual void OnExit() {};
+
 protected:
 private:
 	Scene(const Scene& scene);

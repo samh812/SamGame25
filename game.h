@@ -21,6 +21,7 @@ public:
 	void Quit();
 	void ToggleDebugWindow();
 	void SetCurrentScene(int index);
+	int GetCurrentScene();
 protected:
 	void Process(float deltaTime);
 	void Draw(Renderer& renderer);

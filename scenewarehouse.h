@@ -47,6 +47,10 @@ public:
 	void DisplayUpgrade(int mindex);
 
 	float GetGrowInterval() const;
+	void OnEnter() override;
+	void OnExit() override;
+
+
 
 
 private:

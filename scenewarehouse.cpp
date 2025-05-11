@@ -9,6 +9,8 @@
 #include "texture.h"
 #include "sprite.h"
 #include "player.h"
+#include "game.h"
+#include "scene.h"
 #include <iostream>
 #include <string>
 #include <set>
@@ -61,6 +63,16 @@ SceneWarehouse::~SceneWarehouse()
     m_soundSystem.Release();
 }
 
+void SceneWarehouse::OnEnter() {
+    m_soundSystem.PlaySound("bgm");
+};
+
+void SceneWarehouse::OnExit()
+{
+    m_soundSystem.StopSound("bgm");
+
+}
+
 bool SceneWarehouse::Initialise(Renderer& renderer)
 {
 
@@ -72,7 +84,6 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         return false;
     }
     m_soundSystem.LoadSound("bgm", "../assets/sounds/bgm.mp3", true);
-    m_soundSystem.PlaySound("bgm");
 
     m_soundSystem.LoadSound("coin", "../assets/sounds/coin.wav");
 
@@ -133,6 +144,11 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 
 void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 {
+
+    if (inputSystem.GetKeyState(SDL_SCANCODE_RETURN) == BS_PRESSED)
+    {
+        Game::GetInstance().SetCurrentScene(0); // Switch to SceneWarehouse
+    }
 
 	m_tutInterval += deltaTime;
     //m_pTitleText->Process(deltaTime);

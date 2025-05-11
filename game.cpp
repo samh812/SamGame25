@@ -82,7 +82,7 @@ bool Game::Initialise()
 
 
 	m_iLastTime = SDL_GetPerformanceCounter();
-	m_pRenderer->SetClearColour(0, 255, 255);
+	m_pRenderer->SetClearColour(0, 0, 0);
 
 
 	Scene* pScene = new SceneMainMenu();
@@ -94,7 +94,7 @@ bool Game::Initialise()
 	m_scenes.push_back(pScene);
 
 
-	m_iCurrentScene = 1;
+	m_iCurrentScene = 0;
 
 
 	return true;
@@ -194,10 +194,10 @@ void Game::ToggleDebugWindow
 
 void Game::SetCurrentScene(int index)
 {
-	if (index >= 0 && index < static_cast<int>(m_scenes.size()))
+	if (index >= 0 && index < static_cast<int>(m_scenes.size()) && index != m_iCurrentScene)
 	{
+		m_scenes[m_iCurrentScene]->OnExit();
 		m_iCurrentScene = index;
+		m_scenes[m_iCurrentScene]->OnEnter();
 	}
 }
-
-

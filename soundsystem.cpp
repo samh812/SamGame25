@@ -38,5 +38,14 @@ void SoundSystem::PlaySound(const std::string& name) {
     if (it != m_sounds.end()) {
         FMOD::Channel* channel = nullptr;
         m_system->playSound(it->second, nullptr, false, &channel);
+        m_channels[name] = channel; // Store the channel
+    }
+}
+
+void SoundSystem::StopSound(const std::string& name) {
+    auto it = m_channels.find(name);
+    if (it != m_channels.end() && it->second) {
+        it->second->stop();
+        m_channels.erase(it); // Optionally remove channel reference
     }
 }
