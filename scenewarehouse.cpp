@@ -337,6 +337,8 @@ void SceneWarehouse::Draw(Renderer& renderer)
             }
         }
     }
+    DeleteTexts();
+
     if (m_tutInterval >= 5.0f && m_tutStage < 7) {
         Tutorial(renderer);
         if (!m_coinsAdded) {
@@ -446,7 +448,7 @@ void SceneWarehouse::InitCharSprites(Renderer& renderer) {
         renderer.CreateStaticText(text.c_str(), textSize);
         m_charSprites[c] = renderer.CreateSprite(text.c_str());
     }
-    const std::string extras = "!,:$.+%";
+    const std::string extras = "!,:$.+%/";
     for (char c : extras) {
         std::string text(1, c);
         renderer.CreateStaticText(text.c_str(), textSize);
@@ -729,7 +731,7 @@ void SceneWarehouse::DisplayUpgrade(int mindex) {
     std::string upgradeDetails;
     int increase;
 
-    RemoveTextById("current_level");
+
 
     if (dynamic_cast<MachineConveyor*>(m_machines[mindex])) { //if conveyor display production increase
         upgradeDetails = "Production speed +";
@@ -753,26 +755,32 @@ void SceneWarehouse::DisplayUpgrade(int mindex) {
     }
     else { //if not broken, show level 
 
-        DrawText("Level ", m_screenWidth * 0.04f, m_screenHeight * 0.4f, 0.006f, false);
-        DrawText(currentLevel, m_screenWidth * 0.09f, m_screenHeight * 0.4f, 0.006f, false);
+        DrawText("Level ", m_screenWidth * 0.04f, m_screenHeight * 0.4f, 0.0f, false, "level");
+        DrawText(currentLevel, m_screenWidth * 0.09f, m_screenHeight * 0.4f, 0.0f, false, "current_level");
     }
 
 
     if (nextCost == "0") { //if max upgrade level
-        DrawText("Maxed out!", m_screenWidth * 0.04f, m_screenHeight * 0.45f, 0.006f, false);
+        DrawText("Maxed out!", m_screenWidth * 0.04f, m_screenHeight * 0.45f, 0.0f, false, "upgrade_label");
 
     }
     else { //
-        DrawText("Upgrade Cost $", m_screenWidth * 0.04f, m_screenHeight * 0.45f, 0.006f, false);
-        DrawText(nextCost, m_screenWidth * 0.17f, m_screenHeight * 0.45f, 0.006f, false);
-        DrawText(upgradeDetails, m_screenWidth * 0.04f, m_screenHeight * 0.5f, 0.006f, false);
+        DrawText("Upgrade Cost $", m_screenWidth * 0.04f, m_screenHeight * 0.45f, 0.0f, false, "upgrade_label");
+        DrawText(nextCost, m_screenWidth * 0.17f, m_screenHeight * 0.45f, 0.0f, false, "upgrade_cost");
+        DrawText(upgradeDetails, m_screenWidth * 0.04f, m_screenHeight * 0.5f, 0.0f, false, "upgrade_details");
 
     }
 
-
-
+}
+void SceneWarehouse::DeleteTexts() {
+    RemoveTextById("current_level");
+    RemoveTextById("level");
+    RemoveTextById("upgrade_cost");
+    RemoveTextById("upgrade_label");
+    RemoveTextById("upgrade_details");
 
 }
+
 
 void SceneWarehouse::PauseMenu() {
 

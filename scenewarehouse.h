@@ -41,6 +41,7 @@ public:
 	void DrawNumber(Renderer& renderer, int number, int startX, int startY);
 	void DrawText(const std::string& text, int startX, int startY, float duration, bool typeWriter, const std::string& id = "");
 	void RemoveTextById(const std::string& id);
+	void DeleteTexts();
 
 	bool StartProduction();
 	void Production(float time);
