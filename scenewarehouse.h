@@ -80,7 +80,7 @@ private:
 
 	//grow and spawn money bags seperately
 	float m_moneySpawnTimer = 0.0f;
-	float m_spawnInterval = 3.8f;
+	float m_spawnInterval = 3.2f;
 
 	int m_totalSold;
 

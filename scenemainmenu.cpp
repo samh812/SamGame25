@@ -45,16 +45,25 @@ void SceneMainMenu::Process(float deltaTime, InputSystem& inputSystem)
     m_pMainMenuSprite->Process(deltaTime);
     if (m_menuActive) {
 
-        if (inputSystem.GetKeyState(SDL_SCANCODE_RETURN) == BS_PRESSED)
+        XboxController* controller = inputSystem.GetController(0);
+        bool controllerA = false;
+        if (controller != nullptr) {
+            controllerA = controller->GetButtonState(SDL_CONTROLLER_BUTTON_A) == BS_PRESSED;
+        }
+        if (inputSystem.GetKeyState(SDL_SCANCODE_RETURN) == BS_PRESSED || controllerA)
         {
             Game::GetInstance().SetCurrentScene(2);
         }
-        XboxController* controller = inputSystem.GetController(0);
+
+        bool controllerB = false;
         if (controller != nullptr) {
-            if (controller->GetButtonState(SDL_CONTROLLER_BUTTON_A) == BS_PRESSED) {
-                Game::GetInstance().SetCurrentScene(2);
-            }
+            controllerB = controller->GetButtonState(SDL_CONTROLLER_BUTTON_B) == BS_PRESSED;
         }
+        if (inputSystem.GetKeyState(SDL_SCANCODE_ESCAPE) == BS_PRESSED || controllerB)
+        {
+            Game::GetInstance().Quit();
+        }
+
     }
 
 }

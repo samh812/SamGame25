@@ -140,10 +140,7 @@ void Game::Process(float deltaTime)
 	if (state1 == BS_PRESSED) {
 		ToggleDebugWindow();
 	}
-	//ButtonState quitButton = m_pInputSystem->GetKeyState(SDL_SCANCODE_ESCAPE);
-	//if (quitButton == BS_PRESSED) {
-	//	Quit();
-	//}
+
 
 
 	m_scenes[m_iCurrentScene]->Process(deltaTime, *m_pInputSystem);
