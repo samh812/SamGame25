@@ -46,6 +46,9 @@ SceneWarehouse::~SceneWarehouse()
     delete m_pWarehouseBackground;
     m_pWarehouseBackground = nullptr;
 
+    delete m_pPauseMenu;
+    m_pPauseMenu = nullptr;
+
     delete m_pCoinSprite;
     m_pCoinSprite = nullptr;
     delete m_pBagSprite;
@@ -66,6 +69,7 @@ SceneWarehouse::~SceneWarehouse()
 
 void SceneWarehouse::OnEnter() {
     m_soundSystem.PlaySound("bgm");
+    m_paused = false;
 };
 
 void SceneWarehouse::OnExit()
@@ -106,16 +110,25 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 
     m_pWarehouseBackground = renderer.CreateSprite("../assets/warehouse_background.png");
 
+    m_pPauseMenu = renderer.CreateSprite("../assets/pauseMenu.png");
+    float scaleX = static_cast<float>(renderer.GetWidth()) / m_pPauseMenu->GetWidth();
+    float scaleY = static_cast<float>(renderer.GetHeight()) / m_pPauseMenu->GetHeight();
+    float scale = std::max(scaleX, scaleY);  //ensuring background covers whole screen
+
+    m_pPauseMenu->SetX(renderer.GetWidth() / 2);
+    m_pPauseMenu->SetY(renderer.GetHeight() / 2);
+    m_pPauseMenu->SetScale(scale);
+
 
 
     m_pCoinSprite = renderer.CreateSprite("../assets/coin.png");
-	m_pCoinSprite->SetScale(0.3f);
+    m_pCoinSprite->SetScale(1.0f);
 
 
 
-    float scaleX = static_cast<float>(renderer.GetWidth()) / m_pWarehouseBackground->GetWidth();
-    float scaleY = static_cast<float>(renderer.GetHeight()) / m_pWarehouseBackground->GetHeight();
-    float scale = std::max(scaleX, scaleY);  //ensuring background covers whole screen
+    scaleX = static_cast<float>(renderer.GetWidth()) / m_pWarehouseBackground->GetWidth();
+    scaleY = static_cast<float>(renderer.GetHeight()) / m_pWarehouseBackground->GetHeight();
+    scale = std::max(scaleX, scaleY);  //ensuring background covers whole screen
 
     m_pWarehouseBackground->SetX(renderer.GetWidth() / 2);
     m_pWarehouseBackground->SetY(renderer.GetHeight() / 2);
@@ -147,24 +160,17 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 {
     XboxController* controller = inputSystem.GetController(0);
 
-    bool controllerCheck = false;
-    if (controller != nullptr) {
-        controllerCheck = controller->GetButtonState(SDL_CONTROLLER_BUTTON_B) == BS_PRESSED;
-    }
 
-    //Pausing logic
-    if (inputSystem.GetKeyState(SDL_SCANCODE_ESCAPE) == BS_PRESSED || controllerCheck)
+    //pause logic
+    bool controllerPausePressed = controller != nullptr && controller->GetButtonState(SDL_CONTROLLER_BUTTON_B) == BS_PRESSED;
+    bool keyboardPausePressed = inputSystem.GetKeyState(SDL_SCANCODE_ESCAPE) == BS_PRESSED;
+    bool pausePressed = keyboardPausePressed || controllerPausePressed;
+
+    if (pausePressed && !m_pauseKey)
     {
         m_paused = !m_paused;
-        if (m_paused)
-        {
-            PauseMenu(inputSystem);
-        }
-        else
-        {
-            RemoveTextById("paused");
-        }
     }
+    m_pauseKey = pausePressed;
 
 
     if (!m_paused) {
@@ -302,6 +308,9 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 
         m_soundSystem.Update();
     }
+    else {
+        PauseMenu(inputSystem);
+    }
 }
 
 void SceneWarehouse::Draw(Renderer& renderer)
@@ -312,6 +321,7 @@ void SceneWarehouse::Draw(Renderer& renderer)
     {
         m_pWarehouseBackground->Draw(renderer);
     }
+
 
     if (m_pPlayer)
         m_pPlayer->Draw(renderer);
@@ -376,6 +386,9 @@ void SceneWarehouse::Draw(Renderer& renderer)
 
 
     }
+    if (m_paused) {
+        m_pPauseMenu->Draw(renderer);
+    }
 }
 void SceneWarehouse::DebugDraw()
 {
@@ -387,6 +400,8 @@ void SceneWarehouse::DebugDraw()
   //      else{ImGui::Text("Production: OFF");}
   //      ImGui::Text("Beverage value (rounded int): %d base value: %f", m_bevValue, m_baseValue);
 		ImGui::Text("Active texts count: %d", m_activeTexts.size());
+        ImGui::Text("m_paused: %d", m_paused);
+
 
 		//ImGui::Text("Money Spawn interval: %f", m_spawnInterval);
 		//ImGui::Text("Money Grow interval: %f", m_growInterval);
@@ -662,13 +677,13 @@ bool SceneWarehouse::InitMachines(Renderer& renderer) {
 
         if (dynamic_cast<MachineBottler*>(pMachine))
         {
-            basePath = "../assets/machine_bottler_";
+            basePath = "../assets/machines/machine_bottler_";
             pMachine->SetUpgradeCosts({ 10, 75 , 1000}); // to lvl 1, to lvl 2
             pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.5f , 2.3f }); // broken, lvl1, lvl2
         }
         else if (dynamic_cast<MachineConveyor*>(pMachine))
         {
-            basePath = "../assets/machine_conveyor_";
+            basePath = "../assets/machines/machine_conveyor_";
             pMachine->SetUpgradeCosts({ 5, 40, 1000 });
             pMachine->SetValueIncrease({ 1.0f, 1.0f, 0.8f, 0.6f }); //0.8, 0.6 originally
 
@@ -676,21 +691,21 @@ bool SceneWarehouse::InitMachines(Renderer& renderer) {
         }
         else if (dynamic_cast<MachineFiller*>(pMachine))
         {
-            basePath = "../assets/machine_filler_";
+            basePath = "../assets/machines/machine_filler_";
             pMachine->SetUpgradeCosts({ 7, 80, 1000 });
             pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.6f, 2.3f });
 
         }
         else if (dynamic_cast<MachineCapper*>(pMachine))
         {
-            basePath = "../assets/machine_capper_";
+            basePath = "../assets/machines/machine_capper_";
             pMachine->SetUpgradeCosts({ 3, 60, 1000 });
             pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.4f, 2.3f });
 
         }
         else if (dynamic_cast<MachineLabeler*>(pMachine))
         {
-            basePath = "../assets/machine_labeler_";
+            basePath = "../assets/machines/machine_labeler_";
             pMachine->SetUpgradeCosts({ 5, 65, 1000 });
             pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.7f, 2.3f });
 
@@ -805,9 +820,33 @@ void SceneWarehouse::DeleteTexts() {
 void SceneWarehouse::PauseMenu(InputSystem& input) {
 
 
-    DrawText("PAUSED!", m_screenWidth * 0.5f, m_screenHeight * 0.5f, 0.0f, false, "paused");
+    XboxController* controller = input.GetController(0);
 
 
+    bool controllerY = false;
+    if (controller != nullptr) {
+        controllerY = controller->GetButtonState(SDL_CONTROLLER_BUTTON_Y) == BS_PRESSED;
+    }
+    bool controllerX = false;
+    if (controller != nullptr) {
+        controllerX = controller->GetButtonState(SDL_CONTROLLER_BUTTON_X) == BS_PRESSED;
+    }
+
+
+
+    //Unpause/continue
+    if (input.GetKeyState(SDL_SCANCODE_Y) == BS_PRESSED || controllerY)
+    {
+        //restart funciton here. Also restart on enter
+        printf("game restarted");
+
+    }
+    //Unpause/continue
+    if (input.GetKeyState(SDL_SCANCODE_Q) == BS_PRESSED || controllerX)
+    {
+        Game::GetInstance().SetCurrentScene(1);
+
+    }
 
 
 

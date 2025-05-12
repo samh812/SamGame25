@@ -104,7 +104,8 @@ private:
 	Sprite* m_pCoinSprite = nullptr;
 	std::list<ParticleSystem> m_particleSystems;
 
-	Sprite* m_pTitleText;
+	Sprite* m_pPauseMenu;
+	bool m_pauseKey = false;
 };
 
 #endif // __SCENEWAREHOUSE_H__
