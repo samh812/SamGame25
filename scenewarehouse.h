@@ -48,7 +48,7 @@ public:
 	void Tutorial(Renderer& renderer);
 	bool InitMachines(Renderer& renderer);
 	void DisplayUpgrade(int mindex);
-	void PauseMenu();
+	void PauseMenu(InputSystem& input);
 
 	float GetGrowInterval() const;
 	void OnEnter() override;
@@ -91,6 +91,8 @@ private:
 
 	bool m_coinsAdded = false;
 	bool m_displayingUpgrade = false;
+
+	bool m_paused = false;
 	std::vector<MoneyBag*> m_moneyBags;
 
 	std::default_random_engine m_rng;

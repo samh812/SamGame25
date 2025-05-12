@@ -76,7 +76,7 @@ void SceneWarehouse::OnExit()
 
 bool SceneWarehouse::Initialise(Renderer& renderer)
 {
-
+    m_paused = false;
     m_screenWidth = static_cast<float>(renderer.GetWidth());
     m_screenHeight = static_cast<float>(renderer.GetHeight());
 
@@ -147,141 +147,163 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 {
     XboxController* controller = inputSystem.GetController(0);
 
-    if (inputSystem.GetKeyState(SDL_SCANCODE_ESCAPE) == (BS_PRESSED)) {
-        //PauseMenu();
-    };
-	m_tutInterval += deltaTime;
-    //m_pTitleText->Process(deltaTime);
-    if (m_pPlayer)
+    bool controllerCheck = false;
+    if (controller != nullptr) {
+        controllerCheck = controller->GetButtonState(SDL_CONTROLLER_BUTTON_B) == BS_PRESSED;
+    }
+
+    //Pausing logic
+    if (inputSystem.GetKeyState(SDL_SCANCODE_ESCAPE) == BS_PRESSED || controllerCheck)
     {
-        m_pPlayer->Process(deltaTime, inputSystem);
-
-
-        //check for upgrade collision
-        for (size_t i = 0; i < m_machines.size(); ++i)
+        m_paused = !m_paused;
+        if (m_paused)
         {
-            // if pmachine isinupgradearea, display upgrade cost and details, with smaller text? Or i can jsut display in a central place?
-            if (m_machines[i]->IsPlayerInUpgradeArea(m_pPlayer)) //Upgrade on E or ENTER
-            {
+            PauseMenu(inputSystem);
+        }
+        else
+        {
+            RemoveTextById("paused");
+        }
+    }
 
-                DisplayUpgrade(i);
+
+    if (!m_paused) {
+
+
+
+
+        m_tutInterval += deltaTime;
+        //m_pTitleText->Process(deltaTime);
+        if (m_pPlayer)
+        {
+            m_pPlayer->Process(deltaTime, inputSystem);
+
+
+            //check for upgrade collision
+            for (size_t i = 0; i < m_machines.size(); ++i)
+            {
+                // if pmachine isinupgradearea, display upgrade cost and details, with smaller text? Or i can jsut display in a central place?
+                if (m_machines[i]->IsPlayerInUpgradeArea(m_pPlayer)) //Upgrade on E or ENTER
+                {
+
+                    DisplayUpgrade(i);
+
+                    bool controllerCheck = false;
+                    if (controller != nullptr) {
+                        controllerCheck = controller->GetButtonState(SDL_CONTROLLER_BUTTON_A) == BS_PRESSED;
+                    }
+
+                    if (m_machines[i]->GetUpgradeLevel() < m_machines[i]->GetNumUpgrades() && inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED || controllerCheck) {
+                        int upgradeCost = m_machines[i]->GetUpgradeCost(); //get specific machine's upgrade cost
+                        if (m_pPlayer->SpendMoney(upgradeCost)) { //if player has enough money
+                            m_machines[i]->Upgrade();
+                            m_totalUpgradeLevel++;
+
+                        }
+                    }
+
+                }
+                else {
+                }
+
+            }
+
+            if (StartProduction()) {
+                Production(deltaTime);
+            }
+
+
+            if (StartProduction() && m_moneyGrowTimer >= m_growInterval) //grow pot for every drink sold, but only spawn money bags occasionally
+            {
+                m_moneyPot += m_bevValue;//add money to a total pot every time beverage is sold
+                m_totalSold++;
+                if (m_moneySpawnTimer >= m_spawnInterval) {//if bag is ready to be spawned
+                    for (MoneyBag* pBag : m_moneyBags)
+                    {
+                        if (!pBag->IsActive())
+                        {
+                            Vector2 randPos(m_spawnXDist(m_rng), m_spawnYDist(m_rng));
+                            pBag->SetValue(m_moneyPot);
+                            pBag->Activate(randPos);
+                            m_moneyPot = 0; //reset pot after spawning
+                            break;
+                        }
+                    }
+                    m_moneySpawnTimer = 0.0f;
+                }
+                m_moneyGrowTimer = 0.0f;
+            }
+
+            //check player pickup
+
+            for (MoneyBag* pBag : m_moneyBags)
+            {
 
                 bool controllerCheck = false;
                 if (controller != nullptr) {
                     controllerCheck = controller->GetButtonState(SDL_CONTROLLER_BUTTON_A) == BS_PRESSED;
                 }
+                if (pBag->IsActive() && m_pPlayer->IsCollidingWith(*pBag)) {
+                    if (inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED ||
+                        controllerCheck) {
+                        m_pPlayer->AddMoney(pBag->GetValue());
 
-                if (m_machines[i]->GetUpgradeLevel() < m_machines[i]->GetNumUpgrades() && inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED || controllerCheck) {
-                    int upgradeCost = m_machines[i]->GetUpgradeCost(); //get specific machine's upgrade cost
-                    if (m_pPlayer->SpendMoney(upgradeCost)) { //if player has enough money
-                        m_machines[i]->Upgrade();
-                        m_totalUpgradeLevel++;
+                        m_soundSystem.PlaySound("coin");
+                        //trigger coin particle effect
+                        ParticleSystem ps;
+                        ps.Initialise(m_pCoinSprite, m_pPlayer, 50);
+                        ps.ActivateAt(pBag->GetPosition());
+                        m_particleSystems.push_back(std::move(ps));
 
+                        pBag->Deactivate();
                     }
                 }
+            }
+        }
 
+        for (auto it = m_particleSystems.begin(); it != m_particleSystems.end(); ) {
+            it->Update(deltaTime);
+            if (it->IsFinished()) {
+                it = m_particleSystems.erase(it);
             }
             else {
+                ++it;
             }
-
         }
 
-		if (StartProduction()) {
-            Production(deltaTime);
-		}
-
-
-        if (StartProduction() && m_moneyGrowTimer >= m_growInterval) //grow pot for every drink sold, but only spawn money bags occasionally
+        for (Machine* pMachine : m_machines)
         {
-			m_moneyPot += m_bevValue;//add money to a total pot every time beverage is sold
-			m_totalSold++;
-            if (m_moneySpawnTimer >= m_spawnInterval) {//if bag is ready to be spawned
-                for (MoneyBag* pBag : m_moneyBags)
-                {
-                    if (!pBag->IsActive())
-                    {
-                        Vector2 randPos(m_spawnXDist(m_rng), m_spawnYDist(m_rng));
-                        pBag->SetValue(m_moneyPot);
-                        pBag->Activate(randPos);
-						m_moneyPot = 0; //reset pot after spawning
-                        break;
-                    }
-                }
-				m_moneySpawnTimer = 0.0f;
-            }
-            m_moneyGrowTimer = 0.0f;
+            pMachine->Process(deltaTime, inputSystem);
         }
 
-        //check player pickup
 
-        for (MoneyBag* pBag : m_moneyBags)
-        {
 
-            bool controllerCheck = false;
-            if (controller != nullptr) {
-                controllerCheck = controller->GetButtonState(SDL_CONTROLLER_BUTTON_A) == BS_PRESSED;
-            }
-            if (pBag->IsActive() && m_pPlayer->IsCollidingWith(*pBag)) {
-                if (inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED ||
-                    controllerCheck) {
-                    m_pPlayer->AddMoney(pBag->GetValue());
+        for (Particle& particle : m_coinParticles) {
+            particle.Update(deltaTime);
+        }
 
-                    m_soundSystem.PlaySound("coin");
-                    //trigger coin particle effect
-                    ParticleSystem ps;
-                    ps.Initialise(m_pCoinSprite, m_pPlayer, 50);
-                    ps.ActivateAt(pBag->GetPosition());
-                    m_particleSystems.push_back(std::move(ps));
-
-                    pBag->Deactivate();
+        for (auto it = m_activeTexts.begin(); it != m_activeTexts.end(); ) {
+            if (it->timeRemaining > 0.0f) {
+                it->timeRemaining -= deltaTime;
+                if (it->timeRemaining <= 0.0f) {
+                    it = m_activeTexts.erase(it);
+                    continue;
                 }
             }
-        }
-    }
 
-    for (auto it = m_particleSystems.begin(); it != m_particleSystems.end(); ) {
-        it->Update(deltaTime);
-        if (it->IsFinished()) {
-            it = m_particleSystems.erase(it);
-        }
-        else {
+            if (it->typeWriter && it->charsVisible < it->text.size()) {
+                it->typeTimer += deltaTime;
+                if (it->typeTimer >= 0.05f) {
+                    ++it->charsVisible;
+                    it->typeTimer = 0.0f;
+                }
+            }
+
             ++it;
         }
+
+        m_soundSystem.Update();
     }
-
-    for (Machine* pMachine : m_machines)
-    {
-        pMachine->Process(deltaTime, inputSystem);
-    }
-
-
-
-    for (Particle& particle : m_coinParticles) {
-        particle.Update(deltaTime);
-    }
-
-    for (auto it = m_activeTexts.begin(); it != m_activeTexts.end(); ) {
-        if (it->timeRemaining > 0.0f) {
-            it->timeRemaining -= deltaTime;
-            if (it->timeRemaining <= 0.0f) {
-                it = m_activeTexts.erase(it);
-                continue;
-            }
-        }
-
-        if (it->typeWriter && it->charsVisible < it->text.size()) {
-            it->typeTimer += deltaTime;
-            if (it->typeTimer >= 0.05f) {
-                ++it->charsVisible;
-                it->typeTimer = 0.0f;
-            }
-        }
-
-        ++it;
-    }
-
-    m_soundSystem.Update();
-
 }
 
 void SceneWarehouse::Draw(Renderer& renderer)
@@ -782,11 +804,12 @@ void SceneWarehouse::DeleteTexts() {
 }
 
 
-void SceneWarehouse::PauseMenu() {
+void SceneWarehouse::PauseMenu(InputSystem& input) {
 
 
-    DrawText("Level ", m_screenWidth * 0.04f, m_screenHeight * 0.4f, 0.006f, false);
-    DrawText("Paused", m_screenWidth * 0.09f, m_screenHeight * 0.4f, 0.006f, false);
+    DrawText("PAUSED!", m_screenWidth * 0.5f, m_screenHeight * 0.5f, 0.0f, false, "paused");
+
+
 
 
 
