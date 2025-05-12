@@ -33,6 +33,7 @@ public:
 	void AddAnimatedUpgradeSprite(std::unique_ptr<AnimatedSprite> sprite);
 
 	int GetUpgradeLevel() const;
+	void SetUpgradeLevel(int level);
 	int GetNumUpgrades() const;
 
 	int GetUpgradeCost() const;

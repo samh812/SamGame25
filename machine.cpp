@@ -110,6 +110,10 @@ int Machine::GetUpgradeLevel() const
 {
 	return m_upgradeLevel;
 }
+
+void Machine::SetUpgradeLevel(int level) {
+    m_upgradeLevel = level;
+}
 int Machine::GetNumUpgrades() const
 {
 	return m_numUpgrades;

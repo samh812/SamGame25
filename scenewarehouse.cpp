@@ -70,11 +70,33 @@ SceneWarehouse::~SceneWarehouse()
 void SceneWarehouse::OnEnter() {
     m_soundSystem.PlaySound("bgm");
     m_paused = false;
+
 };
 
 void SceneWarehouse::OnExit()
 {
     m_soundSystem.StopSound("bgm");
+
+    m_tutInterval = 2.0f;
+    m_tutStage = 0;
+    m_totalSold = 0;
+    m_pPlayer->SpendMoney(m_pPlayer->GetMoney());
+    m_totalUpgradeLevel = 0;
+
+    for (Machine* machine : m_machines)
+    {
+        machine->SetUpgradeLevel(-1);
+        machine->Upgrade();
+    }
+    for (MoneyBag* pBag : m_moneyBags)
+    {
+        pBag->Deactivate();
+    }
+
+    
+
+
+
 
 }
 
@@ -122,7 +144,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 
 
     m_pCoinSprite = renderer.CreateSprite("../assets/coin.png");
-    m_pCoinSprite->SetScale(1.0f);
+    m_pCoinSprite->SetScale(0.5f);
 
 
 
@@ -838,7 +860,8 @@ void SceneWarehouse::PauseMenu(InputSystem& input) {
     if (input.GetKeyState(SDL_SCANCODE_Y) == BS_PRESSED || controllerY)
     {
         //restart funciton here. Also restart on enter
-        printf("game restarted");
+        OnExit();
+        OnEnter();
 
     }
     //Unpause/continue
