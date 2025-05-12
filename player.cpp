@@ -24,12 +24,13 @@ bool Player::Initialise(Renderer& renderer)
 {
 
     m_pRenderer = &renderer;
-    m_pAnimSprite = m_pRenderer->CreateAnimatedSprite("../assets/explosion.png");
-    m_pAnimSprite->SetupFrames(66, 66);
+    m_pAnimSprite = m_pRenderer->CreateAnimatedSprite("../assets/playerAnimSprite.png");
+    m_pAnimSprite->SetupFrames(128, 128);
     m_pAnimSprite->SetLooping(true);
     m_pAnimSprite->SetFrameDuration(0.2f);
     m_pAnimSprite->Animate();
     m_pAnimSprite->SetScale(1.0f);
+
     if (m_pAnimSprite == nullptr)
     {
         return false;

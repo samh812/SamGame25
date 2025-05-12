@@ -170,8 +170,6 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
     if (!m_paused) {
 
 
-
-
         m_tutInterval += deltaTime;
         //m_pTitleText->Process(deltaTime);
         if (m_pPlayer)
@@ -626,7 +624,7 @@ bool SceneWarehouse::InitMachines(Renderer& renderer) {
     float currentX = startX;
 
     //dynamic upgrade area size
-    float dynamicYOffset = m_screenHeight * 0.15f;  //15% above the machine
+    float dynamicYOffset = m_screenHeight * 0.2f;  //15% above the machine
     float upgradeAreaYOffset = yOffset - dynamicYOffset;
 
     for (int i = 0; i < numMachines; ++i)
@@ -737,7 +735,7 @@ bool SceneWarehouse::InitMachines(Renderer& renderer) {
         pMachine->SetPosition(Vector2(currentX + width / 2.0f, yOffset));
 
         //set upgrade area width to match the specific machine width
-        pMachine->SetUpgradeArea(Vector2(currentX, upgradeAreaYOffset), width, m_screenHeight * 0.075f); //using machine width
+        pMachine->SetUpgradeArea(Vector2(currentX, upgradeAreaYOffset), width, m_screenHeight * 0.125f); //using machine width
 
         m_machines.push_back(pMachine);
         currentX += width;

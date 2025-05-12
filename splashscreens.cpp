@@ -17,6 +17,10 @@ Splashscreens::~Splashscreens()
         delete FMOD_splash;
         FMOD_splash = nullptr;
     }
+    if (AUT_splash) {
+        delete AUT_splash;
+        AUT_splash = nullptr;
+    }
 
 }
 

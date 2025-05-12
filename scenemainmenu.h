@@ -20,6 +20,7 @@ public:
 
 private:
     bool m_menuActive;
+    Sprite* m_pMainMenuSprite;
 };
 
 #endif 
