@@ -54,7 +54,6 @@ void Player::Process(float deltaTime, InputSystem& inputSystem)
     XboxController* controller = inputSystem.GetController(0);
     if (controller != nullptr && controller->IsConnected())
     {
-        printf("controller connected!");
         Vector2 stick = controller->GetLeftStick();
 
         //normalise

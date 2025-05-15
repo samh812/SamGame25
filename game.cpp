@@ -17,7 +17,7 @@
 #include "splashscreens.h"
 
 #include "inputsystem.h"
-
+#include <thread>
 #include "imgui/imgui_impl_sdl2.h"
 #include "imgui/imgui_impl_opengl3.h"
 
