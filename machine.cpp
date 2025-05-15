@@ -202,7 +202,7 @@ float Machine::GetValueIncreases() const {
 
 
 float Machine::GetNextValueIncrease() const {
-    if (m_upgradeLevel >= 0 && m_upgradeLevel < static_cast<int>(m_increases.size())) {
+    if (m_upgradeLevel >= 0 && m_upgradeLevel < static_cast<int>(m_increases.size())-1) {
         return m_increases[m_upgradeLevel+1];
     }
     return 0.0f;

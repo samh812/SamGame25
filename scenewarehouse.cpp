@@ -71,6 +71,7 @@ void SceneWarehouse::OnEnter() {
     m_soundSystem.PlaySound("bgm");
     m_paused = false;
 
+
 };
 
 void SceneWarehouse::OnExit()
@@ -102,6 +103,7 @@ void SceneWarehouse::OnExit()
 
 bool SceneWarehouse::Initialise(Renderer& renderer)
 {
+
     m_paused = false;
     m_screenWidth = static_cast<float>(renderer.GetWidth());
     m_screenHeight = static_cast<float>(renderer.GetHeight());
@@ -116,7 +118,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 
 
 	m_tutInterval = 2.0f;
-    m_pBagSprite = renderer.CreateSprite("../assets/ball.png");
+    m_pBagSprite = renderer.CreateSprite("../assets/moneyBag.png");
     m_pBagSprite->SetScale(0.13f);
     for (int i = 0; i < 10; ++i)
     {
@@ -127,7 +129,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         pBag->Deactivate();
         m_moneyBags.push_back(pBag);
     }
-    DrawText("Shekels       $", m_screenWidth * 0.04f, m_screenHeight * 0.09f, 0.0f, true);
+    DrawText("Shekels        $", m_screenWidth * 0.04f, m_screenHeight * 0.09f, 0.0f, true);
     DrawText("Beverages", m_screenWidth * 0.04f, m_screenHeight * 0.16f, 0.0f, true);
 
     m_pWarehouseBackground = renderer.CreateSprite("../assets/warehouse_background.png");
@@ -423,10 +425,12 @@ void SceneWarehouse::DebugDraw()
   //      ImGui::Text("Beverage value (rounded int): %d base value: %f", m_bevValue, m_baseValue);
 		ImGui::Text("Active texts count: %d", m_activeTexts.size());
         ImGui::Text("m_paused: %d", m_paused);
-
+        // Show the frame rate (FPS)
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+            1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
 		//ImGui::Text("Money Spawn interval: %f", m_spawnInterval);
-		//ImGui::Text("Money Grow interval: %f", m_growInterval);
+		ImGui::Text("Money Grow interval: %f", m_growInterval);
 		//ImGui::Text("Money Pot: %d", m_moneyPot);
   //      ImGui::Text("Tutorial interval: %f", m_tutInterval);
 
@@ -575,6 +579,7 @@ void SceneWarehouse::Production(float time) {
     m_moneySpawnTimer += time;
 	m_baseValue = 15.0f;
     m_growInterval = 2.0f;
+
     for (Machine* machine : m_machines) {
 
         if (machine) {
@@ -622,6 +627,7 @@ void SceneWarehouse::Tutorial(Renderer& renderer) {
             break;
 		case 3:
             DrawText("Press E / A next to a machine to upgrade it", m_screenWidth * xText, m_screenHeight * 0.15f, 7.0f, true);
+            DrawText("Fix all the machines to start production", m_screenWidth * xText, m_screenHeight * 0.12f, 7.0f, true);
             break;
 
         case 5:
@@ -700,36 +706,36 @@ bool SceneWarehouse::InitMachines(Renderer& renderer) {
         if (dynamic_cast<MachineBottler*>(pMachine))
         {
             basePath = "../assets/machines/machine_bottler_";
-            pMachine->SetUpgradeCosts({ 10, 75 , 1000}); // to lvl 1, to lvl 2
-            pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.5f , 2.3f }); // broken, lvl1, lvl2
+            pMachine->SetUpgradeCosts({ 10, 75 , 1000, 10000, 30000}); // to lvl 1, to lvl 2
+            pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.5f , 2.3f, 2.7f, 3.0f }); // broken, lvl1, lvl2
         }
         else if (dynamic_cast<MachineConveyor*>(pMachine))
         {
             basePath = "../assets/machines/machine_conveyor_";
-            pMachine->SetUpgradeCosts({ 5, 40, 1000 });
-            pMachine->SetValueIncrease({ 1.0f, 1.0f, 0.8f, 0.6f }); //0.8, 0.6 originally
+            pMachine->SetUpgradeCosts({ 5, 40, 1000, 10000, 30000});
+            pMachine->SetValueIncrease({ 1.0f, 1.0f, 0.5f, 0.25f, 0.05f, 0.003f }); //0.8, 0.6 originally
 
 
         }
         else if (dynamic_cast<MachineFiller*>(pMachine))
         {
             basePath = "../assets/machines/machine_filler_";
-            pMachine->SetUpgradeCosts({ 7, 80, 1000 });
-            pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.6f, 2.3f });
+            pMachine->SetUpgradeCosts({ 7, 80, 1000, 10000, 30000});
+            pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.6f, 2.3f, 2.7f, 3.0f });
 
         }
         else if (dynamic_cast<MachineCapper*>(pMachine))
         {
             basePath = "../assets/machines/machine_capper_";
-            pMachine->SetUpgradeCosts({ 3, 60, 1000 });
-            pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.4f, 2.3f });
+            pMachine->SetUpgradeCosts({ 3, 60, 1000, 10000, 30000});
+            pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.4f, 2.3f, 2.7f, 3.0f });
 
         }
         else if (dynamic_cast<MachineLabeler*>(pMachine))
         {
             basePath = "../assets/machines/machine_labeler_";
-            pMachine->SetUpgradeCosts({ 5, 65, 1000 });
-            pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.7f, 2.3f });
+            pMachine->SetUpgradeCosts({ 5, 65, 1000, 10000, 30000});
+            pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.7f, 2.3f, 2.7f, 3.0f });
 
         }
         for (int level = 0; level <= numUpgrades; ++level)
@@ -739,7 +745,7 @@ bool SceneWarehouse::InitMachines(Renderer& renderer) {
             //animated conveyor
             if (dynamic_cast<MachineConveyor*>(pMachine)) {
                 std::unique_ptr<AnimatedSprite> animatedUpgradeSprite = std::unique_ptr<AnimatedSprite>(renderer.CreateAnimatedSprite(fullPath.c_str()));
-                animatedUpgradeSprite->SetupFrames(128, 64);
+                animatedUpgradeSprite->SetupFrames(225, 160);
                 animatedUpgradeSprite->SetLooping(true);
                 animatedUpgradeSprite->Animate();
                 animatedUpgradeSprite->SetScale(1.0f);
@@ -784,21 +790,26 @@ bool SceneWarehouse::InitMachines(Renderer& renderer) {
 void SceneWarehouse::DisplayUpgrade(int mindex) {
 
     std::string currentLevel = std::to_string(m_machines[mindex]->GetUpgradeLevel());
+
     std::string nextCost = std::to_string(m_machines[mindex]->GetUpgradeCost());
     std::string upgradeDetails;
-    int increase;
+    int increase = (static_cast<int>(m_machines[mindex]->GetNextValueIncrease() * 100.0f));
+
+
+
+
+
 
 
 
     if (dynamic_cast<MachineConveyor*>(m_machines[mindex])) { //if conveyor display production increase
         upgradeDetails = "Production speed +";
-        increase = (static_cast<int>(m_machines[mindex]->GetNextValueIncrease() * 100.0f));
+
         upgradeDetails += std::to_string(100-increase);
         upgradeDetails += "%";
     }
     else {                                                     //else display value increase
         upgradeDetails = "Beverage value +";
-        increase = (static_cast<int>(m_machines[mindex]->GetNextValueIncrease() * 100.0f));
         upgradeDetails += std::to_string(increase);
         upgradeDetails += "%";
 

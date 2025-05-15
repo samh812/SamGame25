@@ -74,7 +74,7 @@ private:
 	std::vector<std::unique_ptr<AnimatedSprite>> m_animatedUpgradeSprites;
 
 	int m_upgradeLevel;
-	int m_numUpgrades = 2;
+	int m_numUpgrades = 5;
 	std::vector<int> m_upgradeCosts;
 	std::vector<float> m_increases;
 

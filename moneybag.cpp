@@ -6,7 +6,7 @@ MoneyBag::MoneyBag()
 }
 MoneyBag::~MoneyBag()
 {
-    printf("HII");
+    
 }
 
 void MoneyBag::SetValue(int value) {
