@@ -15,7 +15,7 @@ class Particle {
 public:
     Particle();
 
-    void Initialise(Sprite* sprite, ParticleType type = ParticleType::Coin); //default coin for now
+    void Initialise(Sprite* sprite, ParticleType type = ParticleType::Coin);
     void Activate(Vector2 position);
     void Update(float deltaTime);
     void Draw(Renderer& renderer);

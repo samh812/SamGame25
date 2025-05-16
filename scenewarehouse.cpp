@@ -430,58 +430,32 @@ void SceneWarehouse::DebugDraw()
 {
     if (m_pPlayer)
     {
-  //      Vector2 playerPos = m_pPlayer->GetPosition();
-  //      ImGui::Text("Player Position: X = %.2f, Y = %.2f", playerPos.x, playerPos.y);
-  //      if (StartProduction()) {ImGui::Text("Production: ON Interval: %f", m_growInterval);}
-  //      else{ImGui::Text("Production: OFF");}
-  //      ImGui::Text("Beverage value (rounded int): %d base value: %f", m_bevValue, m_baseValue);
-		ImGui::Text("Active texts count: %d", m_activeTexts.size());
-        ImGui::Text("m_paused: %d", m_paused);
-        // Show the frame rate (FPS)
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
-            1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        //Display FPS and frame time
+        ImGui::Text("%.1f FPS | Frame time: %.3f ms", ImGui::GetIO().Framerate, 1000.0f / ImGui::GetIO().Framerate);
 
-		//ImGui::Text("Money Spawn interval: %f", m_spawnInterval);
-		ImGui::Text("Money Grow interval: %f", m_growInterval);
-		//ImGui::Text("Money Pot: %d", m_moneyPot);
-  //      ImGui::Text("Tutorial interval: %f", m_tutInterval);
-
-
-
-        //ACTUAL DEBUGGING
-
+        ImGui::Text("Debugging Tools:");
         //1. Grant player shekels
         static int giveMoney = 0;
         ImGui::InputInt("Give player shekels", &giveMoney);
         if (ImGui::Button("Apply")) {
             m_pPlayer->AddMoney(giveMoney);
         }
-            // Money per second calculation
+        //Beverages sold per second
         float currentTime = ImGui::GetTime();
         if (currentTime - m_lastMoneyCheckTime >= 1.0f)
         {
-            int currentMoney = m_totalSold; // Assumes GetMoney() exists
-            int deltaMoney = currentMoney - m_lastMoneyAmount;
-            m_moneyPerSecond = static_cast<float>(deltaMoney) / (currentTime - m_lastMoneyCheckTime);
+            int currentSold = m_totalSold; // Assumes GetMoney() exists
+            int delta = currentSold - m_lastSoldAmount;
+            m_moneyPerSecond = static_cast<float>(delta) / (currentTime - m_lastMoneyCheckTime);
 
-            m_lastMoneyAmount = currentMoney;
+            m_lastSoldAmount = currentSold;
             m_lastMoneyCheckTime = currentTime;
         }
 
-        ImGui::Text("Bevs per second: %.6f", m_moneyPerSecond);
+        ImGui::Text("Bevs per second: %.1f", m_moneyPerSecond);
     }
 
 
-
-    //void SceneBouncingBalls::DebugDraw
-    //()
-    //{
-    //    ImGui::Text("Scene: Bouncing Balls");
-    //    ImGui::SliderInt("Show Count", &m_iShowCount, 1, 10);
-    //    static int editBallNumber = 0;
-    //    ImGui::SliderInt("Edit ball", &editBallNumber, 0, 9);
-    //    m_pBalls[editBallNumber]->DebugDraw();
-    //}
     int i = 0;
     for (Machine* machine : m_machines)
     {
@@ -489,29 +463,10 @@ void SceneWarehouse::DebugDraw()
         {
             bool inArea = machine->IsPlayerInUpgradeArea(m_pPlayer);
             bool upgraded = machine->IsUpgraded();
-            int upgradeLevel = machine->GetUpgradeLevel(); // Get the upgrade level
-
-            //ImGui::Text("Machine %d:", i+1);
-            //Vector2 pos = machine->GetPosition();
-            //ImGui::Text("machine position: X = %.2f, Y = %.2f", pos.x, pos.y);
-
-            //ImGui::BulletText("In Upgrade Area: %s", inArea ? "YES" : "no");
-            //ImGui::BulletText("Machine value increase float: %f", machine->GetValueIncreases());
-            //ImGui::BulletText("Upgrade Level: %d", upgradeLevel); // Display upgrade level
+            int upgradeLevel = machine->GetUpgradeLevel();
             ++i;
         }
     }
-
-    //for (MoneyBag* bag : m_moneyBags) {
-    //    if (bag->IsActive()) {
-    //        ImGui::Text("Bag %d:", i + 1);
-    //        Vector2 pos = bag->GetPosition();
-    //        ImGui::Text("Bag position: X = %.2f, Y = %.2f", pos.x, pos.y);
-
-
-    //    }
-    //}
-
 }
 
 
@@ -731,8 +686,8 @@ bool SceneWarehouse::InitMachines(Renderer& renderer) {
         if (dynamic_cast<MachineBottler*>(pMachine))
         {
             basePath = "../assets/machines/machine_bottler_";
-            pMachine->SetUpgradeCosts({ 10, 75 , 1000, 10000, 30000}); // to lvl 1, to lvl 2
-            pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.5f , 2.3f, 2.7f, 3.0f }); // broken, lvl1, lvl2
+            pMachine->SetUpgradeCosts({ 10, 75 , 1000, 10000, 30000}); //to lvl 1, to lvl 2
+            pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.5f , 2.3f, 2.7f, 3.0f }); //broken, lvl1, lvl2
         }
         else if (dynamic_cast<MachineConveyor*>(pMachine))
         {
@@ -857,7 +812,7 @@ void SceneWarehouse::DisplayUpgrade(int mindex) {
         DrawText("Maxed out!", m_screenWidth * 0.04f, m_screenHeight * 0.45f, 0.0f, false, "upgrade_label");
 
     }
-    else { //
+    else { //Display next cost and upgrade details
         DrawText("Upgrade Cost $", m_screenWidth * 0.04f, m_screenHeight * 0.45f, 0.0f, false, "upgrade_label");
         DrawText(nextCost, m_screenWidth * 0.17f, m_screenHeight * 0.45f, 0.0f, false, "upgrade_cost");
         DrawText(upgradeDetails, m_screenWidth * 0.04f, m_screenHeight * 0.5f, 0.0f, false, "upgrade_details");
@@ -892,15 +847,15 @@ void SceneWarehouse::PauseMenu(InputSystem& input) {
 
 
 
-    //Unpause/continue
     if (input.GetKeyState(SDL_SCANCODE_Y) == BS_PRESSED || controllerY)
     {
-        //restart funciton here. Also restart on enter
+        //restarting
         OnExit();
         OnEnter();
 
     }
-    //Unpause/continue
+
+    //quit to main menu
     if (input.GetKeyState(SDL_SCANCODE_Q) == BS_PRESSED || controllerX)
     {
         Game::GetInstance().SetCurrentScene(1);

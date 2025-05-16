@@ -191,13 +191,14 @@ void Game::DebugDraw
 	{
 		bool open = true;
 		ImGui::Begin("Debug Window", &open, ImGuiWindowFlags_MenuBar);
-		ImGui::Text("COMP710 GP Framework (%s)", "2024, S2");
+		ImGui::Text("The Last Bottler | COMP710 GP Framework (%s)", "2025, S1");
+
+		ImGui::Text("Active scene: %d", m_iCurrentScene);
+		m_scenes[m_iCurrentScene]->DebugDraw();
 		if (ImGui::Button("Quit"))
 		{
 			Quit();
 		}
-		ImGui::Text("Active scene: %d", m_iCurrentScene);
-		m_scenes[m_iCurrentScene]->DebugDraw();
 		ImGui::End();
 	}
 }

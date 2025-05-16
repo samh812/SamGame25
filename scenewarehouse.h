@@ -112,7 +112,7 @@ private:
 
 
 	float m_lastMoneyCheckTime = 0.0f;
-	int m_lastMoneyAmount = 0;
+	int m_lastSoldAmount = 0;
 	float m_moneyPerSecond = 0.0f;
 };
 
