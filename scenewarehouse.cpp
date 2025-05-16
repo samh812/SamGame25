@@ -42,20 +42,39 @@ SceneWarehouse::~SceneWarehouse()
     m_machines.clear();
 
 
+    if (m_pWarehouseBackground) {
+        delete m_pWarehouseBackground;
+        m_pWarehouseBackground = nullptr;
+    }
 
-    delete m_pWarehouseBackground;
-    m_pWarehouseBackground = nullptr;
+    if (m_pPauseMenu) {
+        delete m_pPauseMenu;
+        m_pPauseMenu = nullptr;
+    }
 
-    delete m_pPauseMenu;
-    m_pPauseMenu = nullptr;
 
-    delete m_pCoinSprite;
-    m_pCoinSprite = nullptr;
+    if (m_pCoinSprite) {
+        delete m_pCoinSprite;
+        m_pCoinSprite = nullptr;
+    }
 
-    delete m_pCoinSprite;
-    m_pCoinSprite = nullptr;
-    delete m_pBagSprite;
-    m_pBagSprite = nullptr;
+
+    if (m_pSparkSprite) {
+        delete m_pSparkSprite;
+        m_pSparkSprite = nullptr;
+
+    }
+    if (m_pBagSprite) {
+        delete m_pBagSprite;
+        m_pBagSprite = nullptr;
+    }
+
+
+
+    if (m_pAssistant) {
+        delete m_pAssistant;
+        m_pAssistant = nullptr;
+    }
     for (auto& pair : m_charSprites)
     {
         delete pair.second;
@@ -64,10 +83,13 @@ SceneWarehouse::~SceneWarehouse()
 
     for (MoneyBag* pBag : m_moneyBags)
     {
-        delete pBag;  // Only deletes the MoneyBag, not its sprite
+        delete pBag;
     }
     m_moneyBags.clear();
     m_soundSystem.Release();
+
+
+
 }
 
 void SceneWarehouse::OnEnter() {
@@ -118,6 +140,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
     m_soundSystem.LoadSound("bgm", "../assets/sounds/bgm.mp3", true);
 
     m_soundSystem.LoadSound("coin", "../assets/sounds/coin.wav");
+    m_soundSystem.LoadSound("upgrade", "../assets/sounds/upgrade.wav");
 
 
 
@@ -176,7 +199,9 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
     m_pAssistant = new Assistant();
     Sprite* assistantSprite = renderer.CreateSprite("../assets/ball.png");
     assistantSprite->SetScale(0.25f);
-    m_pAssistant->Initialise(assistantSprite, m_pPlayer);
+    assistantSprite->SetX(m_screenWidth * 0.9f);
+    assistantSprite->SetY(m_screenHeight * 0.5f);
+    m_pAssistant->Initialise(assistantSprite, m_pPlayer, m_screenWidth, m_screenHeight);
 
 
     InitMachines(renderer);
@@ -237,6 +262,7 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
                     if (m_machines[i]->GetUpgradeLevel() < m_machines[i]->GetNumUpgrades() && inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED || controllerCheck) {
                         int upgradeCost = m_machines[i]->GetUpgradeCost(); //get specific machine's upgrade cost
                         if (m_pPlayer->SpendMoney(upgradeCost)) { //if player has enough money
+                            m_soundSystem.PlaySound("upgrade");
                             ParticleSystem ps;
                             ps.Initialise(m_pSparkSprite, m_pPlayer, 50, ParticleType::Spark);
                             ps.ActivateAt(m_machines[i]->GetPosition());
@@ -308,15 +334,27 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
                 }
             }
         }
-        // One-time unlock logic
-        if (!m_assistantUnlocked && m_pPlayer->GetMoney() >= 500) {
-            m_pPlayer->SpendMoney(500);
-            m_assistantUnlocked = true;
-            m_pAssistant->Unlock();
+
+
+        bool controllerCheck = false;
+        if (controller != nullptr) {
+            controllerCheck = controller->GetButtonState(SDL_CONTROLLER_BUTTON_A) == BS_PRESSED;
         }
 
+        //onetime assistant unlock
+        if (!m_assistantUnlocked && inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED || controllerCheck) {
+            int assistantCost = 10000;
+            if (m_pPlayer->SpendMoney(assistantCost)) { //if player has enough money
+                m_soundSystem.PlaySound("upgrade");
+                m_assistantUnlocked = true;
+                m_pAssistant->Unlock();
+
+            }
+        }
+
+
         // Update AI assistant
-        if (m_assistantUnlocked && m_pAssistant) {
+        if (m_pAssistant) {
             m_pAssistant->Update(deltaTime, m_moneyBags);
         }
 
@@ -381,7 +419,7 @@ void SceneWarehouse::Draw(Renderer& renderer)
     if (m_pPlayer) {
         m_pPlayer->Draw(renderer);
     }
-    if (m_assistantUnlocked && m_pAssistant) {
+    if (m_pAssistant) {
         m_pAssistant->Draw(renderer);
     }
 

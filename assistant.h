@@ -5,6 +5,7 @@
 #include "sprite.h"
 #include "player.h"
 #include "moneybag.h"
+#include "soundsystem.h"
 
 #include <vector>
 
@@ -23,14 +24,17 @@ public:
     Assistant();
     ~Assistant();
 
-    void Initialise(Sprite* sprite, Player* player);
+    void Initialise(Sprite* sprite, Player* player, float screenWidth, float screenHeight);
     void Update(float deltaTime, std::vector<MoneyBag*>& moneyBags);
     void Draw(Renderer& renderer);
 
     void Unlock(); //player buys the assistant
     bool IsUnlocked() const;
 
+    bool IsPlayerInAssistantArea(Player* player);
+
 private:
+    SoundSystem m_soundSystem;
     AssistantState m_state;
     Sprite* m_pSprite;
     Player* m_pPlayer;

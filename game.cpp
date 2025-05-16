@@ -52,6 +52,7 @@ Game::~Game()
 	for (Scene* scene : m_scenes)
 	{
 		delete scene;
+		scene = nullptr;
 	}
 	m_scenes.clear();
 

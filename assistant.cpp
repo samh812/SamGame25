@@ -4,7 +4,11 @@
 #include "player.h"
 #include "scenewarehouse.h"
 
+#include <fmod.hpp>
+#include <fmod_errors.h>
+
 #include <cmath>
+#include <iostream>
 
 Assistant::Assistant()
     : m_state(AssistantState::Locked), m_pSprite(nullptr), m_pPlayer(nullptr), m_targetBag(nullptr)
@@ -18,20 +22,24 @@ Assistant::~Assistant()
         delete m_pSprite;
         m_pSprite = nullptr;
     }
+
 }
 
-void Assistant::Initialise(Sprite* sprite, Player* player)
+void Assistant::Initialise(Sprite* sprite, Player* player, float screenWidth, float screenHeight)
 {
     m_pSprite = sprite;
     m_pPlayer = player;
 
-    // Start near player
-    if (m_pPlayer)
-    {
-        m_position = m_pPlayer->GetPosition() + Vector2(50.0f, 0.0f);
-        m_pSprite->SetX(m_position.x);
-        m_pSprite->SetY(m_position.y);
+    m_position = Vector2(sprite->GetX(), sprite->GetY());
+
+
+    if (!m_soundSystem.Initialise()) {
+        std::cerr << "Failed to initialise FMOD system!" << std::endl;
+
     }
+    m_soundSystem.LoadSound("assistantpickup", "../assets/sounds/coin.wav");
+
+
 }
 
 void Assistant::Unlock()
@@ -98,10 +106,11 @@ void Assistant::Update(float deltaTime, std::vector<MoneyBag*>& moneyBags)
         if (m_targetBag && m_targetBag->IsActive())
         {
             m_pPlayer->AddMoney(m_targetBag->GetValue());
+            m_soundSystem.PlaySound("assistantpickup");
             m_targetBag->Deactivate();
         }
         m_targetBag = nullptr;
-        m_state = AssistantState::Searching;
+        m_state = AssistantState::Idle;
         break;
 
     default:
@@ -163,6 +172,34 @@ void Assistant::MoveTowards(float deltaTime, const Vector2& target)
     }
 
 }
+
+
+
+bool Assistant::IsPlayerInAssistantArea(Player* player)
+{
+    if (!m_pSprite || !player)
+        return false;
+
+    Vector2 playerPos = player->GetPosition();
+
+    // Define the assistant's position
+    float assistantX = m_pSprite->GetX();
+    float assistantY = m_pSprite->GetY();
+
+    // Define the size of the interaction zone (tweak as needed)
+    float areaWidth = 64.0f;
+    float areaHeight = 64.0f;
+
+    // Check if player is within that rectangle
+    bool isWithinX = playerPos.x >= assistantX - areaWidth / 2 &&
+        playerPos.x <= assistantX + areaWidth / 2;
+
+    bool isWithinY = playerPos.y >= assistantY - areaHeight / 2 &&
+        playerPos.y <= assistantY + areaHeight / 2;
+
+    return isWithinX && isWithinY;
+}
+
 //
 //float Assistant::DistanceTo(const Vector2& target) const
 //{
