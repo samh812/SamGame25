@@ -7,6 +7,8 @@ Particle::Particle() {}
 void Particle::Initialise(Sprite* sprite, ParticleType type) {
     m_pSprite = sprite;
     m_type = type;
+
+
 }
 
 void Particle::Activate(Vector2 position) {
@@ -27,12 +29,17 @@ void Particle::Activate(Vector2 position) {
         break;
 
     case ParticleType::Spark:
-        m_speedMultiplier = 2.0f;
+        if (m_type == ParticleType::Spark && m_pSprite) {
+            // Random scale between 0.5x and 1.2x
+            float scale = 0.3f + static_cast<float>(rand()) / RAND_MAX * 0.2f;
+            m_pSprite->SetScale(scale);
+        }
+        m_speedMultiplier = 500.0f;
         m_velocity = Vector2(
             (((rand() % 200) - 100) / 100.0f) * m_speedMultiplier,
             -std::abs(((rand() % 100) / 100.0f) * m_speedMultiplier) // sparks go upward
         );
-        m_maxLifetime = 0.5f;
+        m_maxLifetime = 4.0f;
         break;
     }
 }
@@ -93,8 +100,18 @@ void Particle::Update(float deltaTime) {
             }
         }
     }
+    else if (m_type == ParticleType::Spark) {
+        const float gravity = 700.0f;
+        m_velocity.y += gravity * deltaTime;
+        m_velocity.x *= 0.99f;
+
+        m_position += m_velocity * deltaTime;
+
+        if (m_lifetime > m_maxLifetime) {
+            m_active = false;
+        }
+    }
     else {
-        // Default behavior (e.g. spark)
         m_position += m_velocity * deltaTime;
         if (m_lifetime > m_maxLifetime) {
             m_active = false;

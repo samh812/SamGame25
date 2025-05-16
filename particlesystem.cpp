@@ -1,11 +1,11 @@
 #include "particlesystem.h"
 
-void ParticleSystem::Initialise(Sprite* sprite, Player* player, int maxParticles) {
+void ParticleSystem::Initialise(Sprite* sprite, Player* player, int maxParticles, ParticleType type) {
     m_pSprite = sprite;
     m_particles.clear();
     for (int i = 0; i < maxParticles; ++i) {
         Particle particle;
-        particle.Initialise(sprite);
+        particle.Initialise(sprite, type);
         particle.SetPlayer(player);
         m_particles.push_back(particle);
     }

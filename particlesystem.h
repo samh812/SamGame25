@@ -6,7 +6,7 @@
 
 class ParticleSystem {
 public:
-    void Initialise(Sprite* sprite, Player* player, int maxParticles);
+    void Initialise(Sprite* sprite, Player* player, int maxParticles, ParticleType type = ParticleType::Coin);
 
     void ActivateAt(Vector2 position);
     void Update(float deltaTime);

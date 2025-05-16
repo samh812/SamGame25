@@ -51,6 +51,9 @@ SceneWarehouse::~SceneWarehouse()
 
     delete m_pCoinSprite;
     m_pCoinSprite = nullptr;
+
+    delete m_pCoinSprite;
+    m_pCoinSprite = nullptr;
     delete m_pBagSprite;
     m_pBagSprite = nullptr;
     for (auto& pair : m_charSprites)
@@ -137,7 +140,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
     m_pPauseMenu = renderer.CreateSprite("../assets/pauseMenu.png");
     float scaleX = static_cast<float>(renderer.GetWidth()) / m_pPauseMenu->GetWidth();
     float scaleY = static_cast<float>(renderer.GetHeight()) / m_pPauseMenu->GetHeight();
-    float scale = std::max(scaleX, scaleY);  //ensuring background covers whole screen
+    float scale = std::max(scaleX, scaleY);
 
     m_pPauseMenu->SetX(renderer.GetWidth() / 2);
     m_pPauseMenu->SetY(renderer.GetHeight() / 2);
@@ -149,6 +152,8 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
     m_pCoinSprite->SetScale(0.5f);
 
 
+    m_pSparkSprite = renderer.CreateSprite("../assets/spark.png");
+    m_pSparkSprite->SetScale(0.5f);
 
     scaleX = static_cast<float>(renderer.GetWidth()) / m_pWarehouseBackground->GetWidth();
     scaleY = static_cast<float>(renderer.GetHeight()) / m_pWarehouseBackground->GetHeight();
@@ -225,7 +230,7 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
                         int upgradeCost = m_machines[i]->GetUpgradeCost(); //get specific machine's upgrade cost
                         if (m_pPlayer->SpendMoney(upgradeCost)) { //if player has enough money
                             ParticleSystem ps;
-                            ps.Initialise(m_pCoinSprite, m_pPlayer, 50);
+                            ps.Initialise(m_pSparkSprite, m_pPlayer, 50, ParticleType::Spark);
                             ps.ActivateAt(m_machines[i]->GetPosition());
                             m_particleSystems.push_back(std::move(ps));
 

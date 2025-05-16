@@ -102,6 +102,8 @@ private:
 	std::vector<Particle> m_coinParticles;
 	std::vector<Particle> m_sparkParticles; //for future
 	Sprite* m_pCoinSprite = nullptr;
+	Sprite* m_pSparkSprite = nullptr;
+
 	std::list<ParticleSystem> m_particleSystems;
 
 	Sprite* m_pPauseMenu;
