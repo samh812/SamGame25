@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animatedsprite.h" />
+    <ClInclude Include="assistant.h" />
     <ClInclude Include="ball.h" />
     <ClInclude Include="entity.h" />
     <ClInclude Include="game.h" />
@@ -64,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="animatedsprite.cpp" />
+    <ClCompile Include="assistant.cpp" />
     <ClCompile Include="ball.cpp" />
     <ClCompile Include="entity.cpp" />
     <ClCompile Include="game.cpp" />

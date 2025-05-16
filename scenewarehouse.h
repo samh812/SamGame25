@@ -9,6 +9,9 @@
 #include "particle.h"
 #include "particlesystem.h"
 #include "soundsystem.h"
+#include "assistant.h"
+
+
 #include <vector>
 #include <map>
 #include <random>
@@ -54,7 +57,6 @@ public:
 	void OnEnter() override;
 	void OnExit() override;
 	std::string FormatWithCommas(int value);
-
 
 
 
@@ -114,6 +116,8 @@ private:
 	float m_lastMoneyCheckTime = 0.0f;
 	int m_lastSoldAmount = 0;
 	float m_moneyPerSecond = 0.0f;
+	Assistant* m_pAssistant = nullptr;
+	bool m_assistantUnlocked = false;
 };
 
 #endif // __SCENEWAREHOUSE_H__

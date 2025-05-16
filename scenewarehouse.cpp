@@ -120,6 +120,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
     m_soundSystem.LoadSound("coin", "../assets/sounds/coin.wav");
 
 
+
 	m_tutInterval = 2.0f;
     m_pBagSprite = renderer.CreateSprite("../assets/moneyBag.png");
     m_pBagSprite->SetScale(0.13f);
@@ -170,6 +171,13 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         m_pPlayer = nullptr;
         return false;
     }
+
+
+    m_pAssistant = new Assistant();
+    Sprite* assistantSprite = renderer.CreateSprite("../assets/ball.png");
+    assistantSprite->SetScale(0.25f);
+    m_pAssistant->Initialise(assistantSprite, m_pPlayer);
+
 
     InitMachines(renderer);
 
@@ -300,6 +308,17 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
                 }
             }
         }
+        // One-time unlock logic
+        if (!m_assistantUnlocked && m_pPlayer->GetMoney() >= 500) {
+            m_pPlayer->SpendMoney(500);
+            m_assistantUnlocked = true;
+            m_pAssistant->Unlock();
+        }
+
+        // Update AI assistant
+        if (m_assistantUnlocked && m_pAssistant) {
+            m_pAssistant->Update(deltaTime, m_moneyBags);
+        }
 
         for (auto it = m_particleSystems.begin(); it != m_particleSystems.end(); ) {
             it->Update(deltaTime);
@@ -359,9 +378,12 @@ void SceneWarehouse::Draw(Renderer& renderer)
     }
 
 
-    if (m_pPlayer)
+    if (m_pPlayer) {
         m_pPlayer->Draw(renderer);
-
+    }
+    if (m_assistantUnlocked && m_pAssistant) {
+        m_pAssistant->Draw(renderer);
+    }
 
     for (auto& machine : m_machines)
     {
@@ -865,3 +887,4 @@ void SceneWarehouse::PauseMenu(InputSystem& input) {
 
 
 }
+
