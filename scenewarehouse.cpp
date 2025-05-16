@@ -224,6 +224,11 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
                     if (m_machines[i]->GetUpgradeLevel() < m_machines[i]->GetNumUpgrades() && inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED || controllerCheck) {
                         int upgradeCost = m_machines[i]->GetUpgradeCost(); //get specific machine's upgrade cost
                         if (m_pPlayer->SpendMoney(upgradeCost)) { //if player has enough money
+                            ParticleSystem ps;
+                            ps.Initialise(m_pCoinSprite, m_pPlayer, 50);
+                            ps.ActivateAt(m_machines[i]->GetPosition());
+                            m_particleSystems.push_back(std::move(ps));
+
                             m_machines[i]->Upgrade();
                             m_totalUpgradeLevel++;
 

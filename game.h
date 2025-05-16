@@ -47,7 +47,6 @@ protected:
 	int m_iFrameCount;
 	int m_iFPS;
 
-	//std::vector<std::unique_ptr<Scene>> m_scenes;		
 	std::vector<Scene*> m_scenes;	
 	int m_iCurrentScene;
 

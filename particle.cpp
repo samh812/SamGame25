@@ -18,7 +18,7 @@ void Particle::Activate(Vector2 position) {
 
     switch (m_type) {
     case ParticleType::Coin:
-        m_speedMultiplier = 1.0f;
+        m_speedMultiplier = 15.0f;
         m_velocity = Vector2(
             (((rand() % 200) - 100) / 100.0f) * m_speedMultiplier,
             (((rand() % 200) - 100) / 100.0f) * m_speedMultiplier
@@ -50,7 +50,7 @@ void Particle::Update(float deltaTime) {
         if (m_lifetime < m_burstDuration) {
             //initial burst movement
             m_position += m_velocity;
-            m_velocity *= 0.995f; //friction
+            m_velocity *= 0.92f; //friction
         }
         else { //converge on player
             if (!m_seekingTarget) {
