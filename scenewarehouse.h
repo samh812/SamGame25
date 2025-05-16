@@ -80,7 +80,7 @@ private:
 
 	//grow and spawn money bags seperately
 	float m_moneySpawnTimer = 0.0f;
-	float m_spawnInterval = 3.2f;
+	float m_spawnInterval = 3.8f;
 
 	int m_totalSold;
 
@@ -106,6 +106,12 @@ private:
 
 	Sprite* m_pPauseMenu;
 	bool m_pauseKey = false;
+
+
+
+	float m_lastMoneyCheckTime = 0.0f;
+	int m_lastMoneyAmount = 0;
+	float m_moneyPerSecond = 0.0f;
 };
 
 #endif // __SCENEWAREHOUSE_H__

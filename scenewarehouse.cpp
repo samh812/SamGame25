@@ -236,30 +236,36 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 
             }
 
-            if (StartProduction()) {
-                Production(deltaTime);
-            }
+            //if (StartProduction()) {
+            //    Production(deltaTime);
+            //}
 
 
-            if (StartProduction() && m_moneyGrowTimer >= m_growInterval) //grow pot for every drink sold, but only spawn money bags occasionally
+            if (StartProduction()) //grow pot for every drink sold, but only spawn money bags occasionally
             {
-                m_moneyPot += m_bevValue;//add money to a total pot every time beverage is sold
-                m_totalSold++;
-                if (m_moneySpawnTimer >= m_spawnInterval) {//if bag is ready to be spawned
-                    for (MoneyBag* pBag : m_moneyBags)
+                Production(deltaTime);
+                while (m_moneyGrowTimer >= m_growInterval)
+                {
+                    m_moneyGrowTimer -= m_growInterval; // subtract interval instead of resetting to 0
+                    m_totalSold++;
+                    m_moneyPot += m_bevValue;
+
+                    if (m_moneySpawnTimer >= m_spawnInterval)
                     {
-                        if (!pBag->IsActive())
+                        for (MoneyBag* pBag : m_moneyBags)
                         {
-                            Vector2 randPos(m_spawnXDist(m_rng), m_spawnYDist(m_rng));
-                            pBag->SetValue(m_moneyPot);
-                            pBag->Activate(randPos);
-                            m_moneyPot = 0; //reset pot after spawning
-                            break;
+                            if (!pBag->IsActive())
+                            {
+                                Vector2 randPos(m_spawnXDist(m_rng), m_spawnYDist(m_rng));
+                                pBag->SetValue(m_moneyPot);
+                                pBag->Activate(randPos);
+                                m_moneyPot = 0;
+                                break;
+                            }
                         }
+                        m_moneySpawnTimer = 0.0f;
                     }
-                    m_moneySpawnTimer = 0.0f;
                 }
-                m_moneyGrowTimer = 0.0f;
             }
 
             //check player pickup
@@ -444,6 +450,19 @@ void SceneWarehouse::DebugDraw()
         if (ImGui::Button("Apply")) {
             m_pPlayer->AddMoney(giveMoney);
         }
+            // Money per second calculation
+        float currentTime = ImGui::GetTime();
+        if (currentTime - m_lastMoneyCheckTime >= 1.0f)
+        {
+            int currentMoney = m_totalSold; // Assumes GetMoney() exists
+            int deltaMoney = currentMoney - m_lastMoneyAmount;
+            m_moneyPerSecond = static_cast<float>(deltaMoney) / (currentTime - m_lastMoneyCheckTime);
+
+            m_lastMoneyAmount = currentMoney;
+            m_lastMoneyCheckTime = currentTime;
+        }
+
+        ImGui::Text("Bevs per second: %.6f", m_moneyPerSecond);
     }
 
 
