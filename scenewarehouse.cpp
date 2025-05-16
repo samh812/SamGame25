@@ -236,17 +236,13 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
 
             }
 
-            //if (StartProduction()) {
-            //    Production(deltaTime);
-            //}
-
 
             if (StartProduction()) //grow pot for every drink sold, but only spawn money bags occasionally
             {
                 Production(deltaTime);
                 while (m_moneyGrowTimer >= m_growInterval)
                 {
-                    m_moneyGrowTimer -= m_growInterval; // subtract interval instead of resetting to 0
+                    m_moneyGrowTimer -= m_growInterval;
                     m_totalSold++;
                     m_moneyPot += m_bevValue;
 

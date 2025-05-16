@@ -106,17 +106,20 @@ bool Game::Initialise()
 }
 bool Game::DoGameLoop()
 {
-	const float stepSize = 1.0f / 60.0f;
-	// TODO: Process input here!
+
+
 	m_pInputSystem->ProcessInput();
 
 	if (m_bLooping)
 	{
-		Uint64 current = SDL_GetPerformanceCounter();
-		float deltaTime = (current - m_iLastTime) / static_cast<float>(SDL_GetPerformanceFrequency());
-		m_iLastTime = current;
+		Uint64 frameStart = SDL_GetPerformanceCounter();
+
+		float deltaTime = (frameStart - m_iLastTime) / static_cast<float>(SDL_GetPerformanceFrequency());
+		m_iLastTime = frameStart;
 		m_fExecutionTime += deltaTime;
+
 		Process(deltaTime);
+
 #ifdef USE_LAG
 		m_fLag += deltaTime;
 		int innerLag = 0;
@@ -127,8 +130,19 @@ bool Game::DoGameLoop()
 			++m_iUpdateCount;
 			++innerLag;
 		}
-#endif //USE_LAG
+#endif // USE_LAG
+
 		Draw(*m_pRenderer);
+
+		// Frame limiting logic
+		Uint64 frameEnd = SDL_GetPerformanceCounter();
+		float actualFrameTime = (frameEnd - frameStart) / static_cast<float>(SDL_GetPerformanceFrequency());
+		float sleepTime = targetFrameTime - actualFrameTime;
+
+		if (sleepTime > 0.0f)
+		{
+			SDL_Delay(static_cast<Uint32>(sleepTime * 1000.0f)); // convert to ms
+		}
 	}
 	return m_bLooping;
 }

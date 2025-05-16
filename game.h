@@ -58,5 +58,10 @@ protected:
 	bool m_bLooping;
 private:
 	Sprite* m_pBall;
+
+	const int targetFPS = 120;
+	const float targetFrameTime = 1.0f / targetFPS;
+	const float stepSize = 1.0f / static_cast<float>(targetFPS);
+
 };
 #endif // __GAME_H
