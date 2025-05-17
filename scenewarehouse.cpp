@@ -857,7 +857,7 @@ void SceneWarehouse::DisplayUpgrade(int mindex) {
 
 
     if (currentLevel == "0") { //if broken
-        currentLevel = "Broken";
+        currentLevel = "Broken, press E / A to fix";
         upgradeDetails = " ";
         DrawText(currentLevel, m_screenWidth * 0.04f, m_screenHeight * 0.4f, 0.0f, false, "current_level");
     }
