@@ -109,6 +109,7 @@ void SceneWarehouse::OnExit()
     m_totalSold = 0;
     m_pPlayer->SpendMoney(m_pPlayer->GetMoney());
     m_totalUpgradeLevel = 0;
+    m_productionSpeedMultiplier = 1.0f;
 
     for (Machine* machine : m_machines)
     {
@@ -129,7 +130,7 @@ void SceneWarehouse::OnExit()
 
 bool SceneWarehouse::Initialise(Renderer& renderer)
 {
-
+    m_productionSpeedMultiplier = 1.0f;
     m_paused = false;
     m_screenWidth = static_cast<float>(renderer.GetWidth());
     m_screenHeight = static_cast<float>(renderer.GetHeight());
@@ -503,22 +504,15 @@ void SceneWarehouse::DebugDraw()
 {
     if (m_pPlayer)
     {
+
+        ImGui::NewLine();
+        ImGui::Text("Press Spacebar to hide/show");
+        ImGui::Text("Debugging Tools:");
+
+
         //Display FPS and frame time
         ImGui::Text("%.1f FPS | Frame time: %.3f ms", ImGui::GetIO().Framerate, 1000.0f / ImGui::GetIO().Framerate);
 
-        ImGui::Text("Debugging Tools:");
-
-        if (ImGui::Button("Apply")) {
-            SkipToProduction();
-            m_skipped = true;
-        }
-
-        //1. Grant player shekels
-        static int giveMoney = 0;
-        ImGui::InputInt("Give player shekels", &giveMoney);
-        if (ImGui::Button("Apply")) {
-            m_pPlayer->AddMoney(giveMoney);
-        }
         //Beverages sold per second
         float currentTime = ImGui::GetTime();
         if (currentTime - m_lastMoneyCheckTime >= 1.0f)
@@ -532,6 +526,48 @@ void SceneWarehouse::DebugDraw()
         }
 
         ImGui::Text("Bevs per second: %.1f", m_moneyPerSecond);
+        ImGui::Text("Bevs production interval: %.8f", m_growInterval);
+        ImGui::NewLine();
+        ImGui::Text("Debugging Tools:");
+
+        if (ImGui::Button("Skip to Production")) {
+            SkipToProduction();
+            m_skipped = true;
+        }
+
+
+        if (ImGui::Button("Machines Max Level")) {
+            MaxMachines();
+        }
+        if (ImGui::Button("Skip to Win")) {
+            SkipToProduction();
+            m_totalSold = 1000000;
+        }
+
+        ImGui::NewLine();
+
+        static int giveMoney = 0;
+        ImGui::InputInt("<< Input shekels", &giveMoney);
+        if (ImGui::Button("Give player shekels")) {
+            m_pPlayer->AddMoney(giveMoney);
+        }
+
+        ImGui::NewLine();
+
+        static int setSold = 0;
+        ImGui::InputInt("<< Input count", &setSold);
+        if (ImGui::Button("Set total Bev count")) {
+            m_totalSold = setSold;
+        }
+        ImGui::NewLine();
+
+        ImGui::Text("Production speed multiplier:");
+
+
+        ImGui::SliderFloat("Lower is faster", &m_productionSpeedMultiplier, 1.0f, 0.01f);
+
+
+
     }
 
 
@@ -638,6 +674,7 @@ void SceneWarehouse::Production(float time) {
     m_moneySpawnTimer += time;
 	m_baseValue = 15.0f;
     m_growInterval = 2.0f;
+    m_growInterval *= m_productionSpeedMultiplier;
 
     for (Machine* machine : m_machines) {
 
@@ -957,5 +994,20 @@ void SceneWarehouse::SkipToProduction() {
         m_tutStage = 8;
 
     }
+}
+
+void SceneWarehouse::MaxMachines() {
+        for (Machine* machine : m_machines) {
+            m_totalUpgradeLevel++;
+
+            for (int i = 0; i <= 5; i++) {
+                machine->Upgrade();
+
+            }
+
+        }
+
+
+    
 }
 

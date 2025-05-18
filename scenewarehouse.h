@@ -58,6 +58,7 @@ public:
 	void OnExit() override;
 	std::string FormatWithCommas(int value);
 	void SkipToProduction();
+	void MaxMachines();
 
 
 
@@ -80,6 +81,7 @@ private:
 
 	float m_moneyGrowTimer;
 	float m_growInterval;
+	float m_productionSpeedMultiplier;
 
 	//grow and spawn money bags seperately
 	float m_moneySpawnTimer = 0.0f;
