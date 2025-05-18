@@ -341,15 +341,27 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
             controllerCheck = controller->GetButtonState(SDL_CONTROLLER_BUTTON_A) == BS_PRESSED;
         }
 
-        //onetime assistant unlock
-        if (!m_assistantUnlocked && inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED || controllerCheck) {
-            int assistantCost = 10000;
-            if (m_pPlayer->SpendMoney(assistantCost)) { //if player has enough money
-                m_soundSystem.PlaySound("upgrade");
-                m_assistantUnlocked = true;
-                m_pAssistant->Unlock();
 
+        int assistantX = m_pAssistant->GetAssistantPosition().x;
+        int assistantY = m_pAssistant->GetAssistantPosition().y;
+
+        std::cout << assistantX << " " << assistantY << std::endl;
+
+        //onetime assistant unlock
+        if (m_pAssistant->IsPlayerInAssistantArea(m_pPlayer) && !(m_pAssistant->IsUnlocked())) {
+            DrawText("Assistant", assistantX-50, assistantY-60, 0.0f, false, "assistanttext");
+            DrawText("$10000", assistantX - 40, assistantY + 60, 0.0f, false, "assistanttext2");
+            DrawText("E / A to buy", assistantX - 70, assistantY + 100, 0.0f, false, "assistanttext3");
+            if (!m_assistantUnlocked && inputSystem.GetKeyState(SDL_SCANCODE_E) == BS_PRESSED || controllerCheck) {
+                int assistantCost = 10000;
+                if (m_pPlayer->SpendMoney(assistantCost)) { //if player has enough money
+                    m_soundSystem.PlaySound("upgrade");
+                    m_assistantUnlocked = true;
+                    m_pAssistant->Unlock();
+
+                }
             }
+
         }
 
 
@@ -464,6 +476,8 @@ void SceneWarehouse::Draw(Renderer& renderer)
         }
     }
     DeleteTexts();
+
+
 
     if (m_tutInterval >= 5.0f && m_tutStage < 7) {
         Tutorial(renderer);
@@ -886,6 +900,9 @@ void SceneWarehouse::DeleteTexts() {
     RemoveTextById("upgrade_cost");
     RemoveTextById("upgrade_label");
     RemoveTextById("upgrade_details");
+    RemoveTextById("assistanttext");
+    RemoveTextById("assistanttext2");
+    RemoveTextById("assistanttext3");
 
 }
 

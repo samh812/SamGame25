@@ -126,7 +126,7 @@ void Assistant::Update(float deltaTime, std::vector<MoneyBag*>& moneyBags)
 
 void Assistant::Draw(Renderer& renderer)
 {
-    if (m_pSprite && m_state != AssistantState::Locked)
+    if (m_pSprite)
     {
         m_pSprite->Draw(renderer);
     }
@@ -158,17 +158,20 @@ void Assistant::FindNearestMoneyBag(const std::vector<MoneyBag*>& moneyBags)
 
 void Assistant::MoveTowards(float deltaTime, const Vector2& target)
 {
-    float dx = target.x - m_position.x;
-    float dy = target.y - m_position.y;
-    float distance = sqrtf(dx * dx + dy * dy);
+    Vector2 direction = target - m_position;
+    float distance = direction.Length();
 
     if (distance > 0.0f)
     {
-        float dirX = dx / distance;
-        float dirY = dy / distance;
+        direction /= distance;
 
-        m_position.x += dirX * m_speed * deltaTime;
-        m_position.y += dirY * m_speed * deltaTime;
+        //apply easing: slow down when near the target
+        float speed = m_speed;
+        if (distance < 100.0f)  // Start slowing down when within 100 units
+            speed *= (distance / 100.0f);  // Linearly decrease speed
+
+        m_position.x += direction.x * speed * deltaTime;
+        m_position.y += direction.y * speed * deltaTime;
     }
 
 }
@@ -187,8 +190,8 @@ bool Assistant::IsPlayerInAssistantArea(Player* player)
     float assistantY = m_pSprite->GetY();
 
     // Define the size of the interaction zone (tweak as needed)
-    float areaWidth = 64.0f;
-    float areaHeight = 64.0f;
+    float areaWidth = 128.0f;
+    float areaHeight = 128.0f;
 
     // Check if player is within that rectangle
     bool isWithinX = playerPos.x >= assistantX - areaWidth / 2 &&
@@ -200,6 +203,10 @@ bool Assistant::IsPlayerInAssistantArea(Player* player)
     return isWithinX && isWithinY;
 }
 
+
+Vector2 Assistant::GetAssistantPosition() {
+    return m_position;
+}
 //
 //float Assistant::DistanceTo(const Vector2& target) const
 //{

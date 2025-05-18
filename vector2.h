@@ -14,6 +14,8 @@ public:
 	float LengthSquared() const;
 	float Length() const;
 	void Normalise();
+	Vector2 Normalised() const;
+	Vector2& operator/=(float scalar);
 	friend Vector2 operator+(const Vector2& veca, const Vector2& vecb)
 	{
 		return (Vector2(veca.x + vecb.x, veca.y + vecb.y));

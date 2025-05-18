@@ -32,6 +32,9 @@ public:
     bool IsUnlocked() const;
 
     bool IsPlayerInAssistantArea(Player* player);
+    Vector2 GetAssistantPosition();
+
+
 
 private:
     SoundSystem m_soundSystem;
@@ -42,13 +45,15 @@ private:
     Vector2 m_targetPos;
     MoneyBag* m_targetBag;
 
-    float m_speed = 150.0f;
+    float m_speed = 100.0f;
 
     float m_searchCooldown = 0.0f; //time until next moneybag search
-    float m_searchInterval = 1.0f;
+    float m_searchInterval = 3.0f;
 
     void FindNearestMoneyBag(const std::vector<MoneyBag*>& moneyBags);
     void MoveTowards(float deltaTime, const Vector2& target);
+
+
 };
 
 #endif

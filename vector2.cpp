@@ -35,12 +35,30 @@ Vector2::Length() const
 {
 	return (sqrtf(LengthSquared()));
 }
-void Vector2::Normalise
-()
+void Vector2::Normalise()
 {
 	float length = Length();
-	x = x / length;
-	y = y / length;
+	if (length > 0.0f)
+	{
+		x /= length;
+		y /= length;
+	}
+}
+Vector2 Vector2::Normalised() const
+{
+	float length = Length();
+	if (length > 0.0f)
+	{
+		return Vector2(x / length, y / length);
+	}
+	return Vector2(0.0f, 0.0f);
+}
+Vector2& Vector2::operator/=(float scalar)
+{
+	assert(scalar != 0.0f);
+	x /= scalar;
+	y /= scalar;
+	return *this;
 }
 float
 Vector2::DotProduct(const Vector2& veca, const Vector2& vecb)
