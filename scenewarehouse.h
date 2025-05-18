@@ -57,6 +57,7 @@ public:
 	void OnEnter() override;
 	void OnExit() override;
 	std::string FormatWithCommas(int value);
+	void SkipToProduction();
 
 
 
@@ -95,6 +96,7 @@ private:
 	bool m_displayingUpgrade = false;
 
 	bool m_paused = false;
+	bool m_skipped = false;
 	std::vector<MoneyBag*> m_moneyBags;
 
 	std::default_random_engine m_rng;

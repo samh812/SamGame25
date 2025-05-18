@@ -95,6 +95,7 @@ SceneWarehouse::~SceneWarehouse()
 void SceneWarehouse::OnEnter() {
     m_soundSystem.PlaySound("bgm");
     m_paused = false;
+    m_skipped = false;
 
 
 };
@@ -345,8 +346,6 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
         int assistantX = m_pAssistant->GetAssistantPosition().x;
         int assistantY = m_pAssistant->GetAssistantPosition().y;
 
-        std::cout << assistantX << " " << assistantY << std::endl;
-
         //onetime assistant unlock
         if (m_pAssistant->IsPlayerInAssistantArea(m_pPlayer) && !(m_pAssistant->IsUnlocked())) {
             DrawText("Assistant", assistantX-50, assistantY-60, 0.0f, false, "assistanttext");
@@ -508,6 +507,12 @@ void SceneWarehouse::DebugDraw()
         ImGui::Text("%.1f FPS | Frame time: %.3f ms", ImGui::GetIO().Framerate, 1000.0f / ImGui::GetIO().Framerate);
 
         ImGui::Text("Debugging Tools:");
+
+        if (ImGui::Button("Apply")) {
+            SkipToProduction();
+            m_skipped = true;
+        }
+
         //1. Grant player shekels
         static int giveMoney = 0;
         ImGui::InputInt("Give player shekels", &giveMoney);
@@ -941,5 +946,16 @@ void SceneWarehouse::PauseMenu(InputSystem& input) {
 
 
 
+}
+
+void SceneWarehouse::SkipToProduction() {
+    if (!m_skipped) {
+        for (Machine* machine : m_machines) {
+            machine->Upgrade();
+            m_totalUpgradeLevel++;
+        }
+        m_tutStage = 8;
+
+    }
 }
 
