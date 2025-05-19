@@ -56,9 +56,7 @@ public:
 	
 	protected:
 	private:
-		// Vector2(const Vector2& vector2);
-		// Vector2& operator=(const Vector2& vector2);
-		// Member data:
+
 	public:
 		float x;
 		float y;

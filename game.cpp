@@ -3,11 +3,10 @@
 
 
 #include <iostream>
-// 
-// This include:
+
 #include "game.h"
 #include "sprite.h"
-// Library includes:
+
 #include "renderer.h"
 #include "logmanager.h"
 #include "scenecheckerboards.h"

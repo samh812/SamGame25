@@ -171,7 +171,6 @@ void Renderer::SetFullscreen(bool fullscreen)
 {
 	if (fullscreen)
 	{
-		// SDL_SetWindowFullscreen(m_pWindow, SDL_WINDOW_FULLSCREEN | SDL_WINDOW_ALWAYS_ON_TOP);
 		SDL_SetWindowFullscreen(m_pWindow, SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_ALWAYS_ON_TOP);
 		SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
 		SDL_SetWindowSize(m_pWindow, m_screenWidth, m_screenHeight);
@@ -287,7 +286,7 @@ Renderer::DrawAnimatedSprite(AnimatedSprite& sprite, int frame)
 	Matrix4 world;
 	SetIdentity(world);
 	world.m[0][0] = cosf(angleInRadians) * (sizeX);
-	world.m[0][1] = sinf(angleInRadians) * (sizeY);       // flipped
+	world.m[0][1] = sinf(angleInRadians) * (sizeY);
 	world.m[1][0] = sinf(angleInRadians) * (sizeX);
 	world.m[1][1] = -cosf(angleInRadians) * (sizeY);
 	world.m[3][0] = static_cast<float>(sprite.GetX());

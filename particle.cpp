@@ -30,14 +30,13 @@ void Particle::Activate(Vector2 position) {
 
     case ParticleType::Spark:
         if (m_type == ParticleType::Spark && m_pSprite) {
-            // Random scale between 0.5x and 1.2x
             float scale = 0.3f + static_cast<float>(rand()) / RAND_MAX * 0.2f;
             m_pSprite->SetScale(scale);
         }
         m_speedMultiplier = 500.0f;
         m_velocity = Vector2(
             (((rand() % 200) - 100) / 100.0f) * m_speedMultiplier,
-            -std::abs(((rand() % 100) / 100.0f) * m_speedMultiplier) // sparks go upward
+            -std::abs(((rand() % 100) / 100.0f) * m_speedMultiplier) //sparks go upward
         );
         m_maxLifetime = 4.0f;
         break;
@@ -94,7 +93,6 @@ void Particle::Update(float deltaTime) {
             }
 
 
-            // Deactivate after lifetime expires
             if (m_lifetime > m_maxLifetime) {
                 m_active = false;
             }

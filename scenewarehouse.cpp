@@ -153,7 +153,7 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
     {
         MoneyBag* pBag = new MoneyBag();
         pBag->Initialise(renderer);
-        pBag->SetSprite(m_pBagSprite);  // all bags share the same sprite
+        pBag->SetSprite(m_pBagSprite);
 
         pBag->Deactivate();
         m_moneyBags.push_back(pBag);
@@ -250,7 +250,7 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
             //check for upgrade collision
             for (size_t i = 0; i < m_machines.size(); ++i)
             {
-                // if pmachine isinupgradearea, display upgrade cost and details, with smaller text? Or i can jsut display in a central place?
+
                 if (m_machines[i]->IsPlayerInUpgradeArea(m_pPlayer)) //Upgrade on E or ENTER
                 {
 
@@ -365,7 +365,7 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
         }
 
 
-        // Update AI assistant
+        //update AI assistant
         if (m_pAssistant) {
             m_pAssistant->Update(deltaTime, m_moneyBags);
         }
@@ -517,7 +517,7 @@ void SceneWarehouse::DebugDraw()
         float currentTime = ImGui::GetTime();
         if (currentTime - m_lastMoneyCheckTime >= 1.0f)
         {
-            int currentSold = m_totalSold; // Assumes GetMoney() exists
+            int currentSold = m_totalSold;
             int delta = currentSold - m_lastSoldAmount;
             m_moneyPerSecond = static_cast<float>(delta) / (currentTime - m_lastMoneyCheckTime);
 

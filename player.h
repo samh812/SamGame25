@@ -25,7 +25,7 @@ public:
 
 private:
 	float m_speed;
-	Renderer* m_pRenderer;  // Pointer to the Renderer object
+	Renderer* m_pRenderer;
 	int m_Shekels;
 };
 

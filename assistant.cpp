@@ -57,7 +57,7 @@ void Assistant::Update(float deltaTime, std::vector<MoneyBag*>& moneyBags)
     if (m_state == AssistantState::Locked)
         return;
 
-    // Update position/state
+    //update position/state
     switch (m_state)
     {
     case AssistantState::Idle:
@@ -65,7 +65,7 @@ void Assistant::Update(float deltaTime, std::vector<MoneyBag*>& moneyBags)
         break;
 
     case AssistantState::Searching:
-        // Only search if cooldown has expired
+        //only search if cooldown has expired
         m_searchCooldown -= deltaTime;
         if (m_searchCooldown <= 0.0f)
         {
@@ -83,7 +83,7 @@ void Assistant::Update(float deltaTime, std::vector<MoneyBag*>& moneyBags)
     case AssistantState::MovingToBag:
         MoveTowards(deltaTime, m_targetPos);
 
-        // Re-check target every few seconds
+        //recheck target every few seconds
         m_searchCooldown -= deltaTime;
         if (m_searchCooldown <= 0.0f)
         {
@@ -167,8 +167,8 @@ void Assistant::MoveTowards(float deltaTime, const Vector2& target)
 
         //apply easing: slow down when near the target
         float speed = m_speed;
-        if (distance < 100.0f)  // Start slowing down when within 100 units
-            speed *= (distance / 100.0f);  // Linearly decrease speed
+        if (distance < 100.0f)  //start slowing down
+            speed *= (distance / 100.0f);
 
         m_position.x += direction.x * speed * deltaTime;
         m_position.y += direction.y * speed * deltaTime;
@@ -185,15 +185,12 @@ bool Assistant::IsPlayerInAssistantArea(Player* player)
 
     Vector2 playerPos = player->GetPosition();
 
-    // Define the assistant's position
     float assistantX = m_pSprite->GetX();
     float assistantY = m_pSprite->GetY();
 
-    // Define the size of the interaction zone (tweak as needed)
     float areaWidth = 128.0f;
     float areaHeight = 128.0f;
 
-    // Check if player is within that rectangle
     bool isWithinX = playerPos.x >= assistantX - areaWidth / 2 &&
         playerPos.x <= assistantX + areaWidth / 2;
 
@@ -207,10 +204,3 @@ bool Assistant::IsPlayerInAssistantArea(Player* player)
 Vector2 Assistant::GetAssistantPosition() {
     return m_position;
 }
-//
-//float Assistant::DistanceTo(const Vector2& target) const
-//{
-//    float dx = target.x - m_position.x;
-//    float dy = target.y - m_position.y;
-//    return sqrtf(dx * dx + dy * dy);
-//}

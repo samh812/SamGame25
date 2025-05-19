@@ -188,7 +188,7 @@ void Machine::SetValueIncrease(const std::vector<float>& values) {
 }
 
 void Machine::SetSharedSprite() {
-	m_ownsSprite = false; // Set to false to indicate that the sprite is shared
+	m_ownsSprite = false;
 }
 
 float Machine::GetValueIncreases() const {
