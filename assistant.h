@@ -29,6 +29,7 @@ public:
     void Draw(Renderer& renderer);
 
     void Unlock(); //player buys the assistant
+    void Lock(); //player buys the assistant
     bool IsUnlocked() const;
 
     bool IsPlayerInAssistantArea(Player* player);

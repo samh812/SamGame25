@@ -47,6 +47,11 @@ void Assistant::Unlock()
     m_state = AssistantState::Idle;
 }
 
+void Assistant::Lock()
+{
+    m_state = AssistantState::Locked;
+}
+
 bool Assistant::IsUnlocked() const
 {
     return m_state != AssistantState::Locked;

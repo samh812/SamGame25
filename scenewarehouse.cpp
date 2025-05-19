@@ -97,6 +97,11 @@ void SceneWarehouse::OnEnter() {
     m_paused = false;
     m_skipped = false;
 
+    m_pAssistant->Lock();
+    m_assistantUnlocked = false;
+
+
+
 
 };
 
@@ -802,36 +807,36 @@ bool SceneWarehouse::InitMachines(Renderer& renderer) {
         if (dynamic_cast<MachineBottler*>(pMachine))
         {
             basePath = "../assets/machines/machine_bottler_";
-            pMachine->SetUpgradeCosts({ 10, 75 , 1000, 10000, 30000}); //to lvl 1, to lvl 2
-            pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.5f , 2.3f, 2.7f, 3.0f }); //broken, lvl1, lvl2
+            pMachine->SetUpgradeCosts({ 10, 75 , 1000, 10000, 30000, 50000}); //to lvl 1, to lvl 2
+            pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.5f , 2.3f, 2.7f, 3.0f , 3.3f}); //broken, lvl1, lvl2
         }
         else if (dynamic_cast<MachineConveyor*>(pMachine))
         {
             basePath = "../assets/machines/machine_conveyor_";
-            pMachine->SetUpgradeCosts({ 5, 40, 1000, 10000, 30000});
-            pMachine->SetValueIncrease({ 1.0f, 1.0f, 0.5f, 0.25f, 0.05f, 0.003f }); //0.8, 0.6 originally
+            pMachine->SetUpgradeCosts({ 5, 40, 1000, 10000, 30000, 50000});
+            pMachine->SetValueIncrease({ 1.0f, 1.0f, 0.5f, 0.25f, 0.05f, 0.02f, 0.01f }); //0.8, 0.6 originally
 
 
         }
         else if (dynamic_cast<MachineFiller*>(pMachine))
         {
             basePath = "../assets/machines/machine_filler_";
-            pMachine->SetUpgradeCosts({ 7, 80, 1000, 10000, 30000});
-            pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.6f, 2.3f, 2.7f, 3.0f });
+            pMachine->SetUpgradeCosts({ 7, 80, 1000, 10000, 30000, 50000});
+            pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.6f, 2.3f, 2.7f, 3.0f, 3.3f });
 
         }
         else if (dynamic_cast<MachineCapper*>(pMachine))
         {
             basePath = "../assets/machines/machine_capper_";
-            pMachine->SetUpgradeCosts({ 3, 60, 1000, 10000, 30000});
-            pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.4f, 2.3f, 2.7f, 3.0f });
+            pMachine->SetUpgradeCosts({ 3, 60, 1000, 10000, 30000, 50000});
+            pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.4f, 2.3f, 2.7f, 3.0f, 3.3f });
 
         }
         else if (dynamic_cast<MachineLabeler*>(pMachine))
         {
             basePath = "../assets/machines/machine_labeler_";
-            pMachine->SetUpgradeCosts({ 5, 65, 1000, 10000, 30000});
-            pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.7f, 2.3f, 2.7f, 3.0f });
+            pMachine->SetUpgradeCosts({ 5, 65, 1000, 10000, 30000, 50000});
+            pMachine->SetValueIncrease({ 1.0f, 1.0f, 1.7f, 2.3f, 2.7f, 3.0f, 3.3f });
 
         }
         for (int level = 0; level <= numUpgrades; ++level)
