@@ -119,8 +119,8 @@ void Particle::Update(float deltaTime) {
 
 void Particle::Draw(Renderer& renderer) {
     if (!m_active || !m_pSprite) return;
-    m_pSprite->SetX(m_position.x);
-    m_pSprite->SetY(m_position.y);
+    m_pSprite->SetX(static_cast<int>(m_position.x));
+    m_pSprite->SetY(static_cast<int>(m_position.y));
     m_pSprite->Draw(renderer);
 }
 

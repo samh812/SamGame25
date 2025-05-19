@@ -109,8 +109,8 @@ void Player::Draw(Renderer& renderer)
 {
     if (m_pAnimSprite && m_bAlive)
     {
-        m_pAnimSprite->SetX(m_position.x);
-        m_pAnimSprite->SetY(m_position.y);
+        m_pAnimSprite->SetX(static_cast<int>(m_position.x));
+        m_pAnimSprite->SetY(static_cast<int>(m_position.y));
         m_pAnimSprite->Draw(renderer);
     }
 }

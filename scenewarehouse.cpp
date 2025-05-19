@@ -52,6 +52,11 @@ SceneWarehouse::~SceneWarehouse()
         m_pPauseMenu = nullptr;
     }
 
+    if (m_pWinScreen) {
+        delete m_pWinScreen;
+        m_pWinScreen = nullptr;
+    }
+
 
     if (m_pCoinSprite) {
         delete m_pCoinSprite;
@@ -125,6 +130,7 @@ void SceneWarehouse::OnExit()
     {
         pBag->Deactivate();
     }
+    m_won = false;
 
     
 
@@ -163,8 +169,8 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
         pBag->Deactivate();
         m_moneyBags.push_back(pBag);
     }
-    DrawText("Shekels        $", m_screenWidth * 0.04f, m_screenHeight * 0.09f, 0.0f, true);
-    DrawText("Beverages", m_screenWidth * 0.04f, m_screenHeight * 0.16f, 0.0f, true);
+    DrawText("Shekels        $", static_cast<int>(m_screenWidth * 0.04f), static_cast<int>(m_screenHeight * 0.09f), 0.0f, true);
+    DrawText("Beverages", static_cast<int>(m_screenWidth * 0.04f), static_cast<int>(m_screenHeight * 0.16f), 0.0f, true);
 
     m_pWarehouseBackground = renderer.CreateSprite("../assets/warehouse_background.png");
 
@@ -177,7 +183,14 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
     m_pPauseMenu->SetY(renderer.GetHeight() / 2);
     m_pPauseMenu->SetScale(scale);
 
+    m_pWinScreen = renderer.CreateSprite("../assets/winMenu.png");
+    scaleX = static_cast<float>(renderer.GetWidth()) / m_pWinScreen->GetWidth();
+    scaleY = static_cast<float>(renderer.GetHeight()) / m_pWinScreen->GetHeight();
+    scale = std::max(scaleX, scaleY);
 
+    m_pWinScreen->SetX(renderer.GetWidth() / 2);
+    m_pWinScreen->SetY(renderer.GetHeight() / 2);
+    m_pWinScreen->SetScale(scale);
 
     m_pCoinSprite = renderer.CreateSprite("../assets/coin.png");
     m_pCoinSprite->SetScale(0.5f);
@@ -204,10 +217,10 @@ bool SceneWarehouse::Initialise(Renderer& renderer)
 
 
     m_pAssistant = new Assistant();
-    Sprite* assistantSprite = renderer.CreateSprite("../assets/ball.png");
-    assistantSprite->SetScale(0.25f);
-    assistantSprite->SetX(m_screenWidth * 0.9f);
-    assistantSprite->SetY(m_screenHeight * 0.5f);
+    Sprite* assistantSprite = renderer.CreateSprite("../assets/assistantSprite.png");
+    assistantSprite->SetScale(0.85f);
+    assistantSprite->SetX(static_cast<int>(m_screenWidth * 0.9f));
+    assistantSprite->SetY(static_cast<int>(m_screenHeight * 0.5f));
     m_pAssistant->Initialise(assistantSprite, m_pPlayer, m_screenWidth, m_screenHeight);
 
 
@@ -238,6 +251,10 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
     if (pausePressed && !m_pauseKey)
     {
         m_paused = !m_paused;
+    }
+    else if (!m_won && m_totalSold >= 1000000) {
+        m_paused = !m_paused;
+        m_won = true;
     }
     m_pauseKey = pausePressed;
 
@@ -348,9 +365,8 @@ void SceneWarehouse::Process(float deltaTime, InputSystem& inputSystem)
             controllerCheck = controller->GetButtonState(SDL_CONTROLLER_BUTTON_A) == BS_PRESSED;
         }
 
-
-        int assistantX = m_pAssistant->GetAssistantPosition().x;
-        int assistantY = m_pAssistant->GetAssistantPosition().y;
+        int assistantX = static_cast<int>(m_pAssistant->GetAssistantPosition().x);
+        int assistantY = static_cast<int>(m_pAssistant->GetAssistantPosition().y);
 
         //onetime assistant unlock
         if (m_pAssistant->IsPlayerInAssistantArea(m_pPlayer) && !(m_pAssistant->IsUnlocked())) {
@@ -460,8 +476,8 @@ void SceneWarehouse::Draw(Renderer& renderer)
         ps.Draw(renderer);
     }
     if (m_pPlayer) {
-        DrawNumber(renderer, m_pPlayer->GetMoney(), m_screenWidth * 0.185f, m_screenHeight*0.09f);
-        DrawNumber(renderer, m_totalSold, m_screenWidth * 0.185f, m_screenHeight*0.16f);
+        DrawNumber(renderer, m_pPlayer->GetMoney(), static_cast<int>(m_screenWidth * 0.185f), static_cast<int>(m_screenHeight * 0.09f));
+        DrawNumber(renderer, m_totalSold, static_cast<int>(m_screenWidth * 0.185f), static_cast<int>(m_screenHeight * 0.16f));
     }
 
 
@@ -501,8 +517,11 @@ void SceneWarehouse::Draw(Renderer& renderer)
 
 
     }
-    if (m_paused) {
+    if (m_paused && !m_won) {
         m_pPauseMenu->Draw(renderer);
+    }
+    else if (m_paused && m_won) {
+        m_pWinScreen->Draw(renderer);
     }
 }
 void SceneWarehouse::DebugDraw()
@@ -519,15 +538,15 @@ void SceneWarehouse::DebugDraw()
         ImGui::Text("%.1f FPS | Frame time: %.3f ms", ImGui::GetIO().Framerate, 1000.0f / ImGui::GetIO().Framerate);
 
         //Beverages sold per second
-        float currentTime = ImGui::GetTime();
-        if (currentTime - m_lastMoneyCheckTime >= 1.0f)
+        double currentTime = ImGui::GetTime();
+        if (currentTime - m_lastMoneyCheckTime >= 1.0)
         {
             int currentSold = m_totalSold;
             int delta = currentSold - m_lastSoldAmount;
-            m_moneyPerSecond = static_cast<float>(delta) / (currentTime - m_lastMoneyCheckTime);
+            m_moneyPerSecond = static_cast<float>(static_cast<double>(delta) / (currentTime - m_lastMoneyCheckTime));
 
             m_lastSoldAmount = currentSold;
-            m_lastMoneyCheckTime = currentTime;
+            m_lastMoneyCheckTime = static_cast<float>(currentTime);
         }
 
         ImGui::Text("Bevs per second: %.1f", m_moneyPerSecond);
@@ -712,31 +731,31 @@ void SceneWarehouse::Tutorial(Renderer& renderer) {
     float xText = 0.60f;
     switch (m_tutStage) {
 	    case 0:
-		    DrawText("Hey, fresh meat!", m_screenWidth*xText, m_screenHeight*0.15f, 5.0f, true);
-		    DrawText("This is your new home now", m_screenWidth * xText, m_screenHeight * 0.2f, 5.0f, true);
+		    DrawText("Hey, fresh meat!", static_cast<int>(m_screenWidth*xText), static_cast<int>(m_screenHeight*0.15f), 5.0f, true);
+		    DrawText("This is your new home now", static_cast<int>(m_screenWidth * xText), static_cast<int>(m_screenHeight * 0.2f), 5.0f, true);
 			m_coinsAdded = true;
 		    break;
         case 1:
 			m_coinsAdded = false;
-            DrawText("Take these shekels", m_screenWidth * xText, m_screenHeight * 0.15f, 5.0f, true);
+            DrawText("Take these shekels", static_cast<int>(m_screenWidth * xText), static_cast<int>(m_screenHeight * 0.15f), 5.0f, true);
             m_pPlayer->AddMoney(40); //start with 40 shekels
             break;
 
         case 2:
-            DrawText("Walk over and repair those machines!", m_screenWidth * xText, m_screenHeight * 0.15f, 5.0f, true);
-            DrawText("We need to get production going FAST", m_screenWidth * xText, m_screenHeight * 0.2f, 5.0f, true);
+            DrawText("Walk over and repair those machines!", static_cast<int>(m_screenWidth * xText), static_cast<int>(m_screenHeight * 0.15f), 5.0f, true);
+            DrawText("We need to get production going FAST", static_cast<int>(m_screenWidth * xText), static_cast<int>(m_screenHeight * 0.2f), 5.0f, true);
             break;
 		case 3:
-            DrawText("Press E / A next to a machine to upgrade it", m_screenWidth * xText, m_screenHeight * 0.15f, 7.0f, true);
-            DrawText("Fix all the machines to start production", m_screenWidth * xText, m_screenHeight * 0.12f, 7.0f, true);
+            DrawText("Press E / A next to a machine to upgrade it", static_cast<int>(m_screenWidth * xText), static_cast<int>(m_screenHeight * 0.15f), 7.0f, true);
+            DrawText("Fix all the machines to start production", static_cast<int>(m_screenWidth * xText), static_cast<int>(m_screenHeight * 0.12f), 7.0f, true);
             break;
 
         case 5:
-            DrawText("Lets see...", m_screenWidth * xText, m_screenHeight * 0.15f, 5.0f, true);
-            DrawText("One million beverages should do!", m_screenWidth * xText, m_screenHeight * 0.2f, 5.0f, true);
+            DrawText("Lets see...", static_cast<int>(m_screenWidth * xText), static_cast<int>(m_screenHeight * 0.15f), 5.0f, true);
+            DrawText("One million beverages should do!", static_cast<int>(m_screenWidth * xText), static_cast<int>(m_screenHeight * 0.2f), 5.0f, true);
             break;
         case 6:
-            DrawText("Press E / A to pick up money bags", m_screenWidth * xText, m_screenHeight * 0.15f, 7.0f, true);
+            DrawText("Press E / A to pick up money bags", static_cast<int>(m_screenWidth * xText), static_cast<int>(m_screenHeight * 0.15f), 7.0f, true);
 
             break;
         default:
@@ -920,23 +939,23 @@ void SceneWarehouse::DisplayUpgrade(int mindex) {
     if (currentLevel == "0") { //if broken
         currentLevel = "Broken, press E / A to fix";
         upgradeDetails = " ";
-        DrawText(currentLevel, m_screenWidth * 0.04f, m_screenHeight * 0.4f, 0.0f, false, "current_level");
+        DrawText(currentLevel, static_cast<int>(m_screenWidth * 0.04f), static_cast<int>(m_screenHeight * 0.4f), 0.0f, false, "current_level");
     }
     else { //if not broken, show level 
 
-        DrawText("Level ", m_screenWidth * 0.04f, m_screenHeight * 0.4f, 0.0f, false, "level");
-        DrawText(currentLevel, m_screenWidth * 0.09f, m_screenHeight * 0.4f, 0.0f, false, "current_level");
+        DrawText("Level ", static_cast<int>(m_screenWidth * 0.04f), static_cast<int>(m_screenHeight * 0.4f), 0.0f, false, "level");
+        DrawText(currentLevel, static_cast<int>(m_screenWidth * 0.09f), static_cast<int>(m_screenHeight * 0.4f), 0.0f, false, "current_level");
     }
 
 
     if (nextCost == "0") { //if max upgrade level
-        DrawText("Maxed out!", m_screenWidth * 0.04f, m_screenHeight * 0.45f, 0.0f, false, "upgrade_label");
+        DrawText("Maxed out!", static_cast<int>(m_screenWidth * 0.04f), static_cast<int>(m_screenHeight * 0.45f), 0.0f, false, "upgrade_label");
 
     }
     else { //Display next cost and upgrade details
-        DrawText("Upgrade Cost $", m_screenWidth * 0.04f, m_screenHeight * 0.45f, 0.0f, false, "upgrade_label");
-        DrawText(nextCost, m_screenWidth * 0.17f, m_screenHeight * 0.45f, 0.0f, false, "upgrade_cost");
-        DrawText(upgradeDetails, m_screenWidth * 0.04f, m_screenHeight * 0.5f, 0.0f, false, "upgrade_details");
+        DrawText("Upgrade Cost $", static_cast<int>(m_screenWidth * 0.04f), static_cast<int>(m_screenHeight * 0.45f), 0.0f, false, "upgrade_label");
+        DrawText(nextCost, static_cast<int>(m_screenWidth * 0.17f), static_cast<int>(m_screenHeight * 0.45f), 0.0f, false, "upgrade_cost");
+        DrawText(upgradeDetails, static_cast<int>(m_screenWidth * 0.04f), static_cast<int>(m_screenHeight * 0.5f), 0.0f, false, "upgrade_details");
 
     }
 

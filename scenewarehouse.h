@@ -113,6 +113,7 @@ private:
 	std::list<ParticleSystem> m_particleSystems;
 
 	Sprite* m_pPauseMenu;
+	Sprite* m_pWinScreen;
 	bool m_pauseKey = false;
 
 
@@ -122,6 +123,7 @@ private:
 	float m_moneyPerSecond = 0.0f;
 	Assistant* m_pAssistant = nullptr;
 	bool m_assistantUnlocked = false;
+	bool m_won = false;
 };
 
 #endif // __SCENEWAREHOUSE_H__

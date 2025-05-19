@@ -50,7 +50,6 @@ public:
 	float GetValueIncreases() const;
 	float GetNextValueIncrease() const;
 
-	void IncreaseValue(float value);
 
 	void SetSharedSprite();
 

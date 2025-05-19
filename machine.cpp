@@ -41,14 +41,14 @@ void Machine::Draw(Renderer& renderer)
 {
     if (m_pAnimatedSprite && m_bAlive)
     {
-        m_pAnimatedSprite->SetX(m_position.x);
-        m_pAnimatedSprite->SetY(m_position.y);
+        m_pAnimatedSprite->SetX(static_cast<int>(m_position.x));
+        m_pAnimatedSprite->SetY(static_cast<int>(m_position.y));
         m_pAnimatedSprite->Draw(renderer);
     }
     else if (m_pSprite && m_bAlive)
     {
-        m_pSprite->SetX(m_position.x);
-        m_pSprite->SetY(m_position.y);
+        m_pSprite->SetX(static_cast<int>(m_position.x));
+        m_pSprite->SetY(static_cast<int>(m_position.y));
         m_pSprite->Draw(renderer);
     }
 }
@@ -177,9 +177,6 @@ int Machine::GetUpgradeCost() const {
 
 
 
-void Machine::IncreaseValue(float value) {
-    m_valueIncrease * value;
-}
 
 
 

@@ -36,8 +36,8 @@ void Entity::Draw(Renderer& renderer)
 {
     if (m_pSprite != nullptr && m_bAlive)
     {
-        m_pSprite->SetX(m_position.x);
-        m_pSprite->SetY(m_position.y);
+        m_pSprite->SetX(static_cast<int>(m_position.x));
+        m_pSprite->SetY(static_cast<int>(m_position.y));
         m_pSprite->Draw(renderer);
     }
 }

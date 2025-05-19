@@ -37,7 +37,7 @@ void Game::DestroyInstance()
 	delete sm_pInstance;
 	sm_pInstance = 0;
 }
-Game::Game() : m_pRenderer(0), m_bLooping(true)
+Game::Game() : m_pRenderer(0), m_bLooping(true), m_bShowDebugWindow(false)
 {
 }
 Game::~Game()

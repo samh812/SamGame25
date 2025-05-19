@@ -30,7 +30,7 @@ void Assistant::Initialise(Sprite* sprite, Player* player, float screenWidth, fl
     m_pSprite = sprite;
     m_pPlayer = player;
 
-    m_position = Vector2(sprite->GetX(), sprite->GetY());
+    m_position = Vector2(static_cast<float>(sprite->GetX()), static_cast<float>(sprite->GetY()));
 
 
     if (!m_soundSystem.Initialise()) {
@@ -124,8 +124,8 @@ void Assistant::Update(float deltaTime, std::vector<MoneyBag*>& moneyBags)
 
     if (m_pSprite)
     {
-        m_pSprite->SetX(m_position.x);
-        m_pSprite->SetY(m_position.y);
+        m_pSprite->SetX(static_cast<int>(m_position.x));
+        m_pSprite->SetY(static_cast<int>(m_position.y));
     }
 }
 
@@ -190,8 +190,8 @@ bool Assistant::IsPlayerInAssistantArea(Player* player)
 
     Vector2 playerPos = player->GetPosition();
 
-    float assistantX = m_pSprite->GetX();
-    float assistantY = m_pSprite->GetY();
+    float assistantX = static_cast<float>(m_pSprite->GetX());
+    float assistantY = static_cast<float>(m_pSprite->GetY());
 
     float areaWidth = 128.0f;
     float areaHeight = 128.0f;
